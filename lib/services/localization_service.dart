@@ -163,7 +163,8 @@ class AppLocalizations {
       'product_b': 'Product B',
       'compare_ingredients': 'Compare Ingredients',
       'select_both_products': 'Please select both products to compare',
-      'overall_comparison': 'Overall Comparison'
+      'overall_comparison': 'Overall Comparison',
+      'tap_to_add': 'Tap to add'
     },
     'ko': {
       'app_name': '성분렌즈',
@@ -229,7 +230,8 @@ class AppLocalizations {
       'product_b': '제품 B',
       'compare_ingredients': '성분 비교',
       'select_both_products': '비교할 두 제품을 모두 선택해주세요',
-      'overall_comparison': '종합 비교 분석'
+      'overall_comparison': '종합 비교 분석',
+      'tap_to_add': '탭하여 추가'
     },
     'zh': {
       'app_name': 'AI成分分析器',
@@ -282,7 +284,18 @@ class AppLocalizations {
       'confirm_analysis_notice': '点击确认将立即开始AI分析并显示广告。\n(AI分析大约需要10秒时间。)',
       'app_subtitle': '基于AI的成分分析器',
       'ai_disclaimer': 'AI分析结果仅供参考。AI可能提供错误信息，重要决定请务必咨询专业人士。😊',
-      'analysis_results': '分析结果'
+      'save_screenshot': '保存结果',
+      'screenshot_saved': '结果已保存到相册',
+      'screenshot_failed': '保存失败',
+      'storage_permission_needed': '需要存储权限',
+      'analysis_results': '分析结果',
+      'compare': '比较',
+      'product_a': '产品 A',
+      'product_b': '产品 B',
+      'compare_ingredients': '成分比较',
+      'select_both_products': '请选择两个产品进行比较',
+      'overall_comparison': '综合比较分析',
+      'tap_to_add': '点击添加'
     },
     'ja': {
       'app_name': 'AI成分分析',
@@ -338,7 +351,18 @@ class AppLocalizations {
       'app_subtitle': 'AI搭載の成分分析ツール',
       'ai_disclaimer':
           'AI分析結果は参考程度にご利用ください。AIは誤った情報を提供する可能性がありますので、重要な決定は必ず専門家にご相談ください。😊',
-      'analysis_results': '分析結果'
+      'save_screenshot': '結果を保存',
+      'screenshot_saved': '結果がギャラリーに保存されました',
+      'screenshot_failed': '保存に失敗しました',
+      'storage_permission_needed': 'ストレージの権限が必要です',
+      'analysis_results': '分析結果',
+      'compare': '比較',
+      'product_a': '製品 A',
+      'product_b': '製品 B',
+      'compare_ingredients': '成分比較',
+      'select_both_products': '比較する2つの製品を選択してください',
+      'overall_comparison': '総合比較分析',
+      'tap_to_add': 'タップして追加'
     },
     'es': {
       'app_name': 'Analizador de Ingredientes',
@@ -398,7 +422,18 @@ class AppLocalizations {
       'app_subtitle': 'Analizador de ingredientes con IA',
       'ai_disclaimer':
           'Use los resultados del análisis de IA solo como referencia. La IA puede proporcionar información incorrecta, así que consulte a expertos para decisiones importantes. 😊',
-      'analysis_results': 'Resultados del Análisis'
+      'save_screenshot': 'Guardar Resultados',
+      'screenshot_saved': 'Resultados guardados en la galería',
+      'screenshot_failed': 'Error al guardar',
+      'storage_permission_needed': 'Se requiere permiso de almacenamiento',
+      'analysis_results': 'Resultados del Análisis',
+      'compare': 'Comparar',
+      'product_a': 'Producto A',
+      'product_b': 'Producto B',
+      'compare_ingredients': 'Comparar Ingredientes',
+      'select_both_products': 'Por favor seleccione ambos productos para comparar',
+      'overall_comparison': 'Comparación General',
+      'tap_to_add': 'Toca para agregar'
     },
     'pt': {
       'app_name': 'Analisador de Ingredientes',
@@ -458,7 +493,18 @@ class AppLocalizations {
       'app_subtitle': 'Analisador de ingredientes com IA',
       'ai_disclaimer':
           'Use os resultados da análise de IA apenas como referência. A IA pode fornecer informações incorretas, então consulte especialistas para decisões importantes. 😊',
-      'analysis_results': 'Resultados da Análise'
+      'save_screenshot': 'Salvar Resultados',
+      'screenshot_saved': 'Resultados salvos na galeria',
+      'screenshot_failed': 'Falha ao salvar',
+      'storage_permission_needed': 'Permissão de armazenamento necessária',
+      'analysis_results': 'Resultados da Análise',
+      'compare': 'Comparar',
+      'product_a': 'Produto A',
+      'product_b': 'Produto B',
+      'compare_ingredients': 'Comparar Ingredientes',
+      'select_both_products': 'Por favor selecione ambos os produtos para comparar',
+      'overall_comparison': 'Comparação Geral',
+      'tap_to_add': 'Toque para adicionar'
     },
     'th': {
       'app_name': 'เครื่องวิเคราะห์ส่วนผสม',
@@ -516,7 +562,18 @@ class AppLocalizations {
       'app_subtitle': 'เครื่องวิเคราะห์ส่วนผสมด้วย AI',
       'ai_disclaimer':
           'โปรดใช้ผลการวิเคราะห์ AI เป็นข้อมูลอ้างอิงเท่านั้น AI อาจให้ข้อมูลที่ไม่ถูกต้อง โปรดปรึกษาผู้เชี่ยวชาญสำหรับการตัดสินใจที่สำคัญ 😊',
-      'analysis_results': 'ผลการวิเคราะห์'
+      'save_screenshot': 'บันทึกผลลัพธ์',
+      'screenshot_saved': 'บันทึกผลลัพธ์ไปยังแกลเลอรี่แล้ว',
+      'screenshot_failed': 'บันทึกล้มเหลว',
+      'storage_permission_needed': 'ต้องการสิทธิ์การจัดเก็บข้อมูล',
+      'analysis_results': 'ผลการวิเคราะห์',
+      'compare': 'เปรียบเทียบ',
+      'product_a': 'ผลิตภัณฑ์ A',
+      'product_b': 'ผลิตภัณฑ์ B',
+      'compare_ingredients': 'เปรียบเทียบส่วนผสม',
+      'select_both_products': 'กรุณาเลือกผลิตภัณฑ์ทั้งสองเพื่อเปรียบเทียบ',
+      'overall_comparison': 'การเปรียบเทียบโดยรวม',
+      'tap_to_add': 'แตะเพื่อเพิ่ม'
     },
     'vi': {
       'app_name': 'Phân Tích Thành Phần',
@@ -576,7 +633,18 @@ class AppLocalizations {
       'app_subtitle': 'Công cụ phân tích thành phần bằng AI',
       'ai_disclaimer':
           'Vui lòng chỉ sử dụng kết quả phân tích AI để tham khảo. AI có thể cung cấp thông tin không chính xác, vì vậy hãy tham khảo ý kiến chuyên gia cho các quyết định quan trọng. 😊',
-      'analysis_results': 'Kết Quả Phân Tích'
+      'save_screenshot': 'Lưu Kết Quả',
+      'screenshot_saved': 'Kết quả đã được lưu vào thư viện',
+      'screenshot_failed': 'Lưu thất bại',
+      'storage_permission_needed': 'Cần quyền truy cập bộ nhớ',
+      'analysis_results': 'Kết Quả Phân Tích',
+      'compare': 'So Sánh',
+      'product_a': 'Sản Phẩm A',
+      'product_b': 'Sản Phẩm B',
+      'compare_ingredients': 'So Sánh Thành Phần',
+      'select_both_products': 'Vui lòng chọn cả hai sản phẩm để so sánh',
+      'overall_comparison': 'So Sánh Tổng Thể',
+      'tap_to_add': 'Chạm để thêm'
     },
   };
 

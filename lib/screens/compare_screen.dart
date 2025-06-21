@@ -199,7 +199,7 @@ class _CompareScreenState extends State<CompareScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Tap to add',
+                          AppLocalizations.of(context)!.translate('tap_to_add'),
                           style: TextStyle(
                             color: AppTheme.gray500,
                             fontSize: 12,
@@ -261,7 +261,7 @@ class _CompareScreenState extends State<CompareScreen> {
                     ),
                     child: Text(
                       AppLocalizations.of(context)!.translate(
-                          'category_label', {'category': widget.category}),
+                          'category_label', {'category': AppLocalizations.of(context)!.translate(widget.category)}),
                       style: TextStyle(
                         color: AppTheme.primaryGreen,
                         fontSize: 12,
