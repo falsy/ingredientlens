@@ -7,10 +7,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
         android:maxSdkVersion="32" />
     
-    <!-- 갤러리 저장을 위한 권한 (Android 13+) -->
+    <!-- 갤러리에서 이미지 읽기 위한 권한 (Android 13+) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <application
         android:label="@string/app_name"

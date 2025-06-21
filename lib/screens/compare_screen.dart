@@ -67,7 +67,8 @@ class _CompareScreenState extends State<CompareScreen> {
     if (_imageA == null || _imageB == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.translate('select_both_products')),
+          content: Text(
+              AppLocalizations.of(context)!.translate('select_both_products')),
           backgroundColor: AppTheme.negativeColor,
         ),
       );
@@ -81,10 +82,10 @@ class _CompareScreenState extends State<CompareScreen> {
   void _startComparison() {
     // 분석 시작 시 취소 플래그 초기화
     _isAnalysisCancelled = false;
-    
+
     // API 호출을 먼저 시작
     _performComparison();
-    
+
     // 전면 광고 표시 (API는 이미 시작됨)
     Navigator.push(
       context,
@@ -109,7 +110,7 @@ class _CompareScreenState extends State<CompareScreen> {
     try {
       // 현재 로케일에서 언어 코드 가져오기
       final langCode = Localizations.localeOf(context).languageCode;
-      
+
       // 실제 API 호출
       final result = await ApiService.compareIngredients(
         imageA: _imageA!,
@@ -117,7 +118,7 @@ class _CompareScreenState extends State<CompareScreen> {
         category: widget.category,
         langCode: langCode,
       );
-      
+
       // 취소되지 않았을 때만 결과 화면으로 이동
       if (mounted && !_isAnalysisCancelled) {
         // 모든 화면을 닫고 결과 화면으로 이동
@@ -125,7 +126,8 @@ class _CompareScreenState extends State<CompareScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ComparisonResultScreen(comparisonResult: result),
+            builder: (context) =>
+                ComparisonResultScreen(comparisonResult: result),
           ),
         );
       }
@@ -134,7 +136,8 @@ class _CompareScreenState extends State<CompareScreen> {
       if (mounted && !_isAnalysisCancelled) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('analysis_failed')),
+            content: Text(
+                AppLocalizations.of(context)!.translate('analysis_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -250,13 +253,15 @@ class _CompareScreenState extends State<CompareScreen> {
                 children: [
                   // Category indicator
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppTheme.primaryGreen.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.translate('category_label', {'category': widget.category}),
+                      AppLocalizations.of(context)!.translate(
+                          'category_label', {'category': widget.category}),
                       style: TextStyle(
                         color: AppTheme.primaryGreen,
                         fontSize: 12,
@@ -265,7 +270,7 @@ class _CompareScreenState extends State<CompareScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Product cards in 2 columns
                   Row(
                     children: [
@@ -286,29 +291,32 @@ class _CompareScreenState extends State<CompareScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const Spacer(),
-                  
+
                   // Compare button
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 50,
                     child: ElevatedButton(
-                      onPressed: (_imageA != null && _imageB != null) ? _compareProducts : null,
+                      onPressed: (_imageA != null && _imageB != null)
+                          ? _compareProducts
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryGreen,
                         disabledBackgroundColor: AppTheme.gray300,
                         foregroundColor: AppTheme.whiteColor,
                         disabledForegroundColor: AppTheme.gray500,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(25),
                         ),
                         elevation: 2,
                       ),
                       child: Text(
-                        AppLocalizations.of(context)!.translate('compare_ingredients'),
+                        AppLocalizations.of(context)!
+                            .translate('compare_ingredients'),
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
