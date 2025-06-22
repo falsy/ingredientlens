@@ -34,8 +34,8 @@ const List<Category> categories = [
     icon: Icons.pets,
   ),
   Category(
-    id: 'health_supplements',
-    nameKey: 'health_supplements',
+    id: 'medicine',
+    nameKey: 'medicine',
     icon: Icons.medication,
   ),
 ];

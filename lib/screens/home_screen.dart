@@ -104,10 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   AppLocalizations.of(context)!.translate(category.nameKey),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryGreen,
-                    height: 1.4,
+                    height: 1.5,
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   AppLocalizations.of(context)!.translate('other'),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryGreen,
                     height: 1.2,
@@ -318,11 +318,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Center(
                   child: Container(
                     constraints: const BoxConstraints(maxWidth: 340),
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 18),
                         // App Title (왼쪽 정렬)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -334,14 +334,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .toUpperCase(),
                               style: TextStyle(
                                 color: AppTheme.primaryGreen,
-                                fontSize: 18,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.4,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 0),
+                        const SizedBox(height: 2),
                         // App Subtitle
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .toUpperCase(),
                               style: TextStyle(
                                 color: AppTheme.primaryGreen,
-                                fontSize: 13,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,
                               ),
@@ -487,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 28),
 
                         // Footer with copyright and links
                         Padding(

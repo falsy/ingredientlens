@@ -166,6 +166,8 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
         builder: (context) => ImageCropScreen(
           imagePath: imageFile.path,
           category: widget.category,
+          isCompareMode: widget.isCompareMode,
+          onImageSelected: widget.onImageSelected,
         ),
       ),
     );

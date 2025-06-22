@@ -102,7 +102,7 @@ class AppLocalizations {
       'cosmetics': 'Cosmetics',
       'baby_products': 'Baby Products',
       'pet_products': 'Pet Products',
-      'health_supplements': 'Health Supplements',
+      'medicine': 'Medicine',
       'cleaning_products': 'Cleaning Products',
       'vegan_products': 'Vegan Products',
       'other': 'Other',
@@ -164,7 +164,8 @@ class AppLocalizations {
       'compare_ingredients': 'Compare Ingredients',
       'select_both_products': 'Please select both products to compare',
       'overall_comparison': 'Overall Comparison',
-      'tap_to_add': 'Tap to add'
+      'tap_to_add': 'Tap to add',
+      'compare_instruction': 'Capture or select the ingredient list for each product to compare'
     },
     'ko': {
       'app_name': '성분렌즈',
@@ -173,7 +174,7 @@ class AppLocalizations {
       'cosmetics': '화장품',
       'baby_products': '육아용품',
       'pet_products': '반려용품',
-      'health_supplements': '건강식품',
+      'medicine': '의약품',
       'cleaning_products': '세정용품',
       'vegan_products': '비건품',
       'other': '기타',
@@ -231,7 +232,8 @@ class AppLocalizations {
       'compare_ingredients': '성분 비교',
       'select_both_products': '비교할 두 제품을 모두 선택해주세요',
       'overall_comparison': '종합 비교 분석',
-      'tap_to_add': '탭하여 추가'
+      'tap_to_add': '탭하여 추가',
+      'compare_instruction': '각 제품의 성분표를 촬영하거나 선택하여 비교해보세요'
     },
     'zh': {
       'app_name': 'AI成分分析器',
@@ -240,7 +242,7 @@ class AppLocalizations {
       'cosmetics': '化妆品',
       'baby_products': '婴儿用品',
       'pet_products': '宠物用品',
-      'health_supplements': '保健品',
+      'medicine': '药品',
       'cleaning_products': '清洁用品',
       'vegan_products': '纯素产品',
       'other': '其他',
@@ -295,7 +297,8 @@ class AppLocalizations {
       'compare_ingredients': '成分比较',
       'select_both_products': '请选择两个产品进行比较',
       'overall_comparison': '综合比较分析',
-      'tap_to_add': '点击添加'
+      'tap_to_add': '点击添加',
+      'compare_instruction': '拍摄或选择每个产品的成分表进行比较'
     },
     'ja': {
       'app_name': 'AI成分分析',
@@ -304,7 +307,7 @@ class AppLocalizations {
       'cosmetics': '化粧品',
       'baby_products': 'ベビー用品',
       'pet_products': 'ペット用品',
-      'health_supplements': '健康食品',
+      'medicine': '医薬品',
       'cleaning_products': '洗剤',
       'vegan_products': 'ビーガン製品',
       'other': 'その他',
@@ -362,7 +365,8 @@ class AppLocalizations {
       'compare_ingredients': '成分比較',
       'select_both_products': '比較する2つの製品を選択してください',
       'overall_comparison': '総合比較分析',
-      'tap_to_add': 'タップして追加'
+      'tap_to_add': 'タップして追加',
+      'compare_instruction': '各製品の成分表を撮影または選択して比較してください'
     },
     'es': {
       'app_name': 'Analizador de Ingredientes',
@@ -371,7 +375,7 @@ class AppLocalizations {
       'cosmetics': 'Cosméticos',
       'baby_products': 'Productos para Bebés',
       'pet_products': 'Productos para Mascotas',
-      'health_supplements': 'Suplementos',
+      'medicine': 'Medicina',
       'cleaning_products': 'Productos de Limpieza',
       'vegan_products': 'Productos Veganos',
       'other': 'Otro',
@@ -433,7 +437,8 @@ class AppLocalizations {
       'compare_ingredients': 'Comparar Ingredientes',
       'select_both_products': 'Por favor seleccione ambos productos para comparar',
       'overall_comparison': 'Comparación General',
-      'tap_to_add': 'Toca para agregar'
+      'tap_to_add': 'Toca para agregar',
+      'compare_instruction': 'Captura o selecciona la lista de ingredientes de cada producto para comparar'
     },
     'pt': {
       'app_name': 'Analisador de Ingredientes',
@@ -442,7 +447,7 @@ class AppLocalizations {
       'cosmetics': 'Cosméticos',
       'baby_products': 'Produtos para Bebês',
       'pet_products': 'Produtos para Pets',
-      'health_supplements': 'Suplementos',
+      'medicine': 'Medicamentos',
       'cleaning_products': 'Produtos de Limpeza',
       'vegan_products': 'Produtos Veganos',
       'other': 'Outro',
@@ -504,7 +509,8 @@ class AppLocalizations {
       'compare_ingredients': 'Comparar Ingredientes',
       'select_both_products': 'Por favor selecione ambos os produtos para comparar',
       'overall_comparison': 'Comparação Geral',
-      'tap_to_add': 'Toque para adicionar'
+      'tap_to_add': 'Toque para adicionar',
+      'compare_instruction': 'Capture ou selecione a lista de ingredientes de cada produto para comparar'
     },
     'th': {
       'app_name': 'เครื่องวิเคราะห์ส่วนผสม',
@@ -513,7 +519,7 @@ class AppLocalizations {
       'cosmetics': 'เครื่องสำอาง',
       'baby_products': 'ผลิตภัณฑ์สำหรับเด็ก',
       'pet_products': 'ผลิตภัณฑ์สำหรับสัตว์เลี้ยง',
-      'health_supplements': 'อาหารเสริม',
+      'medicine': 'ยา',
       'cleaning_products': 'ผลิตภัณฑ์ทำความสะอาด',
       'vegan_products': 'ผลิตภัณฑ์วีแกน',
       'other': 'อื่นๆ',
@@ -573,7 +579,8 @@ class AppLocalizations {
       'compare_ingredients': 'เปรียบเทียบส่วนผสม',
       'select_both_products': 'กรุณาเลือกผลิตภัณฑ์ทั้งสองเพื่อเปรียบเทียบ',
       'overall_comparison': 'การเปรียบเทียบโดยรวม',
-      'tap_to_add': 'แตะเพื่อเพิ่ม'
+      'tap_to_add': 'แตะเพื่อเพิ่ม',
+      'compare_instruction': 'ถ่ายภาพหรือเลือกรายการส่วนผสมของแต่ละผลิตภัณฑ์เพื่อเปรียบเทียบ'
     },
     'vi': {
       'app_name': 'Phân Tích Thành Phần',
@@ -582,7 +589,7 @@ class AppLocalizations {
       'cosmetics': 'Mỹ Phẩm',
       'baby_products': 'Sản Phẩm Em Bé',
       'pet_products': 'Sản Phẩm Thú Cưng',
-      'health_supplements': 'Thực Phẩm Chức Năng',
+      'medicine': 'Thuốc',
       'cleaning_products': 'Sản Phẩm Tẩy Rửa',
       'vegan_products': 'Sản Phẩm Thuần Chay',
       'other': 'Khác',
@@ -644,7 +651,8 @@ class AppLocalizations {
       'compare_ingredients': 'So Sánh Thành Phần',
       'select_both_products': 'Vui lòng chọn cả hai sản phẩm để so sánh',
       'overall_comparison': 'So Sánh Tổng Thể',
-      'tap_to_add': 'Chạm để thêm'
+      'tap_to_add': 'Chạm để thêm',
+      'compare_instruction': 'Chụp hoặc chọn danh sách thành phần của mỗi sản phẩm để so sánh'
     },
   };
 

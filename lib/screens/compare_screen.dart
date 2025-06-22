@@ -261,7 +261,10 @@ class _CompareScreenState extends State<CompareScreen> {
                     ),
                     child: Text(
                       AppLocalizations.of(context)!.translate(
-                          'category_label', {'category': AppLocalizations.of(context)!.translate(widget.category)}),
+                          'category_label', {
+                        'category': AppLocalizations.of(context)!
+                            .translate(widget.category)
+                      }),
                       style: TextStyle(
                         color: AppTheme.primaryGreen,
                         fontSize: 12,
@@ -290,6 +293,19 @@ class _CompareScreenState extends State<CompareScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Instruction message
+                  Text(
+                    AppLocalizations.of(context)!
+                        .translate('compare_instruction'),
+                    style: TextStyle(
+                      color: AppTheme.gray700,
+                      fontSize: 12,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
 
                   const Spacer(),

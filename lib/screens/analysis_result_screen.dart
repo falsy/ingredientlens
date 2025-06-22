@@ -29,7 +29,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
   Future<void> _saveScreenshot() async {
     if (_isSavingScreenshot) return;
-    
+
     setState(() {
       _isSavingScreenshot = true;
     });
@@ -45,7 +45,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppLocalizations.of(context)!.translate('storage_permission_needed')),
+                content: Text(AppLocalizations.of(context)!
+                    .translate('storage_permission_needed')),
                 backgroundColor: AppTheme.negativeColor,
                 duration: const Duration(seconds: 3),
               ),
@@ -55,24 +56,25 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         }
       }
 
-      
       // RepaintBoundary에서 이미지 캡처
       RenderRepaintBoundary boundary = _repaintBoundaryKey.currentContext!
           .findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      
+
       // 이미지를 바이트 배열로 변환
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
       // 임시 파일로 저장
       final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/ingredient_analysis_${DateTime.now().millisecondsSinceEpoch}.png');
+      final tempFile = File(
+          '${tempDir.path}/ingredient_analysis_${DateTime.now().millisecondsSinceEpoch}.png');
       await tempFile.writeAsBytes(pngBytes);
 
       // gal 패키지를 사용해서 갤러리에 저장
       await Gal.putImage(tempFile.path);
-      
+
       // 임시 파일 삭제
       await tempFile.delete();
 
@@ -81,7 +83,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('screenshot_saved')),
+            content: Text(
+                AppLocalizations.of(context)!.translate('screenshot_saved')),
             backgroundColor: AppTheme.primaryGreen,
             duration: const Duration(seconds: 3),
           ),
@@ -93,21 +96,23 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       if (mounted) {
         // 기존 스낵바 제거
         ScaffoldMessenger.of(context).clearSnackBars();
-        
+
         // 권한 오류인지 확인
-        String errorMessage = AppLocalizations.of(context)!.translate('screenshot_failed');
+        String errorMessage =
+            AppLocalizations.of(context)!.translate('screenshot_failed');
         String errorDetail = e.toString();
-        
-        if (errorDetail.contains('permission') || 
+
+        if (errorDetail.contains('permission') ||
             errorDetail.contains('Permission') ||
             errorDetail.contains('access') ||
             errorDetail.contains('denied')) {
-          errorMessage = AppLocalizations.of(context)!.translate('storage_permission_needed');
+          errorMessage = AppLocalizations.of(context)!
+              .translate('storage_permission_needed');
         }
-        
+
         // 디버깅용 상세 에러 메시지 (개발 중에만)
         if (kDebugMode) print('Error details: $errorDetail');
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('$errorMessage\n디버그: ${e.toString()}'),
@@ -137,12 +142,14 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
-    
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.translate('analysis_results').toUpperCase(),
+          AppLocalizations.of(context)!
+              .translate('analysis_results')
+              .toUpperCase(),
           style: TextStyle(
             color: AppTheme.primaryGreen,
             fontSize: 17,
@@ -163,7 +170,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 24),
-          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
       body: Column(
@@ -202,7 +210,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     required IconData icon,
   }) {
     if (items.isEmpty) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -227,7 +235,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     );
   }
 
-  Widget _buildIngredientCard(BuildContext context, dynamic item, Color accentColor) {
+  Widget _buildIngredientCard(
+      BuildContext context, dynamic item, Color accentColor) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
@@ -255,9 +264,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           Text(
             item['description'] ?? '',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.gray700,
-              height: 1.5,
-            ),
+                  color: AppTheme.gray700,
+                  height: 1.5,
+                ),
           ),
         ],
       ),
@@ -266,7 +275,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
   List<Widget> _buildSectionsWithSpacing(BuildContext context) {
     List<Widget> sections = [];
-    
+
     // 긍정적인 성분
     final positiveSection = _buildSection(
       context,
@@ -278,7 +287,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     if (positiveSection is! SizedBox) {
       sections.add(positiveSection);
     }
-    
+
     // 부정적인 성분
     final negativeSection = _buildSection(
       context,
@@ -291,7 +300,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
       sections.add(negativeSection);
     }
-    
+
     // 기타 성분
     final otherSection = _buildSection(
       context,
@@ -304,20 +313,20 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
       sections.add(otherSection);
     }
-    
+
     // 총평
     final overallSection = _buildOverallReview(context);
     if (overallSection is! SizedBox) {
       if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
       sections.add(overallSection);
     }
-    
+
     // 스크린샷 저장 버튼 추가
     if (sections.isNotEmpty) {
       sections.add(const SizedBox(height: 32));
       sections.add(_buildScreenshotButton(context));
     }
-    
+
     // AI 안내 메시지 추가
     if (sections.isNotEmpty) {
       sections.add(const SizedBox(height: 32));
@@ -341,7 +350,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         ),
       );
     }
-    
+
     return sections;
   }
 
@@ -350,7 +359,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isSavingScreenshot ? null : _saveScreenshot,
-        icon: _isSavingScreenshot 
+        icon: _isSavingScreenshot
             ? const SizedBox(
                 width: 20,
                 height: 20,
@@ -381,7 +390,6 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     );
   }
 
-
   Widget _buildOverallReview(BuildContext context) {
     final overallReview = widget.analysisResult['overall_review'];
     if (overallReview == null || overallReview.toString().trim().isEmpty) {
@@ -393,7 +401,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       children: [
         Row(
           children: [
-            Icon(Icons.lightbulb_outline, color: AppTheme.primaryGreen, size: 20),
+            Icon(Icons.lightbulb_outline,
+                color: AppTheme.primaryGreen, size: 20),
             const SizedBox(width: 8),
             Text(
               AppLocalizations.of(context)!.translate('overall_review'),
@@ -420,9 +429,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           child: Text(
             overallReview.toString(),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppTheme.blackColor,
-              height: 1.6,
-            ),
+                  color: AppTheme.blackColor,
+                  height: 1.6,
+                ),
           ),
         ),
       ],
