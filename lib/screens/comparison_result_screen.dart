@@ -28,7 +28,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
 
   Future<void> _saveScreenshot() async {
     if (_isSavingScreenshot) return;
-    
+
     setState(() {
       _isSavingScreenshot = true;
     });
@@ -43,7 +43,8 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
             ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppLocalizations.of(context)!.translate('storage_permission_needed')),
+                content: Text(AppLocalizations.of(context)!
+                    .translate('storage_permission_needed')),
                 backgroundColor: AppTheme.negativeColor,
                 duration: const Duration(seconds: 3),
               ),
@@ -53,23 +54,39 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         }
       }
 
-      // RepaintBoundary에서 이미지 캡처
-      RenderRepaintBoundary boundary = _repaintBoundaryKey.currentContext!
-          .findRenderObject() as RenderRepaintBoundary;
-      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      // RepaintBoundary 확인
+      final RenderObject? renderObject = _repaintBoundaryKey.currentContext?.findRenderObject();
+      if (renderObject == null || renderObject is! RenderRepaintBoundary) {
+        throw Exception('Screenshot widget not ready');
+      }
       
+      final RenderRepaintBoundary boundary = renderObject;
+      
+      // 렌더링이 완료되었는지 확인
+      if (boundary.debugNeedsPaint) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      
+      // iOS에서 안정적인 캡처를 위해 픽셀 비율을 낮춤
+      final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+      double pixelRatio = isIOS ? 1.5 : 2.0;
+      
+      ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
+
       // 이미지를 바이트 배열로 변환
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       Uint8List pngBytes = byteData!.buffer.asUint8List();
 
       // 임시 파일로 저장
       final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/ingredient_comparison_${DateTime.now().millisecondsSinceEpoch}.png');
+      final tempFile = File(
+          '${tempDir.path}/ingredient_comparison_${DateTime.now().millisecondsSinceEpoch}.png');
       await tempFile.writeAsBytes(pngBytes);
 
       // gal 패키지를 사용해서 갤러리에 저장
       await Gal.putImage(tempFile.path);
-      
+
       // 임시 파일 삭제
       await tempFile.delete();
 
@@ -77,7 +94,8 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('screenshot_saved')),
+            content: Text(
+                AppLocalizations.of(context)!.translate('screenshot_saved')),
             backgroundColor: AppTheme.primaryGreen,
             duration: const Duration(seconds: 3),
           ),
@@ -88,7 +106,8 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('screenshot_failed')),
+            content: Text(
+                AppLocalizations.of(context)!.translate('screenshot_failed')),
             backgroundColor: AppTheme.negativeColor,
             duration: const Duration(seconds: 5),
           ),
@@ -107,19 +126,21 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFF5F5F5),
+        statusBarColor: AppTheme.backgroundColor,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFF5F5F5),
+        systemNavigationBarColor: AppTheme.backgroundColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
-    
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.translate('compare_ingredients').toUpperCase(),
+          AppLocalizations.of(context)!
+              .translate('compare_ingredients')
+              .toUpperCase(),
           style: TextStyle(
             color: AppTheme.primaryGreen,
             fontSize: 17,
@@ -132,30 +153,40 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         centerTitle: false,
         scrolledUnderElevation: 0,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color(0xFFF5F5F5),
+          statusBarColor: AppTheme.backgroundColor,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Color(0xFFF5F5F5),
+          systemNavigationBarColor: AppTheme.backgroundColor,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 24),
-          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: RepaintBoundary(
-              key: _repaintBoundaryKey,
-              child: Container(
-                color: AppTheme.backgroundColor,
-                child: ListView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsets.all(20),
-                  children: _buildSectionsWithSpacing(context),
+            child: ListView(
+              physics: const ClampingScrollPhysics(),
+              children: [
+                RepaintBoundary(
+                  key: _repaintBoundaryKey,
+                  child: Container(
+                    width: double.infinity,
+                    color: AppTheme.backgroundColor, // 배경색 설정
+                    padding: const EdgeInsets.all(20),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: _buildSectionsWithSpacing(context),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
           // 하단 광고 배너
@@ -172,7 +203,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     required IconData icon,
   }) {
     if (items.isEmpty) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -224,9 +255,9 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           Text(
             item['description'] ?? '',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.gray700,
-              height: 1.5,
-            ),
+                  color: AppTheme.gray700,
+                  height: 1.5,
+                ),
           ),
         ],
       ),
@@ -235,7 +266,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
 
   List<Widget> _buildSectionsWithSpacing(BuildContext context) {
     List<Widget> sections = [];
-    
+
     // Product A 성분
     final productASection = _buildSection(
       title: AppLocalizations.of(context)!.translate('product_a'),
@@ -246,7 +277,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     if (productASection is! SizedBox) {
       sections.add(productASection);
     }
-    
+
     // Product B 성분
     final productBSection = _buildSection(
       title: AppLocalizations.of(context)!.translate('product_b'),
@@ -258,20 +289,20 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
       if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
       sections.add(productBSection);
     }
-    
+
     // 종합 비교 분석
     final overallSection = _buildOverallComparison(context);
     if (overallSection is! SizedBox) {
       if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
       sections.add(overallSection);
     }
-    
+
     // 스크린샷 저장 버튼 추가
     if (sections.isNotEmpty) {
       sections.add(const SizedBox(height: 32));
       sections.add(_buildScreenshotButton(context));
     }
-    
+
     // AI 안내 메시지 추가
     if (sections.isNotEmpty) {
       sections.add(const SizedBox(height: 32));
@@ -295,7 +326,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         ),
       );
     }
-    
+
     return sections;
   }
 
@@ -304,7 +335,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isSavingScreenshot ? null : _saveScreenshot,
-        icon: _isSavingScreenshot 
+        icon: _isSavingScreenshot
             ? const SizedBox(
                 width: 20,
                 height: 20,
@@ -373,9 +404,9 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           child: Text(
             overallReview.toString(),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppTheme.blackColor,
-              height: 1.6,
-            ),
+                  color: AppTheme.blackColor,
+                  height: 1.6,
+                ),
           ),
         ),
       ],

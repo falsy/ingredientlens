@@ -56,10 +56,26 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         }
       }
 
-      // RepaintBoundary에서 이미지 캡처
-      RenderRepaintBoundary boundary = _repaintBoundaryKey.currentContext!
-          .findRenderObject() as RenderRepaintBoundary;
-      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      // RepaintBoundary 확인
+      final RenderObject? renderObject = _repaintBoundaryKey.currentContext?.findRenderObject();
+      if (renderObject == null || renderObject is! RenderRepaintBoundary) {
+        if (kDebugMode) print('RenderRepaintBoundary not found');
+        throw Exception('Screenshot widget not ready');
+      }
+      
+      final RenderRepaintBoundary boundary = renderObject;
+      
+      // 렌더링이 완료되었는지 확인
+      if (boundary.debugNeedsPaint) {
+        if (kDebugMode) print('Widget needs paint, waiting...');
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+
+      // iOS에서 안정적인 캡처를 위해 픽셀 비율을 낮춤
+      final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+      double pixelRatio = isIOS ? 1.5 : 2.0;
+
+      ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
 
       // 이미지를 바이트 배열로 변환
       ByteData? byteData =
@@ -91,8 +107,11 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         );
       }
     } catch (e) {
-      if (kDebugMode) print('Screenshot error: $e');
-      if (kDebugMode) print('Screenshot error type: ${e.runtimeType}');
+      if (kDebugMode) {
+        print('Screenshot error: $e');
+        print('Screenshot error type: ${e.runtimeType}');
+        print('Screenshot error stack trace: ${StackTrace.current}');
+      }
       if (mounted) {
         // 기존 스낵바 제거
         ScaffoldMessenger.of(context).clearSnackBars();
@@ -135,10 +154,10 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     // 결과 화면에서도 상태바와 네비게이션 바를 배경색으로 설정
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFF5F5F5),
+        statusBarColor: AppTheme.backgroundColor,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFF5F5F5),
+        systemNavigationBarColor: AppTheme.backgroundColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -162,10 +181,10 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         centerTitle: false,
         scrolledUnderElevation: 0,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color(0xFFF5F5F5),
+          statusBarColor: AppTheme.backgroundColor,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Color(0xFFF5F5F5),
+          systemNavigationBarColor: AppTheme.backgroundColor,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
@@ -185,10 +204,11 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               child: RepaintBoundary(
                 key: _repaintBoundaryKey,
                 child: Container(
-                  color: AppTheme.backgroundColor,
-                  padding: const EdgeInsets.all(20), // 화면과 스크린샷 모두에 적용되는 여백
+                  color: AppTheme.backgroundColor, // 배경색 설정
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: _buildSectionsWithSpacing(context),
                   ),
                 ),
