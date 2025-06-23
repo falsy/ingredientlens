@@ -313,227 +313,262 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Expanded(
             child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 340),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 18),
-                        // App Title (왼쪽 정렬)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 2),
-                            child: Text(
-                              AppLocalizations.of(context)!
-                                  .translate('app_name')
-                                  .toUpperCase(),
-                              style: TextStyle(
-                                color: AppTheme.primaryGreen,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.4,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        // App Subtitle
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 2),
-                            child: Text(
-                              AppLocalizations.of(context)!
-                                  .translate('app_subtitle')
-                                  .toUpperCase(),
-                              style: TextStyle(
-                                color: AppTheme.primaryGreen,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Category Grid
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(4), // 그림자를 위한 패딩 추가
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20,
-                            childAspectRatio: 1.0, // 정사각형
-                          ),
-                          itemCount: categories.length + 1, // +1 for Other
-                          itemBuilder: (context, index) {
-                            if (index < categories.length) {
-                              return _buildCategoryCard(categories[index]);
-                            } else {
-                              return _buildOtherCard();
-                            }
-                          },
-                        ),
-
-                        const SizedBox(height: 18),
-
-                        // Custom category input (like search bar)
-                        if (_showCustomInput) ...[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: AppTheme.whiteColor,
-                                borderRadius: BorderRadius.circular(25),
-                                border: Border.all(
-                                  color: AppTheme.primaryGreen.withOpacity(0.3),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: TextField(
-                                controller: _customCategoryController,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _customCategory = value;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: AppLocalizations.of(context)!
-                                      .translate('enter_custom_category'),
-                                  hintStyle: TextStyle(
-                                    color:
-                                        AppTheme.primaryGreen.withOpacity(0.4),
-                                    fontSize: 13,
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 18,
-                                    vertical: 12,
-                                  ),
-                                ),
-                                style: TextStyle(
-                                  color: AppTheme.primaryGreen,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-
-                        // Analyze button
-                        const SizedBox(height: 4),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _onAnalyzePressed,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryGreen,
-                                foregroundColor: AppTheme.whiteColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                elevation: 2,
-                              ),
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .translate('analyze'),
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Compare button
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: OutlinedButton(
-                              onPressed: _onComparePressed,
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                    color: AppTheme.primaryGreen, width: 1.5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .translate('compare'),
-                                style: TextStyle(
-                                  color: AppTheme.primaryGreen,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-
-                        // Footer with copyright and links
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+              bottom: false, // 하단 SafeArea 비활성화
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight:
+                            constraints.maxHeight - 48, // vertical padding 제외
+                      ),
+                      child: Center(
+                        child: Container(
+                          constraints: const BoxConstraints(maxWidth: 340),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '© Falsy.',
-                                style: TextStyle(
-                                  color: AppTheme.gray700,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              GestureDetector(
-                                onTap: _launchPrivacyPolicy,
-                                child: Text(
-                                  'Privacy Policy',
-                                  style: TextStyle(
-                                    color: AppTheme.gray700,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 18),
+                                  // App Title (왼쪽 정렬)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 2),
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('app_name')
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                          color: AppTheme.primaryGreen,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.4,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: _launchTermsOfService,
-                                child: Text(
-                                  'Terms of Service',
-                                  style: TextStyle(
-                                    color: AppTheme.gray700,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
+                                  const SizedBox(height: 2),
+                                  // App Subtitle
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 2),
+                                      child: Text(
+                                        AppLocalizations.of(context)!
+                                            .translate('app_subtitle')
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                          color: AppTheme.primaryGreen,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.2,
+                                        ),
+                                      ),
+                                    ),
                                   ),
+                                  const SizedBox(height: 24),
+
+                                  // Category Grid
+                                  GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.all(
+                                        4), // 그림자를 위한 패딩 추가
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 20,
+                                      mainAxisSpacing: 20,
+                                      childAspectRatio: 1.0, // 정사각형
+                                    ),
+                                    itemCount:
+                                        categories.length + 1, // +1 for Other
+                                    itemBuilder: (context, index) {
+                                      if (index < categories.length) {
+                                        return _buildCategoryCard(
+                                            categories[index]);
+                                      } else {
+                                        return _buildOtherCard();
+                                      }
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 18),
+
+                                  // Custom category input (like search bar)
+                                  if (_showCustomInput) ...[
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.whiteColor,
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                          border: Border.all(
+                                            color: AppTheme.primaryGreen
+                                                .withOpacity(0.3),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: TextField(
+                                          controller: _customCategoryController,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _customCategory = value;
+                                            });
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: AppLocalizations.of(
+                                                    context)!
+                                                .translate(
+                                                    'enter_custom_category'),
+                                            hintStyle: TextStyle(
+                                              color: AppTheme.primaryGreen
+                                                  .withOpacity(0.4),
+                                              fontSize: 13,
+                                            ),
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                              horizontal: 18,
+                                              vertical: 12,
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            color: AppTheme.primaryGreen,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+
+                                  // Analyze button
+                                  const SizedBox(height: 4),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: _onAnalyzePressed,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AppTheme.primaryGreen,
+                                          foregroundColor: AppTheme.whiteColor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                          ),
+                                          elevation: 2,
+                                        ),
+                                        child: Text(
+                                          AppLocalizations.of(context)!
+                                              .translate('analyze'),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+
+                                  // Compare button
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: OutlinedButton(
+                                        onPressed: _onComparePressed,
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(
+                                              color: AppTheme.primaryGreen,
+                                              width: 1.5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          AppLocalizations.of(context)!
+                                              .translate('compare'),
+                                          style: TextStyle(
+                                            color: AppTheme.primaryGreen,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 28),
+                                ],
+                              ),
+
+                              // Footer with copyright and links
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 24),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '© Falsy.',
+                                      style: TextStyle(
+                                        color: AppTheme.gray700,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    GestureDetector(
+                                      onTap: _launchPrivacyPolicy,
+                                      child: Text(
+                                        'Privacy Policy',
+                                        style: TextStyle(
+                                          color: AppTheme.gray700,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    GestureDetector(
+                                      onTap: _launchTermsOfService,
+                                      child: Text(
+                                        'Terms of Service',
+                                        style: TextStyle(
+                                          color: AppTheme.gray700,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),

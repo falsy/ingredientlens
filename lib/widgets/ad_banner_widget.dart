@@ -96,29 +96,33 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // 광고가 비활성화되어 있으면 아무것도 표시하지 않음
-    if (!_enableAds) {
+    // 광고가 비활성화되어 있거나 로드되지 않았으면 아무것도 표시하지 않음
+    if (!_enableAds || (!_isBannerAdReady && _adFailed)) {
       return const SizedBox.shrink();
     }
     
-    return Container(
-      width: double.infinity,
-      height: 60,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppTheme.whiteColor,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.cardShadow,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: _isBannerAdReady && _bannerAd != null
-          ? AdWidget(ad: _bannerAd!)
-          : const SizedBox.shrink(),
-    );
+    // 광고가 준비되었을 때만 컨테이너 표시
+    if (_isBannerAdReady && _bannerAd != null) {
+      return Container(
+        width: double.infinity,
+        height: 60,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.whiteColor,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.cardShadow,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: AdWidget(ad: _bannerAd!),
+      );
+    }
+    
+    // 광고 로딩 중일 때는 빈 공간 표시하지 않음
+    return const SizedBox.shrink();
   }
 }
