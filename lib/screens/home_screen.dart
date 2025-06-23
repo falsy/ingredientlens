@@ -278,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _launchPrivacyPolicy() async {
-    final Uri url = Uri.parse('https://falsy.me/ingredient-lens/privacy.html');
+    final Uri url = Uri.parse('https://falsy.me/ingredientlens/privacy.html');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _launchTermsOfService() async {
-    final Uri url = Uri.parse('https://falsy.me/ingredient-lens/terms.html');
+    final Uri url = Uri.parse('https://falsy.me/ingredientlens/terms.html');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
