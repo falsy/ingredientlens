@@ -189,14 +189,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedCategory == 'other') {
       categoryToCompare = _customCategory?.trim();
       if (categoryToCompare == null || categoryToCompare.isEmpty) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!
                 .translate('enter_custom_category')),
             backgroundColor: AppTheme.negativeColor,
-            behavior: SnackBarBehavior.floating,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
         return;
@@ -206,14 +204,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (categoryToCompare == null) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!
               .translate('please_select_category')),
           backgroundColor: AppTheme.negativeColor,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       );
       return;
@@ -235,6 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedCategory == 'other') {
       categoryToAnalyze = _customCategory?.trim();
       if (categoryToAnalyze == null || categoryToAnalyze.isEmpty) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!
@@ -249,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (categoryToAnalyze == null) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!

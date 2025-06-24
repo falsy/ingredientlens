@@ -152,7 +152,7 @@ class AppLocalizations {
           'Clicking Confirm will start AI analysis immediately and display ads.\n(AI analysis takes about 10 seconds.)',
       'app_subtitle': 'AI-powered ingredient analyzer',
       'ai_disclaimer':
-          'Please use AI analysis results for reference only. AI may provide incorrect information, so please consult experts for important decisions. 😊',
+          'AI-provided information may contain errors. Please use the analysis results for reference only, and always consult with professionals for important decisions. 😊',
       'save_screenshot': 'Save Results',
       'screenshot_saved': 'Results saved to gallery',
       'screenshot_failed': 'Failed to save',
@@ -220,7 +220,7 @@ class AppLocalizations {
           '확인을 클릭하면 즉시 AI 분석이 시작되고 광고가 표시됩니다.\n(AI 분석에는 10초 정도의 시간이 소요됩니다.)',
       'app_subtitle': 'AI를 활용한 성분표 분석기',
       'ai_disclaimer':
-          'AI 분석 결과는 참고용으로만 활용해 주세요. AI는 잘못된 정보를 제공할 수 있으니 중요한 결정은 꼭 전문가와 상담해 주세요. 😊',
+          'AI가 제공하는 정보에는 오류가 있을 수 있습니다. 분석 결과는 참고용으로 활용하시고, 중요한 결정은 반드시 전문가와 상담해 주세요. 😊',
       'save_screenshot': '결과 저장하기',
       'screenshot_saved': '결과가 갤러리에 저장되었습니다',
       'screenshot_failed': '저장에 실패했습니다',
@@ -285,7 +285,7 @@ class AppLocalizations {
       'close': '关闭',
       'confirm_analysis_notice': '点击确认将立即开始AI分析并显示广告。\n(AI分析大约需要10秒时间。)',
       'app_subtitle': '基于AI的成分分析器',
-      'ai_disclaimer': 'AI分析结果仅供参考。AI可能提供错误信息，重要决定请务必咨询专业人士。😊',
+      'ai_disclaimer': 'AI提供的信息可能存在错误。请将分析结果仅作为参考，重要决定请务必咨询专业人士。😊',
       'save_screenshot': '保存结果',
       'screenshot_saved': '结果已保存到相册',
       'screenshot_failed': '保存失败',
@@ -353,7 +353,7 @@ class AppLocalizations {
           '確認をクリックするとすぐにAI分析が開始され、広告が表示されます。\n(AI分析には約10秒かかります。)',
       'app_subtitle': 'AI搭載の成分分析ツール',
       'ai_disclaimer':
-          'AI分析結果は参考程度にご利用ください。AIは誤った情報を提供する可能性がありますので、重要な決定は必ず専門家にご相談ください。😊',
+          'AIが提供する情報には誤りがある可能性があります。分析結果は参考程度にご利用いただき、重要な決定は必ず専門家にご相談ください。😊',
       'save_screenshot': '結果を保存',
       'screenshot_saved': '結果がギャラリーに保存されました',
       'screenshot_failed': '保存に失敗しました',
@@ -425,7 +425,7 @@ class AppLocalizations {
           'Hacer clic en Confirmar iniciará el análisis de IA inmediatamente y mostrará anuncios.\n(El análisis de IA toma aproximadamente 10 segundos.)',
       'app_subtitle': 'Analizador de ingredientes con IA',
       'ai_disclaimer':
-          'Use los resultados del análisis de IA solo como referencia. La IA puede proporcionar información incorrecta, así que consulte a expertos para decisiones importantes. 😊',
+          'La información proporcionada por la IA puede contener errores. Utilice los resultados del análisis solo como referencia y consulte siempre a profesionales para decisiones importantes. 😊',
       'save_screenshot': 'Guardar Resultados',
       'screenshot_saved': 'Resultados guardados en la galería',
       'screenshot_failed': 'Error al guardar',
@@ -497,7 +497,7 @@ class AppLocalizations {
           'Clicar em Confirmar iniciará imediatamente a análise de IA e exibirá anúncios.\n(A análise de IA leva aproximadamente 10 segundos.)',
       'app_subtitle': 'Analisador de ingredientes com IA',
       'ai_disclaimer':
-          'Use os resultados da análise de IA apenas como referência. A IA pode fornecer informações incorretas, então consulte especialistas para decisões importantes. 😊',
+          'As informações fornecidas pela IA podem conter erros. Use os resultados da análise apenas como referência e sempre consulte profissionais para decisões importantes. 😊',
       'save_screenshot': 'Salvar Resultados',
       'screenshot_saved': 'Resultados salvos na galeria',
       'screenshot_failed': 'Falha ao salvar',
@@ -567,7 +567,7 @@ class AppLocalizations {
           'การคลิกยืนยันจะเริ่มการวิเคราะห์ AI ทันทีและแสดงโฆษณา\n(การวิเคราะห์ AI ใช้เวลาประมาณ 10 วินาที)',
       'app_subtitle': 'เครื่องวิเคราะห์ส่วนผสมด้วย AI',
       'ai_disclaimer':
-          'โปรดใช้ผลการวิเคราะห์ AI เป็นข้อมูลอ้างอิงเท่านั้น AI อาจให้ข้อมูลที่ไม่ถูกต้อง โปรดปรึกษาผู้เชี่ยวชาญสำหรับการตัดสินใจที่สำคัญ 😊',
+          'ข้อมูลที่ AI ให้มาอาจมีข้อผิดพลาดได้ โปรดใช้ผลการวิเคราะห์เป็นข้อมูลอ้างอิงเท่านั้น และปรึกษาผู้เชี่ยวชาญเสมอสำหรับการตัดสินใจที่สำคัญ 😊',
       'save_screenshot': 'บันทึกผลลัพธ์',
       'screenshot_saved': 'บันทึกผลลัพธ์ไปยังแกลเลอรี่แล้ว',
       'screenshot_failed': 'บันทึกล้มเหลว',
@@ -639,7 +639,7 @@ class AppLocalizations {
           'Nhấp vào Xác nhận sẽ bắt đầu phân tích AI ngay lập tức và hiển thị quảng cáo.\n(Phân tích AI mất khoảng 10 giây.)',
       'app_subtitle': 'Công cụ phân tích thành phần bằng AI',
       'ai_disclaimer':
-          'Vui lòng chỉ sử dụng kết quả phân tích AI để tham khảo. AI có thể cung cấp thông tin không chính xác, vì vậy hãy tham khảo ý kiến chuyên gia cho các quyết định quan trọng. 😊',
+          'Thông tin do AI cung cấp có thể chứa lỗi. Hãy sử dụng kết quả phân tích chỉ để tham khảo và luôn tham khảo ý kiến chuyên gia cho các quyết định quan trọng. 😊',
       'save_screenshot': 'Lưu Kết Quả',
       'screenshot_saved': 'Kết quả đã được lưu vào thư viện',
       'screenshot_failed': 'Lưu thất bại',
