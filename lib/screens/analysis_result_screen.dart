@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:gal/gal.dart';
-import 'dart:ui' as ui;
 import 'dart:io';
-import 'dart:typed_data';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../widgets/ad_banner_widget.dart';
+import '../widgets/save_result_bottom_sheet.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
   final Map<String, dynamic> analysisResult;
+  final String category;
+  final bool fromSavedResults;
 
   const AnalysisResultScreen({
     super.key,
     required this.analysisResult,
+    required this.category,
+    this.fromSavedResults = false,
   });
 
   @override
@@ -24,128 +23,26 @@ class AnalysisResultScreen extends StatefulWidget {
 }
 
 class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
-  final GlobalKey _repaintBoundaryKey = GlobalKey();
-  bool _isSavingScreenshot = false;
+  void _showSaveBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SaveResultBottomSheet(
+        resultData: widget.analysisResult,
+        resultType: 'analysis',
+        category: widget.category,
+      ),
+    );
+  }
 
-  Future<void> _saveScreenshot() async {
-    if (_isSavingScreenshot) return;
-
-    setState(() {
-      _isSavingScreenshot = true;
-    });
-
-    try {
-      // 권한 확인 및 요청
-      bool hasAccess = await Gal.hasAccess();
-      if (!hasAccess) {
-        // 권한 요청
-        hasAccess = await Gal.requestAccess();
-        if (!hasAccess) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!
-                    .translate('storage_permission_needed')),
-                backgroundColor: AppTheme.negativeColor,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      // RepaintBoundary 확인
-      final RenderObject? renderObject = _repaintBoundaryKey.currentContext?.findRenderObject();
-      if (renderObject == null || renderObject is! RenderRepaintBoundary) {
-        if (kDebugMode) print('RenderRepaintBoundary not found');
-        throw Exception('Screenshot widget not ready');
-      }
-      
-      final RenderRepaintBoundary boundary = renderObject;
-      
-      // 렌더링이 완료되었는지 확인
-      if (boundary.debugNeedsPaint) {
-        if (kDebugMode) print('Widget needs paint, waiting...');
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
-
-      // iOS에서 안정적인 캡처를 위해 픽셀 비율을 낮춤
-      final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-      double pixelRatio = isIOS ? 1.5 : 2.0;
-
-      ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
-
-      // 이미지를 바이트 배열로 변환
-      ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
-
-      // 임시 파일로 저장
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File(
-          '${tempDir.path}/ingredient_analysis_${DateTime.now().millisecondsSinceEpoch}.png');
-      await tempFile.writeAsBytes(pngBytes);
-
-      // gal 패키지를 사용해서 갤러리에 저장
-      await Gal.putImage(tempFile.path);
-
-      // 임시 파일 삭제
-      await tempFile.delete();
-
-      if (mounted) {
-        // 기존 스낵바 제거
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                AppLocalizations.of(context)!.translate('screenshot_saved')),
-            backgroundColor: AppTheme.primaryGreen,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Screenshot error: $e');
-        print('Screenshot error type: ${e.runtimeType}');
-        print('Screenshot error stack trace: ${StackTrace.current}');
-      }
-      if (mounted) {
-        // 기존 스낵바 제거
-        ScaffoldMessenger.of(context).clearSnackBars();
-
-        // 권한 오류인지 확인
-        String errorMessage =
-            AppLocalizations.of(context)!.translate('screenshot_failed');
-        String errorDetail = e.toString();
-
-        if (errorDetail.contains('permission') ||
-            errorDetail.contains('Permission') ||
-            errorDetail.contains('access') ||
-            errorDetail.contains('denied')) {
-          errorMessage = AppLocalizations.of(context)!
-              .translate('storage_permission_needed');
-        }
-
-        // 디버깅용 상세 에러 메시지 (개발 중에만)
-        if (kDebugMode) print('Error details: $errorDetail');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('$errorMessage\n디버그: ${e.toString()}'),
-            backgroundColor: AppTheme.negativeColor,
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSavingScreenshot = false;
-        });
-      }
+  void _handleBackNavigation() {
+    if (widget.fromSavedResults) {
+      // 저장된 결과에서 온 경우 저장된 결과 목록으로 돌아가기
+      Navigator.pop(context);
+    } else {
+      // 그 외의 경우는 모두 홈 화면으로 돌아가기
+      Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }
 
@@ -162,7 +59,12 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       ),
     );
 
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        _handleBackNavigation();
+        return false; // 기본 뒤로가기 동작을 막음
+      },
+      child: Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
@@ -171,7 +73,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               .toUpperCase(),
           style: TextStyle(
             color: AppTheme.primaryGreen,
-            fontSize: 17,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.4,
           ),
@@ -188,9 +90,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 24),
-          onPressed: () =>
-              Navigator.of(context).popUntil((route) => route.isFirst),
+          icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 28),
+          onPressed: _handleBackNavigation,
         ),
       ),
       body: Column(
@@ -200,24 +101,20 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               physics: const BouncingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),
               ),
-              padding: EdgeInsets.zero,
-              child: RepaintBoundary(
-                key: _repaintBoundaryKey,
-                child: Container(
-                  color: AppTheme.backgroundColor, // 배경색 설정
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: _buildSectionsWithSpacing(context),
-                  ),
-                ),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: _buildSectionsWithSpacing(context),
               ),
             ),
           ),
           // 하단 광고 배너
           const AdBannerWidget(),
+          // 안드로이드 시스템 네비게이션 바 영역 고려
+          SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
         ],
+      ),
       ),
     );
   }
@@ -341,8 +238,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       sections.add(overallSection);
     }
 
-    // 스크린샷 저장 버튼 추가
-    if (sections.isNotEmpty) {
+    // 스크린샷 저장 버튼 추가 (저장된 결과에서 온 경우가 아닐 때만)
+    if (sections.isNotEmpty && !widget.fromSavedResults) {
       sections.add(const SizedBox(height: 32));
       sections.add(_buildScreenshotButton(context));
     }
@@ -361,7 +258,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           child: Text(
             AppLocalizations.of(context)!.translate('ai_disclaimer'),
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               color: AppTheme.gray700,
               height: 1.5,
             ),
@@ -378,19 +275,10 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     return Container(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: _isSavingScreenshot ? null : _saveScreenshot,
-        icon: _isSavingScreenshot
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Icon(Icons.save_alt, color: Colors.white),
+        onPressed: _showSaveBottomSheet,
+        icon: const Icon(Icons.save_alt, color: Colors.white),
         label: Text(
-          AppLocalizations.of(context)!.translate('save_screenshot'),
+          AppLocalizations.of(context)!.translate('save_result'),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
@@ -412,9 +300,14 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
   Widget _buildOverallReview(BuildContext context) {
     final overallReview = widget.analysisResult['overall_review'];
-    if (overallReview == null || overallReview.toString().trim().isEmpty) {
+    if (overallReview == null || (overallReview is List && overallReview.isEmpty)) {
       return const SizedBox.shrink();
     }
+
+    // 이전 버전 호환성을 위해 String인 경우도 처리
+    final List<String> reviewList = overallReview is String 
+        ? [overallReview]
+        : (overallReview as List).cast<String>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,12 +339,20 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               width: 1,
             ),
           ),
-          child: Text(
-            overallReview.toString(),
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.blackColor,
-                  height: 1.6,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int i = 0; i < reviewList.length; i++) ...[
+                Text(
+                  reviewList[i],
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppTheme.blackColor,
+                        height: 1.6,
+                      ),
                 ),
+                if (i < reviewList.length - 1) const SizedBox(height: 12),
+              ],
+            ],
           ),
         ),
       ],

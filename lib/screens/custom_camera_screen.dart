@@ -9,6 +9,7 @@ import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/api_service.dart';
 import '../widgets/interstitial_ad_widget.dart';
+import '../config/app_config.dart';
 import 'image_crop_screen.dart';
 import '../screens/analysis_result_screen.dart';
 
@@ -337,24 +338,26 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
     // API 호출을 먼저 시작
     _performAnalysis(imageFile);
     
-    // 전면 광고 표시 (API는 이미 시작됨)
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => InterstitialAdWidget(
-          onAdDismissed: () {
-            // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
-            if (kDebugMode) print('Ad finished, API should already be running');
-          },
-          onAnalysisCancelled: () {
-            // 분석 취소 플래그 설정
-            _isAnalysisCancelled = true;
-            // 분석 취소 시 이전 화면으로 돌아가기
-            Navigator.pop(context);
-          },
+    // 광고가 활성화된 경우만 전면 광고 표시 (API는 이미 시작됨)
+    if (AppConfig.enableAds) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InterstitialAdWidget(
+            onAdDismissed: () {
+              // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
+              if (kDebugMode) print('Ad finished, API should already be running');
+            },
+            onAnalysisCancelled: () {
+              // 분석 취소 플래그 설정
+              _isAnalysisCancelled = true;
+              // 분석 취소 시 이전 화면으로 돌아가기
+              Navigator.pop(context);
+            },
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   bool _isAnalysisCancelled = false;
@@ -379,7 +382,10 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => AnalysisResultScreen(analysisResult: result),
+            builder: (context) => AnalysisResultScreen(
+              analysisResult: result,
+              category: widget.category,
+            ),
           ),
         );
       }
@@ -453,7 +459,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                         AppLocalizations.of(context)!.translate('take_photo').toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 17,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.4,
                         ),

@@ -237,10 +237,10 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
     // 광고 로딩 중이거나 광고가 닫힌 후 항상 로딩 화면 표시
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFF5F5F5),
+        statusBarColor: AppTheme.backgroundColor,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFF5F5F5),
+        systemNavigationBarColor: AppTheme.backgroundColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(

@@ -6,20 +6,22 @@ class AppTheme {
     const supportedLanguages = ['ko', 'en', 'ja'];
     return supportedLanguages.contains(languageCode) ? 'Paperlogy' : null;
   }
+
   static const Color blackColor = Color(0xFF000000);
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color gray900 = Color(0xFF1A1A1A);
   static const Color gray700 = Color(0xFF4A4A4A);
   static const Color gray500 = Color(0xFF8A8A8A);
+  static const Color gray400 = Color(0xFFB0B0B0);
   static const Color gray300 = Color(0xFFD0D0D0);
   static const Color gray100 = Color(0xFFF0F0F0);
 
   static const Color positiveColor = Color(0xFF22C55E);
   static const Color negativeColor = Color(0xFFEF4444);
-  
+
   // 새로운 디자인 색상
   static const Color backgroundColor = Color(0xFFF5F5F5);
-  static const Color primaryGreen = Color(0xFF1B5E3F);  // 더 어두운 초록색
+  static const Color primaryGreen = Color(0xFF1B5E3F); // 더 어두운 초록색
   static const Color cardShadow = Color(0x1A000000);
 
   static ThemeData lightTheme = ThemeData(

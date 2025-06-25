@@ -11,16 +11,21 @@ import 'services/preferences_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Lock to portrait mode only
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  
   // Load environment variables
   await dotenv.load(fileName: ".env");
   
   // 상태바와 네비게이션 바 설정 (앱 전체에서 일관되게 유지)
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Color(0xFFF5F5F5), // 상태바 배경색
+      statusBarColor: AppTheme.backgroundColor, // 상태바 배경색
       statusBarIconBrightness: Brightness.dark, // 상태바 아이콘 색상 (어두운 색)
       statusBarBrightness: Brightness.light, // iOS용 상태바 밝기
-      systemNavigationBarColor: Color(0xFFF5F5F5), // 네비게이션 바 배경색
+      systemNavigationBarColor: AppTheme.backgroundColor, // 네비게이션 바 배경색
       systemNavigationBarIconBrightness: Brightness.dark, // 네비게이션 바 아이콘 색상
     ),
   );

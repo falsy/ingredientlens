@@ -68,10 +68,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
             // 다이얼로그가 닫힐 때 원래 색상으로 복원
             SystemChrome.setSystemUIOverlayStyle(
               const SystemUiOverlayStyle(
-                statusBarColor: Color(0xFFF5F5F5),
+                statusBarColor: AppTheme.backgroundColor,
                 statusBarIconBrightness: Brightness.dark,
                 statusBarBrightness: Brightness.light,
-                systemNavigationBarColor: Color(0xFFF5F5F5),
+                systemNavigationBarColor: AppTheme.backgroundColor,
                 systemNavigationBarIconBrightness: Brightness.dark,
               ),
             );
@@ -87,10 +87,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
                   // 원래 색상으로 복원 후 다이얼로그 닫기
                   SystemChrome.setSystemUIOverlayStyle(
                     const SystemUiOverlayStyle(
-                      statusBarColor: Color(0xFFF5F5F5),
+                      statusBarColor: AppTheme.backgroundColor,
                       statusBarIconBrightness: Brightness.dark,
                       statusBarBrightness: Brightness.light,
-                      systemNavigationBarColor: Color(0xFFF5F5F5),
+                      systemNavigationBarColor: AppTheme.backgroundColor,
                       systemNavigationBarIconBrightness: Brightness.dark,
                     ),
                   );
@@ -103,10 +103,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
                   // 원래 색상으로 복원 후 다이얼로그 닫기
                   SystemChrome.setSystemUIOverlayStyle(
                     const SystemUiOverlayStyle(
-                      statusBarColor: Color(0xFFF5F5F5),
+                      statusBarColor: AppTheme.backgroundColor,
                       statusBarIconBrightness: Brightness.dark,
                       statusBarBrightness: Brightness.light,
-                      systemNavigationBarColor: Color(0xFFF5F5F5),
+                      systemNavigationBarColor: AppTheme.backgroundColor,
                       systemNavigationBarIconBrightness: Brightness.dark,
                     ),
                   );
@@ -237,10 +237,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
             // 다이얼로그가 닫힐 때 원래 색상으로 복원
             SystemChrome.setSystemUIOverlayStyle(
               const SystemUiOverlayStyle(
-                statusBarColor: Color(0xFFF5F5F5),
+                statusBarColor: AppTheme.backgroundColor,
                 statusBarIconBrightness: Brightness.dark,
                 statusBarBrightness: Brightness.light,
-                systemNavigationBarColor: Color(0xFFF5F5F5),
+                systemNavigationBarColor: AppTheme.backgroundColor,
                 systemNavigationBarIconBrightness: Brightness.dark,
               ),
             );
@@ -287,10 +287,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
                   // 원래 색상으로 복원 후 다이얼로그 닫기
                   SystemChrome.setSystemUIOverlayStyle(
                     const SystemUiOverlayStyle(
-                      statusBarColor: Color(0xFFF5F5F5),
+                      statusBarColor: AppTheme.backgroundColor,
                       statusBarIconBrightness: Brightness.dark,
                       statusBarBrightness: Brightness.light,
-                      systemNavigationBarColor: Color(0xFFF5F5F5),
+                      systemNavigationBarColor: AppTheme.backgroundColor,
                       systemNavigationBarIconBrightness: Brightness.dark,
                     ),
                   );
@@ -309,10 +309,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
                   // 원래 색상으로 복원 후 다이얼로그 닫기
                   SystemChrome.setSystemUIOverlayStyle(
                     const SystemUiOverlayStyle(
-                      statusBarColor: Color(0xFFF5F5F5),
+                      statusBarColor: AppTheme.backgroundColor,
                       statusBarIconBrightness: Brightness.dark,
                       statusBarBrightness: Brightness.light,
-                      systemNavigationBarColor: Color(0xFFF5F5F5),
+                      systemNavigationBarColor: AppTheme.backgroundColor,
                       systemNavigationBarIconBrightness: Brightness.dark,
                     ),
                   );
@@ -345,10 +345,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
     // 이미지 소스 선택 화면에서 상태바와 네비게이션 바 색상 설정
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFF5F5F5),
+        statusBarColor: AppTheme.backgroundColor,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFF5F5F5),
+        systemNavigationBarColor: AppTheme.backgroundColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -362,7 +362,7 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
               .toUpperCase(),
           style: TextStyle(
             color: AppTheme.primaryGreen,
-            fontSize: 17,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.4,
           ),
@@ -371,10 +371,10 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
         elevation: 0,
         centerTitle: false,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color(0xFFF5F5F5),
+          statusBarColor: AppTheme.backgroundColor,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Color(0xFFF5F5F5),
+          systemNavigationBarColor: AppTheme.backgroundColor,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
@@ -561,6 +561,8 @@ class _ImageSourceScreenState extends State<ImageSourceScreen> {
               textAlign: TextAlign.center,
             ),
           ),
+          // 안드로이드 시스템 네비게이션 바 영역 고려
+          SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
         ],
       ),
     );

@@ -7,15 +7,20 @@ import '../widgets/ad_banner_widget.dart';
 import '../widgets/interstitial_ad_widget.dart';
 import '../services/api_service.dart';
 import '../config/ad_config.dart';
+import '../config/app_config.dart';
 import 'image_source_screen.dart';
 import 'comparison_result_screen.dart';
 
 class CompareScreen extends StatefulWidget {
   final String category;
+  final String? initialImageAPath;
+  final String? initialImageBPath;
 
   const CompareScreen({
     super.key,
     required this.category,
+    this.initialImageAPath,
+    this.initialImageBPath,
   });
 
   @override
@@ -30,13 +35,22 @@ class _CompareScreenState extends State<CompareScreen> {
   @override
   void initState() {
     super.initState();
+    
+    // 초기 이미지 설정
+    if (widget.initialImageAPath != null) {
+      _imageA = File(widget.initialImageAPath!);
+    }
+    if (widget.initialImageBPath != null) {
+      _imageB = File(widget.initialImageBPath!);
+    }
+    
     // 상태바 색상 설정
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFF5F5F5),
+        statusBarColor: AppTheme.backgroundColor,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFF5F5F5),
+        systemNavigationBarColor: AppTheme.backgroundColor,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
@@ -86,24 +100,26 @@ class _CompareScreenState extends State<CompareScreen> {
     // API 호출을 먼저 시작
     _performComparison();
 
-    // 전면 광고 표시 (API는 이미 시작됨)
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => InterstitialAdWidget(
-          customAdUnitId: AdConfig.compareAdUnitId, // 비교용 광고 ID
-          onAdDismissed: () {
-            // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
-          },
-          onAnalysisCancelled: () {
-            // 분석 취소 플래그 설정
-            _isAnalysisCancelled = true;
-            // 분석 취소 시 광고 화면 닫기
-            Navigator.pop(context); // 광고 화면 닫기
-          },
+    // 광고가 활성화된 경우만 전면 광고 표시 (API는 이미 시작됨)
+    if (AppConfig.enableAds) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InterstitialAdWidget(
+            customAdUnitId: AdConfig.compareAdUnitId, // 비교용 광고 ID
+            onAdDismissed: () {
+              // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
+            },
+            onAnalysisCancelled: () {
+              // 분석 취소 플래그 설정
+              _isAnalysisCancelled = true;
+              // 분석 취소 시 광고 화면 닫기
+              Navigator.pop(context); // 광고 화면 닫기
+            },
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _performComparison() async {
@@ -126,8 +142,10 @@ class _CompareScreenState extends State<CompareScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ComparisonResultScreen(comparisonResult: result),
+            builder: (context) => ComparisonResultScreen(
+              comparisonResult: result,
+              category: widget.category,
+            ),
           ),
         );
       }
@@ -223,7 +241,7 @@ class _CompareScreenState extends State<CompareScreen> {
           AppLocalizations.of(context)!.translate('compare').toUpperCase(),
           style: TextStyle(
             color: AppTheme.primaryGreen,
-            fontSize: 17,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.4,
           ),
@@ -233,14 +251,14 @@ class _CompareScreenState extends State<CompareScreen> {
         centerTitle: false,
         scrolledUnderElevation: 0,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color(0xFFF5F5F5),
+          statusBarColor: AppTheme.backgroundColor,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Color(0xFFF5F5F5),
+          systemNavigationBarColor: AppTheme.backgroundColor,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 24),
+          icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -344,6 +362,8 @@ class _CompareScreenState extends State<CompareScreen> {
           ),
           // 하단 광고 배너
           const AdBannerWidget(),
+          // 안드로이드 시스템 네비게이션 바 영역 고려
+          SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
         ],
       ),
     );

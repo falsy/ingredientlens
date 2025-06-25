@@ -6,20 +6,24 @@ import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/api_service.dart';
 import '../widgets/interstitial_ad_widget.dart';
+import '../config/app_config.dart';
 import 'analysis_result_screen.dart';
 
 class TransparentOverlayScreen extends StatefulWidget {
   final File imageFile;
   final String category;
+  final String? originalImagePath; // 원본 이미지 경로 (자르기 전)
 
   const TransparentOverlayScreen({
     super.key,
     required this.imageFile,
     required this.category,
+    this.originalImagePath,
   });
 
   @override
-  State<TransparentOverlayScreen> createState() => _TransparentOverlayScreenState();
+  State<TransparentOverlayScreen> createState() =>
+      _TransparentOverlayScreenState();
 }
 
 class _TransparentOverlayScreenState extends State<TransparentOverlayScreen> {
@@ -39,57 +43,61 @@ class _TransparentOverlayScreenState extends State<TransparentOverlayScreen> {
     if (kDebugMode) print('🚀 분석 시작!');
     // 분석 시작 시 취소 플래그 초기화
     _isAnalysisCancelled = false;
-    
+
     // API 호출을 먼저 시작
     _performAnalysis(imageFile);
-    
-    if (kDebugMode) print('📱 광고 화면 표시 시도...');
-    // 전면 광고 표시 (API는 이미 시작됨)
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          if (kDebugMode) print('✅ 광고 화면 빌드됨');
-          return InterstitialAdWidget(
-            onAdDismissed: () {
-              // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
-              if (kDebugMode) print('📺 광고 종료, API 진행 중...');
-            },
-            onAnalysisCancelled: () {
-              // 분석 취소 플래그 설정
-              if (kDebugMode) print('❌ 분석 취소됨');
-              _isAnalysisCancelled = true;
-              // 분석 취소 시 광고 화면과 투명 페이지 닫기
-              Navigator.pop(context); // 광고 화면 닫기
-              Navigator.pop(context); // 투명 페이지 닫기
-            },
-          );
-        },
-      ),
-    ).then((_) {
-      if (kDebugMode) print('🔙 광고 화면에서 돌아옴');
-    });
+
+    if (AppConfig.enableAds) {
+      if (kDebugMode) print('📱 광고 화면 표시 시도...');
+      // 전면 광고 표시 (API는 이미 시작됨)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            if (kDebugMode) print('✅ 광고 화면 빌드됨');
+            return InterstitialAdWidget(
+              onAdDismissed: () {
+                // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
+                if (kDebugMode) print('📺 광고 종료, API 진행 중...');
+              },
+              onAnalysisCancelled: () {
+                // 분석 취소 플래그 설정
+                if (kDebugMode) print('❌ 분석 취소됨');
+                _isAnalysisCancelled = true;
+                // 분석 취소 시 광고 화면과 투명 페이지 닫기
+                Navigator.pop(context); // 광고 화면 닫기
+                Navigator.pop(context); // 투명 페이지 닫기
+              },
+            );
+          },
+        ),
+      ).then((_) {
+        if (kDebugMode) print('🔙 광고 화면에서 돌아옴');
+      });
+    } else {
+      if (kDebugMode) print('📱 광고 비활성화됨 - 광고 화면 건너뜀');
+    }
   }
 
   void _performAnalysis(File imageFile) async {
     try {
       // 현재 로케일에서 언어 코드 가져오기
       final langCode = Localizations.localeOf(context).languageCode;
-      
+
       if (kDebugMode) {
         print('🔄 API 분석 시작...');
         print('📍 언어: $langCode, 카테고리: ${widget.category}');
       }
-      
+
       // 실제 API 호출
       final result = await ApiService.analyzeIngredients(
         imageFile: imageFile,
         category: widget.category,
         langCode: langCode,
       );
-      
+
       if (kDebugMode) print('✅ API 분석 완료!');
-      
+
       // 취소되지 않았을 때만 결과 화면으로 이동
       if (mounted && !_isAnalysisCancelled) {
         if (kDebugMode) print('📄 결과 화면으로 이동...');
@@ -98,7 +106,10 @@ class _TransparentOverlayScreenState extends State<TransparentOverlayScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AnalysisResultScreen(analysisResult: result),
+            builder: (context) => AnalysisResultScreen(
+              analysisResult: result,
+              category: widget.category,
+            ),
           ),
         );
       } else {
@@ -110,7 +121,8 @@ class _TransparentOverlayScreenState extends State<TransparentOverlayScreen> {
       if (mounted && !_isAnalysisCancelled) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('analysis_failed')),
+            content: Text(
+                AppLocalizations.of(context)!.translate('analysis_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -188,7 +200,8 @@ class _TransparentOverlayScreenState extends State<TransparentOverlayScreen> {
                   border: Border.all(color: AppTheme.gray300),
                 ),
                 child: Text(
-                  AppLocalizations.of(context)!.translate('confirm_analysis_notice'),
+                  AppLocalizations.of(context)!
+                      .translate('confirm_analysis_notice'),
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppTheme.gray700,
@@ -231,7 +244,7 @@ class _TransparentOverlayScreenState extends State<TransparentOverlayScreen> {
                         // 분석 시작 플래그 설정
                         _isAnalysisStarted = true;
                         // 바텀시트 닫기
-                        Navigator.pop(context); 
+                        Navigator.pop(context);
                         // 즉시 분석 시작
                         _startAnalysis(widget.imageFile);
                       },

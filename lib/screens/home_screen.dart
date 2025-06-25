@@ -8,6 +8,7 @@ import '../utils/theme.dart';
 import '../widgets/ad_banner_widget.dart';
 import 'image_source_screen.dart';
 import 'compare_screen.dart';
+import 'saved_results_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -275,6 +276,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _navigateToSavedResults() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SavedResultsScreen(),
+        settings: const RouteSettings(name: '/saved-results'),
+      ),
+    );
+  }
+
   Future<void> _launchPrivacyPolicy() async {
     final Uri url = Uri.parse('https://falsy.me/ingredientlens/privacy.html');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
@@ -333,43 +344,77 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 18),
-                                  // App Title (왼쪽 정렬)
+                                  // Header with title and saved results button
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 4),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 2),
-                                      child: Text(
-                                        AppLocalizations.of(context)!
-                                            .translate('app_name')
-                                            .toUpperCase(),
-                                        style: TextStyle(
-                                          color: AppTheme.primaryGreen,
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.4,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // App Title
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 2),
+                                                child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate('app_name')
+                                                      .toUpperCase(),
+                                                  style: TextStyle(
+                                                    color:
+                                                        AppTheme.primaryGreen,
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.w800,
+                                                    letterSpacing: 0.4,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              // App Subtitle
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 2),
+                                                child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          'app_subtitle'),
+                                                  style: TextStyle(
+                                                    color:
+                                                        AppTheme.primaryGreen,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 0.2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  // App Subtitle
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 2),
-                                      child: Text(
-                                        AppLocalizations.of(context)!
-                                            .translate('app_subtitle')
-                                            .toUpperCase(),
-                                        style: TextStyle(
-                                          color: AppTheme.primaryGreen,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 0.2,
+                                        // Saved results button
+                                        GestureDetector(
+                                          onTap: _navigateToSavedResults,
+                                          child: Container(
+                                            width: 44,
+                                            height: 44,
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primaryGreen,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.bookmark_outline,
+                                              color: AppTheme.whiteColor,
+                                              size: 22,
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ),
                                   const SizedBox(height: 24),
@@ -522,40 +567,54 @@ class _HomeScreenState extends State<HomeScreen> {
                               // Footer with copyright and links
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 24),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                child: Column(
                                   children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: _launchPrivacyPolicy,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 4),
+                                            child: Text(
+                                              'Privacy Policy',
+                                              style: TextStyle(
+                                                color: AppTheme.gray700,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        GestureDetector(
+                                          onTap: _launchTermsOfService,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 4),
+                                            child: Text(
+                                              'Terms of Service',
+                                              style: TextStyle(
+                                                color: AppTheme.gray700,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
                                     Text(
-                                      '© Falsy.',
+                                      'ⓒ falsy.',
                                       style: TextStyle(
                                         color: AppTheme.gray700,
-                                        fontSize: 10,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    GestureDetector(
-                                      onTap: _launchPrivacyPolicy,
-                                      child: Text(
-                                        'Privacy Policy',
-                                        style: TextStyle(
-                                          color: AppTheme.gray700,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    GestureDetector(
-                                      onTap: _launchTermsOfService,
-                                      child: Text(
-                                        'Terms of Service',
-                                        style: TextStyle(
-                                          color: AppTheme.gray700,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ],
                                 ),
@@ -572,6 +631,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           // Ad banner at bottom
           const AdBannerWidget(),
+          // 안드로이드 시스템 네비게이션 바 영역 고려
+          SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
         ],
       ),
     );

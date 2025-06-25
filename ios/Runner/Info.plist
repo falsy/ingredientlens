@@ -28,6 +28,10 @@
 	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>IngredientLens uses the camera to capture photos of product ingredient labels for AI-powered analysis. For example, you can take a photo of a food package's ingredient list to get detailed information about each ingredient's nutritional benefits and potential concerns. The captured photos are processed locally and sent to our AI service for ingredient analysis only.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -246,15 +250,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>

@@ -96,7 +96,12 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // 항상 광고 영역을 예약하고, 광고가 로드되면 표시
+    // 광고가 비활성화된 경우 완전히 숨김
+    if (!_enableAds) {
+      return const SizedBox.shrink();
+    }
+
+    // 광고가 활성화된 경우에만 영역 표시
     return Container(
       width: double.infinity,
       height: 60,
@@ -112,9 +117,9 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
           ),
         ],
       ),
-      child: _enableAds && _isBannerAdReady && _bannerAd != null
+      child: _isBannerAdReady && _bannerAd != null
           ? AdWidget(ad: _bannerAd!)
-          : const SizedBox.shrink(), // 광고 로딩 중이거나 비활성화된 경우 빈 공간
+          : const SizedBox.shrink(), // 광고 로딩 중인 경우 빈 공간
     );
   }
 }

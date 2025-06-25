@@ -236,6 +236,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           pageBuilder: (context, animation, secondaryAnimation) => TransparentOverlayScreen(
             imageFile: imageFile,
             category: widget.category,
+            originalImagePath: widget.imagePath, // 원본 이미지 경로 전달
           ),
           transitionDuration: Duration.zero, // 즉시 전환
           reverseTransitionDuration: Duration.zero, // 즉시 전환
@@ -259,7 +260,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           AppLocalizations.of(context)!.translate('crop_image').toUpperCase(),
           style: TextStyle(
             color: AppTheme.primaryGreen,
-            fontSize: 17,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.4,
           ),
@@ -268,10 +269,10 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         elevation: 0,
         centerTitle: false,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: Color(0xFFF5F5F5),
+          statusBarColor: AppTheme.backgroundColor,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Color(0xFFF5F5F5),
+          systemNavigationBarColor: AppTheme.backgroundColor,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
@@ -385,6 +386,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               ],
             ),
           ),
+          // 안드로이드 시스템 네비게이션 바 영역 고려
+          SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
         ],
       ),
     );
