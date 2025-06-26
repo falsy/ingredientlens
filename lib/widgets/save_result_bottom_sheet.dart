@@ -92,21 +92,32 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      decoration: const BoxDecoration(
-        color: AppTheme.backgroundColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 상단 핸들
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppTheme.gray300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
           // 제목
           Text(
             AppLocalizations.of(context)!.translate('save_result'),
@@ -119,12 +130,15 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
           const SizedBox(height: 20),
           
           // 이름 라벨
-          Text(
-            AppLocalizations.of(context)!.translate('result_name'),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppTheme.blackColor,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              AppLocalizations.of(context)!.translate('result_name'),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.blackColor,
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -169,26 +183,23 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                 child: OutlinedButton(
                   onPressed: _isSaving ? null : () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppTheme.primaryGreen,
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                     minimumSize: const Size(double.infinity, 50),
+                    side: BorderSide(color: AppTheme.gray500, width: 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                   ),
                   child: Text(
                     AppLocalizations.of(context)!.translate('cancel'),
                     style: TextStyle(
-                      color: AppTheme.primaryGreen,
+                      color: AppTheme.gray700,
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveResult,
@@ -197,7 +208,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                     foregroundColor: AppTheme.whiteColor,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(25),
                     ),
                   ),
                   child: _isSaving
@@ -213,7 +224,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                           AppLocalizations.of(context)!.translate('save'),
                           style: const TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
                 ),
@@ -224,6 +235,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
           // 하단 SafeArea 확보
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
+      ),
       ),
     );
   }

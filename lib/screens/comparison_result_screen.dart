@@ -4,7 +4,7 @@ import 'dart:io';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../widgets/ad_banner_widget.dart';
-import '../widgets/save_result_bottom_sheet.dart';
+import 'save_result_overlay_screen.dart';
 
 class ComparisonResultScreen extends StatefulWidget {
   final Map<String, dynamic> comparisonResult;
@@ -24,16 +24,22 @@ class ComparisonResultScreen extends StatefulWidget {
 
 class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
   void _showSaveBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => SaveResultBottomSheet(
-        resultData: widget.comparisonResult,
-        resultType: 'comparison',
-        category: widget.category,
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        opaque: false,
+        barrierColor: Colors.transparent,
+        pageBuilder: (context, animation, secondaryAnimation) => SaveResultOverlayScreen(
+          resultData: widget.comparisonResult,
+          resultType: 'comparison',
+          category: widget.category,
+        ),
       ),
-    );
+    ).then((result) {
+      if (result == true && mounted) {
+        // 저장 성공 시 처리는 overlay screen에서 이미 했으므로 추가 작업 없음
+      }
+    });
   }
 
   void _handleBackNavigation() {
@@ -327,7 +333,8 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
               for (int i = 0; i < reviewList.length; i++) ...[
                 Text(
                   reviewList[i],
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  style: TextStyle(
+                        fontSize: 15,
                         color: AppTheme.blackColor,
                         height: 1.6,
                       ),
