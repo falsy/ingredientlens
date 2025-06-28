@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
+import '../services/database_service.dart';
+import '../models/recent_result.dart';
 import '../widgets/ad_banner_widget.dart';
 import 'save_result_overlay_screen.dart';
 
@@ -23,6 +26,37 @@ class AnalysisResultScreen extends StatefulWidget {
 }
 
 class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _saveRecentResult();
+  }
+
+  void _saveRecentResult() async {
+    // Don't save if this result is from saved results
+    if (widget.fromSavedResults) return;
+    
+    try {
+      final overallReviewList = widget.analysisResult['overall_review'] as List<dynamic>?;
+      final overallReview = overallReviewList?.isNotEmpty == true 
+          ? overallReviewList!.join(' ') 
+          : '';
+      
+      if (overallReview.isNotEmpty) {
+        final recentResult = RecentResult(
+          type: 'analysis',
+          category: widget.category,
+          overallReview: overallReview,
+          resultData: jsonEncode(widget.analysisResult),
+          createdAt: DateTime.now(),
+        );
+        
+        await DatabaseService().saveRecentResult(recentResult);
+      }
+    } catch (e) {
+      // Error saving recent result - ignore silently
+    }
+  }
   void _showSaveBottomSheet() {
     Navigator.push(
       context,

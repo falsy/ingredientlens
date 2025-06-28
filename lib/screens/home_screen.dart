@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
 import '../models/category.dart';
+import '../models/recent_result.dart';
+import '../services/database_service.dart';
 import '../services/localization_service.dart';
 import '../services/preferences_service.dart';
 import '../utils/theme.dart';
 import '../widgets/ad_banner_widget.dart';
+import '../widgets/home_header_widget.dart';
+import '../widgets/category_section_widget.dart';
+import '../widgets/recent_results_section_widget.dart';
+import '../widgets/announcements_section_widget.dart';
+import '../widgets/category_action_bottom_sheet.dart';
+import '../widgets/home_footer_widget.dart';
 import 'image_source_screen.dart';
 import 'compare_screen.dart';
 import 'saved_results_screen.dart';
+import 'analysis_result_screen.dart';
+import 'comparison_result_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,210 +28,70 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? _selectedCategory;
-  String? _customCategory;
-  final TextEditingController _customCategoryController =
-      TextEditingController();
-  bool _showCustomInput = false;
+  List<RecentResult> _recentResults = [];
+  String? _currentCategoryId;
+  String? _currentCategoryName;
+  String? _customCategoryText;
 
   @override
   void initState() {
     super.initState();
-    _loadLastSelectedCategory();
-    // 홈 화면에서 상태바와 네비게이션 바 색상 설정
+    _loadRecentResults();
+    // 홈 화면에서 상태바와 네비게이션 바를 투명하게 설정
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: AppTheme.backgroundColor,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.backgroundColor,
+        systemNavigationBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
   }
 
-  void _loadLastSelectedCategory() {
-    final lastCategory = PreferencesService.instance.getLastSelectedCategory();
-    if (lastCategory != null) {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 화면이 다시 포커스될 때마다 Recent Results 새로고침
+    _loadRecentResults();
+  }
+
+  void _loadRecentResults() async {
+    try {
+      final results = await DatabaseService().getRecentResults();
       setState(() {
-        _selectedCategory = lastCategory;
+        _recentResults = results;
       });
+    } catch (e) {
+      // Error loading recent results - ignore silently
     }
   }
 
   @override
   void dispose() {
-    _customCategoryController.dispose();
     super.dispose();
   }
 
-  Widget _buildCategoryCard(Category category) {
-    final isSelected = _selectedCategory == category.id;
+  void _showCategoryActionBottomSheet(
+      String categoryId, String categoryName, bool isCustom) {
+    setState(() {
+      _currentCategoryId = categoryId;
+      _currentCategoryName = categoryName;
+    });
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedCategory = category.id;
-          _customCategory = null;
-          _showCustomInput = false;
-        });
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.whiteColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? AppTheme.primaryGreen : AppTheme.whiteColor,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.cardShadow.withOpacity(0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-              16, 14, 14, 16), // 왼쪽, 위, 오른쪽, 아래 (border 2px 보정)
-          child: Stack(
-            children: [
-              // 오른쪽 위 아이콘
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Icon(
-                  category.icon,
-                  size: 28,
-                  color: AppTheme.primaryGreen,
-                ),
-              ),
-              // 왼쪽 아래 텍스트
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 8,
-                child: Text(
-                  AppLocalizations.of(context)!.translate(category.nameKey),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryGreen,
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOtherCard() {
-    final isSelected = _selectedCategory == 'other';
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedCategory = 'other';
-          _showCustomInput = true;
-        });
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.whiteColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? AppTheme.primaryGreen : AppTheme.whiteColor,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.cardShadow,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-              16, 14, 14, 16), // 왼쪽, 위, 오른쪽, 아래 (border 2px 보정)
-          child: Stack(
-            children: [
-              // 오른쪽 위 아이콘
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Icon(
-                  Icons.more_horiz,
-                  size: 26,
-                  color: AppTheme.primaryGreen,
-                ),
-              ),
-              // 왼쪽 아래 텍스트
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 8,
-                child: Text(
-                  AppLocalizations.of(context)!.translate('other'),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryGreen,
-                    height: 1.2,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onComparePressed() {
-    String? categoryToCompare;
-
-    if (_selectedCategory == 'other') {
-      categoryToCompare = _customCategory?.trim();
-      if (categoryToCompare == null || categoryToCompare.isEmpty) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!
-                .translate('enter_custom_category')),
-            backgroundColor: AppTheme.negativeColor,
-          ),
-        );
-        return;
-      }
-    } else {
-      categoryToCompare = _selectedCategory;
-    }
-
-    if (categoryToCompare == null) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .translate('please_select_category')),
-          backgroundColor: AppTheme.negativeColor,
-        ),
-      );
-      return;
-    }
-
-    // Navigate to compare screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CompareScreen(category: categoryToCompare!),
-        settings: const RouteSettings(name: '/compare'),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CategoryActionBottomSheet(
+        categoryId: categoryId,
+        categoryName: categoryName,
+        isCustomCategory: isCustom,
+        onCustomCategoryChanged: (customText) {
+          _customCategoryText = customText;
+        },
+        onAnalyze: _onAnalyzePressed,
+        onCompare: _onComparePressed,
       ),
     );
   }
@@ -229,40 +99,41 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onAnalyzePressed() {
     String? categoryToAnalyze;
 
-    if (_selectedCategory == 'other') {
-      categoryToAnalyze = _customCategory?.trim();
-      if (categoryToAnalyze == null || categoryToAnalyze.isEmpty) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!
-                .translate('enter_custom_category')),
-            backgroundColor: AppTheme.negativeColor,
-          ),
-        );
-        return;
-      }
+    if (_currentCategoryId == 'other') {
+      // Custom category - this will be handled in the bottom sheet
+      categoryToAnalyze = _customCategoryText?.trim();
     } else {
-      categoryToAnalyze = _selectedCategory;
+      categoryToAnalyze = _currentCategoryId;
     }
 
-    if (categoryToAnalyze == null) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .translate('please_select_category')),
-          backgroundColor: AppTheme.negativeColor,
+    if (categoryToAnalyze != null && categoryToAnalyze.isNotEmpty) {
+      if (_currentCategoryId != 'other') {
+        PreferencesService.instance
+            .setLastSelectedCategory(_currentCategoryId!);
+      }
+      _navigateToImageSource(categoryToAnalyze);
+    }
+  }
+
+  void _onComparePressed() {
+    String? categoryToCompare;
+
+    if (_currentCategoryId == 'other') {
+      // Custom category - this will be handled in the bottom sheet
+      categoryToCompare = _customCategoryText?.trim();
+    } else {
+      categoryToCompare = _currentCategoryId;
+    }
+
+    if (categoryToCompare != null && categoryToCompare.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CompareScreen(category: categoryToCompare!),
+          settings: const RouteSettings(name: '/compare'),
         ),
       );
-      return;
     }
-
-    if (_selectedCategory != null && _selectedCategory != 'other') {
-      PreferencesService.instance.setLastSelectedCategory(_selectedCategory!);
-    }
-
-    _navigateToImageSource(categoryToAnalyze);
   }
 
   void _navigateToImageSource(String category) {
@@ -286,38 +157,63 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _launchPrivacyPolicy() async {
-    final Uri url = Uri.parse('https://falsy.me/ingredientlens/privacy.html');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open Privacy Policy'),
-            backgroundColor: AppTheme.negativeColor,
+  void _onRecentResultTap(RecentResult result) {
+    try {
+      final resultData = jsonDecode(result.resultData);
+
+      if (result.type == 'analysis') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnalysisResultScreen(
+              analysisResult: resultData,
+              category: result.category,
+              fromSavedResults: true,
+            ),
+          ),
+        );
+      } else if (result.type == 'compare') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ComparisonResultScreen(
+              comparisonResult: resultData,
+              category: result.category,
+              fromSavedResults: true,
+            ),
           ),
         );
       }
+    } catch (e) {
+      // JSON parsing failed - ignore silently
     }
   }
 
-  Future<void> _launchTermsOfService() async {
-    final Uri url = Uri.parse('https://falsy.me/ingredientlens/terms.html');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open Terms of Service'),
-            backgroundColor: AppTheme.negativeColor,
-          ),
-        );
-      }
+  String _formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays > 0) {
+      return AppLocalizations.of(context)!
+          .translate('time_days_ago')
+          .replaceAll('{days}', '${difference.inDays}');
+    } else if (difference.inHours > 0) {
+      return AppLocalizations.of(context)!
+          .translate('time_hours_ago')
+          .replaceAll('{hours}', '${difference.inHours}');
+    } else if (difference.inMinutes > 0) {
+      return AppLocalizations.of(context)!
+          .translate('time_minutes_ago')
+          .replaceAll('{minutes}', '${difference.inMinutes}');
+    } else {
+      return AppLocalizations.of(context)!.translate('time_just_now');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(
@@ -326,302 +222,64 @@ class _HomeScreenState extends State<HomeScreen> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    // padding: const EdgeInsets.symmetric(vertical: 24),
+                    padding: const EdgeInsets.only(
+                      top: 24,
+                    ),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight:
                             constraints.maxHeight - 48, // vertical padding 제외
                       ),
-                      child: Center(
-                        child: Container(
-                          constraints: const BoxConstraints(maxWidth: 340),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 18),
-                                  // Header with title and saved results button
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // App Title
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 2),
-                                                child: Text(
-                                                  AppLocalizations.of(context)!
-                                                      .translate('app_name')
-                                                      .toUpperCase(),
-                                                  style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryGreen,
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.w800,
-                                                    letterSpacing: 0.4,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 2),
-                                              // App Subtitle
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 2),
-                                                child: Text(
-                                                  AppLocalizations.of(context)!
-                                                      .translate(
-                                                          'app_subtitle'),
-                                                  style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryGreen,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    letterSpacing: 0.2,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        // Saved results button
-                                        GestureDetector(
-                                          onTap: _navigateToSavedResults,
-                                          child: Container(
-                                            width: 44,
-                                            height: 44,
-                                            decoration: BoxDecoration(
-                                              color: AppTheme.primaryGreen,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.bookmark_outline,
-                                              color: AppTheme.whiteColor,
-                                              size: 22,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-
-                                  // Category Grid
-                                  GridView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    padding: const EdgeInsets.all(
-                                        4), // 그림자를 위한 패딩 추가
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 20,
-                                      mainAxisSpacing: 20,
-                                      childAspectRatio: 1.0, // 정사각형
-                                    ),
-                                    itemCount:
-                                        categories.length + 1, // +1 for Other
-                                    itemBuilder: (context, index) {
-                                      if (index < categories.length) {
-                                        return _buildCategoryCard(
-                                            categories[index]);
-                                      } else {
-                                        return _buildOtherCard();
-                                      }
-                                    },
-                                  ),
-
-                                  const SizedBox(height: 18),
-
-                                  // Custom category input (like search bar)
-                                  if (_showCustomInput) ...[
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.whiteColor,
-                                          borderRadius:
-                                              BorderRadius.circular(25),
-                                          border: Border.all(
-                                            color: AppTheme.primaryGreen
-                                                .withOpacity(0.3),
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: TextField(
-                                          controller: _customCategoryController,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _customCategory = value;
-                                            });
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: AppLocalizations.of(
-                                                    context)!
-                                                .translate(
-                                                    'enter_custom_category'),
-                                            hintStyle: TextStyle(
-                                              color: AppTheme.primaryGreen
-                                                  .withOpacity(0.4),
-                                              fontSize: 13,
-                                            ),
-                                            border: InputBorder.none,
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                              horizontal: 18,
-                                              vertical: 12,
-                                            ),
-                                          ),
-                                          style: TextStyle(
-                                            color: AppTheme.primaryGreen,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                  ],
-
-                                  // Analyze button
-                                  const SizedBox(height: 4),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        onPressed: _onAnalyzePressed,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              AppTheme.primaryGreen,
-                                          foregroundColor: AppTheme.whiteColor,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25),
-                                          ),
-                                          elevation: 2,
-                                        ),
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('analyze'),
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  // Compare button
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      height: 50,
-                                      child: OutlinedButton(
-                                        onPressed: _onComparePressed,
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                              color: AppTheme.primaryGreen,
-                                              width: 1.5),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .translate('compare'),
-                                          style: TextStyle(
-                                            color: AppTheme.primaryGreen,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 28),
-                                ],
-                              ),
-
-                              // Footer with copyright and links
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 24),
+                      child: Column(
+                        children: [
+                          Center(
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 340),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: _launchPrivacyPolicy,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 4),
-                                            child: Text(
-                                              'Privacy Policy',
-                                              style: TextStyle(
-                                                color: AppTheme.gray700,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        GestureDetector(
-                                          onTap: _launchTermsOfService,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8, horizontal: 4),
-                                            child: Text(
-                                              'Terms of Service',
-                                              style: TextStyle(
-                                                color: AppTheme.gray700,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    // Header Section
+                                    HomeHeaderWidget(
+                                      onSavedResultsTap:
+                                          _navigateToSavedResults,
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'ⓒ falsy.',
-                                      style: TextStyle(
-                                        color: AppTheme.gray700,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                    const SizedBox(height: 38),
+
+                                    // Category Section
+                                    CategorySectionWidget(
+                                      onCategoryTap:
+                                          _showCategoryActionBottomSheet,
                                     ),
+                                    const SizedBox(height: 38),
+
+                                    // Ad banner
+                                    const AdBannerWidget(),
+                                    const SizedBox(height: 38),
+
+                                    // Recent Results Section
+                                    RecentResultsSectionWidget(
+                                      recentResults: _recentResults,
+                                      formatDateTime: _formatDateTime,
+                                      onResultTap: _onRecentResultTap,
+                                    ),
+                                    const SizedBox(height: 38),
+
+                                    // Announcements Section
+                                    // const AnnouncementsSectionWidget(),
+                                    // const SizedBox(height: 38),
                                   ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+
+                          // Footer - 전체 폭 사용
+                          const HomeFooterWidget(),
+                        ],
                       ),
                     ),
                   );
@@ -629,8 +287,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // Ad banner at bottom
-          const AdBannerWidget(),
           // 안드로이드 시스템 네비게이션 바 영역 고려
           SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
         ],

@@ -19,13 +19,13 @@ void main() async {
   // Load environment variables
   await dotenv.load(fileName: ".env");
   
-  // 상태바와 네비게이션 바 설정 (앱 전체에서 일관되게 유지)
+  // 상태바와 네비게이션 바를 투명하게 설정
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: AppTheme.backgroundColor, // 상태바 배경색
+      statusBarColor: Colors.transparent, // 투명한 상태바
       statusBarIconBrightness: Brightness.dark, // 상태바 아이콘 색상 (어두운 색)
       statusBarBrightness: Brightness.light, // iOS용 상태바 밝기
-      systemNavigationBarColor: AppTheme.backgroundColor, // 네비게이션 바 배경색
+      systemNavigationBarColor: Colors.transparent, // 투명한 네비게이션 바
       systemNavigationBarIconBrightness: Brightness.dark, // 네비게이션 바 아이콘 색상
     ),
   );

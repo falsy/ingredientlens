@@ -105,20 +105,20 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     return Container(
       width: double.infinity,
       height: 60,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppTheme.whiteColor,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.cardShadow,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppTheme.cardBackgroundColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: AppTheme.cardBorderColor,
+          width: 1,
+        ),
       ),
+      padding: const EdgeInsets.all(2),
       child: _isBannerAdReady && _bannerAd != null
-          ? AdWidget(ad: _bannerAd!)
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: AdWidget(ad: _bannerAd!)
+            )
           : const SizedBox.shrink(), // 광고 로딩 중인 경우 빈 공간
     );
   }

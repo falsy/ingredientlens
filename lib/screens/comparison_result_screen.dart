@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
+import '../services/database_service.dart';
+import '../models/recent_result.dart';
 import '../widgets/ad_banner_widget.dart';
 import 'save_result_overlay_screen.dart';
 
@@ -23,6 +26,37 @@ class ComparisonResultScreen extends StatefulWidget {
 }
 
 class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _saveRecentResult();
+  }
+
+  void _saveRecentResult() async {
+    // Don't save if this result is from saved results
+    if (widget.fromSavedResults) return;
+    
+    try {
+      final overallComparativeReviewList = widget.comparisonResult['overall_comparative_review'] as List<dynamic>?;
+      final overallComparativeReview = overallComparativeReviewList?.isNotEmpty == true 
+          ? overallComparativeReviewList!.join(' ') 
+          : '';
+      
+      if (overallComparativeReview.isNotEmpty) {
+        final recentResult = RecentResult(
+          type: 'compare',
+          category: widget.category,
+          overallReview: overallComparativeReview,
+          resultData: jsonEncode(widget.comparisonResult),
+          createdAt: DateTime.now(),
+        );
+        
+        await DatabaseService().saveRecentResult(recentResult);
+      }
+    } catch (e) {
+      // Error saving recent result - ignore silently
+    }
+  }
   void _showSaveBottomSheet() {
     Navigator.push(
       context,
