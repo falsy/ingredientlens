@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'dart:async';
 import 'package:image/image.dart' as img;
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
-import 'transparent_overlay_screen.dart';
+import '../services/api_service.dart';
+import '../services/usage_limit_service.dart';
+import '../widgets/interstitial_ad_widget.dart';
+import '../config/app_config.dart';
+import 'analysis_result_screen.dart';
 
 class ImageCropScreen extends StatefulWidget {
   final String imagePath;
@@ -33,7 +37,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
   bool _isDragging = false;
   Size? _imageSize;
   bool _isProcessing = false;
-  Rect? _imageRect;
+  double _rotationAngle = 0.0; // -45 to 45 degrees
+  bool _isAnalysisCancelled = false;
 
   @override
   void initState() {
@@ -58,33 +63,39 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     final minY = _startPoint.dy < _endPoint.dy ? _startPoint.dy : _endPoint.dy;
     final maxX = _startPoint.dx > _endPoint.dx ? _startPoint.dx : _endPoint.dx;
     final maxY = _startPoint.dy > _endPoint.dy ? _startPoint.dy : _endPoint.dy;
-    
+
     return Rect.fromLTRB(minX, minY, maxX, maxY);
   }
 
   void _onPanStart(DragStartDetails details, BoxConstraints constraints) {
-    final RenderBox renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox renderBox =
+        _imageKey.currentContext!.findRenderObject() as RenderBox;
     final localPosition = renderBox.globalToLocal(details.globalPosition);
-    
+
     setState(() {
       _isDragging = true;
-      _startPoint = _clampToImageBounds(Offset(
-        localPosition.dx / renderBox.size.width,
-        localPosition.dy / renderBox.size.height,
-      ), renderBox.size);
+      _startPoint = _clampToImageBounds(
+          Offset(
+            localPosition.dx / renderBox.size.width,
+            localPosition.dy / renderBox.size.height,
+          ),
+          renderBox.size);
       _endPoint = _startPoint;
     });
   }
 
   void _onPanUpdate(DragUpdateDetails details, BoxConstraints constraints) {
-    final RenderBox renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox renderBox =
+        _imageKey.currentContext!.findRenderObject() as RenderBox;
     final localPosition = renderBox.globalToLocal(details.globalPosition);
-    
+
     setState(() {
-      _endPoint = _clampToImageBounds(Offset(
-        localPosition.dx / renderBox.size.width,
-        localPosition.dy / renderBox.size.height,
-      ), renderBox.size);
+      _endPoint = _clampToImageBounds(
+          Offset(
+            localPosition.dx / renderBox.size.width,
+            localPosition.dy / renderBox.size.height,
+          ),
+          renderBox.size);
     });
   }
 
@@ -109,9 +120,9 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     // 컨테이너 내에서 이미지가 실제로 차지하는 영역 계산 (fit: BoxFit.contain)
     final containerAspectRatio = containerSize.width / containerSize.height;
     final imageAspectRatio = _imageSize!.width / _imageSize!.height;
-    
+
     late double imageLeft, imageTop, imageRight, imageBottom;
-    
+
     if (imageAspectRatio > containerAspectRatio) {
       // 이미지가 더 가로로 길면, 좌우 꽉 채우고 상하에 여백
       imageLeft = 0.0;
@@ -129,7 +140,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       imageLeft = leftPadding / containerSize.width;
       imageRight = 1.0 - imageLeft;
     }
-    
+
     return Offset(
       offset.dx.clamp(imageLeft, imageRight),
       offset.dy.clamp(imageTop, imageBottom),
@@ -148,19 +159,20 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       final imageFile = File(widget.imagePath);
       final bytes = await imageFile.readAsBytes();
       final image = img.decodeImage(bytes);
-      
+
       if (image != null) {
         // 화면에서의 크롭 영역을 실제 이미지 좌표로 변환
         final rect = _cropRect;
-        final renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
+        final renderBox =
+            _imageKey.currentContext!.findRenderObject() as RenderBox;
         final containerSize = renderBox.size;
-        
+
         // 컨테이너 내에서 이미지가 실제로 차지하는 영역 계산
         final containerAspectRatio = containerSize.width / containerSize.height;
         final imageAspectRatio = _imageSize!.width / _imageSize!.height;
-        
+
         late double imageLeft, imageTop, imageWidth, imageHeight;
-        
+
         if (imageAspectRatio > containerAspectRatio) {
           // 이미지가 더 가로로 길면, 좌우 꽉 채우고 상하에 여백
           imageLeft = 0;
@@ -174,33 +186,61 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
           imageWidth = containerSize.height * imageAspectRatio;
           imageLeft = (containerSize.width - imageWidth) / 2;
         }
-        
+
         // 화면 좌표를 이미지 내 비율로 변환
-        final cropLeftRatio = (rect.left * containerSize.width - imageLeft) / imageWidth;
-        final cropTopRatio = (rect.top * containerSize.height - imageTop) / imageHeight;
+        final cropLeftRatio =
+            (rect.left * containerSize.width - imageLeft) / imageWidth;
+        final cropTopRatio =
+            (rect.top * containerSize.height - imageTop) / imageHeight;
         final cropWidthRatio = (rect.width * containerSize.width) / imageWidth;
-        final cropHeightRatio = (rect.height * containerSize.height) / imageHeight;
-        
+        final cropHeightRatio =
+            (rect.height * containerSize.height) / imageHeight;
+
         // 실제 이미지 픽셀 좌표로 변환
-        final cropX = (cropLeftRatio * image.width).round().clamp(0, image.width);
-        final cropY = (cropTopRatio * image.height).round().clamp(0, image.height);
-        final cropWidth = (cropWidthRatio * image.width).round().clamp(1, image.width - cropX);
-        final cropHeight = (cropHeightRatio * image.height).round().clamp(1, image.height - cropY);
-        
+        final cropX =
+            (cropLeftRatio * image.width).round().clamp(0, image.width);
+        final cropY =
+            (cropTopRatio * image.height).round().clamp(0, image.height);
+        (cropWidthRatio * image.width).round().clamp(1, image.width - cropX);
+        (cropHeightRatio * image.height).round().clamp(1, image.height - cropY);
+
+        // 회전 적용
+        img.Image rotatedImage = image;
+        if (_rotationAngle != 0.0) {
+          rotatedImage = img.copyRotate(image, angle: _rotationAngle);
+        }
+
+        // 회전된 이미지에서 크롭 영역 재계산
+        final rotatedWidth = rotatedImage.width;
+        final rotatedHeight = rotatedImage.height;
+
+        // 회전된 이미지 기준으로 크롭 좌표 재계산
+        final finalCropX =
+            (cropLeftRatio * rotatedWidth).round().clamp(0, rotatedWidth);
+        final finalCropY =
+            (cropTopRatio * rotatedHeight).round().clamp(0, rotatedHeight);
+        final finalCropWidth = (cropWidthRatio * rotatedWidth)
+            .round()
+            .clamp(1, rotatedWidth - finalCropX);
+        final finalCropHeight = (cropHeightRatio * rotatedHeight)
+            .round()
+            .clamp(1, rotatedHeight - finalCropY);
+
         // 이미지 크롭
         final croppedImage = img.copyCrop(
-          image,
-          x: cropX,
-          y: cropY,
-          width: cropWidth,
-          height: cropHeight,
+          rotatedImage,
+          x: finalCropX,
+          y: finalCropY,
+          width: finalCropWidth,
+          height: finalCropHeight,
         );
-        
+
         // 임시 파일로 저장
         final tempDir = Directory.systemTemp;
-        final tempFile = File('${tempDir.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg');
+        final tempFile = File(
+            '${tempDir.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg');
         await tempFile.writeAsBytes(img.encodeJpg(croppedImage, quality: 85));
-        
+
         // 미리보기 다이얼로그 표시
         if (mounted) {
           _showPreviewDialog(tempFile);
@@ -229,20 +269,250 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         return route.settings.name == '/compare' || route.isFirst;
       });
     } else {
-      // 일반 모드일 때는 기존대로 투명한 오버레이 페이지를 열어서 분석 진행
+      // 일반 모드일 때는 바로 바텀시트 호출
+      _showPreviewBottomSheet(imageFile);
+    }
+  }
+
+  void _showPreviewBottomSheet(File imageFile) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: AppTheme.backgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 상단 핸들
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.gray300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // const SizedBox(height: 20),
+              // Text(
+              //   AppLocalizations.of(context)!.translate('photo_taken'),
+              //   style: const TextStyle(
+              //     color: AppTheme.blackColor,
+              //     fontSize: 18,
+              //     fontWeight: FontWeight.w500,
+              //     height: 1.3,
+              //   ),
+              // ),
+              const SizedBox(height: 20),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 200,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppTheme.gray300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      imageFile,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardBackgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppTheme.cardBorderColor,
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!
+                      .translate('confirm_analysis_notice'),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppTheme.gray500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // 바텀시트 닫기
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.whiteColor,
+                        foregroundColor: AppTheme.blackColor,
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(
+                            color: AppTheme.blackColor,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.translate('cancel'),
+                        style: const TextStyle(
+                          color: AppTheme.blackColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // 바텀시트 닫기
+                        _startAnalysis(imageFile); // 분석 시작
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.blackColor,
+                        foregroundColor: AppTheme.whiteColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.translate('analyze'),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // 하단 SafeArea 확보
+              SizedBox(height: MediaQuery.of(context).padding.bottom),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _startAnalysis(File imageFile) async {
+    if (kDebugMode) print('🚀 분석 시작!');
+
+    // 사용량 제한 확인
+    final usageLimitService = UsageLimitService();
+    final canMakeRequest = await usageLimitService.canMakeRequest();
+
+    if (!canMakeRequest) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.translate('daily_limit_reached')),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
+    _isAnalysisCancelled = false;
+
+    // 사용량 증가
+    await usageLimitService.incrementUsage();
+
+    // API 호출을 먼저 시작
+    _performAnalysis(imageFile);
+
+    if (AppConfig.enableAds) {
+      if (kDebugMode) print('📱 광고 화면 표시 시도...');
       Navigator.push(
         context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => TransparentOverlayScreen(
-            imageFile: imageFile,
-            category: widget.category,
-            originalImagePath: widget.imagePath, // 원본 이미지 경로 전달
-          ),
-          transitionDuration: Duration.zero, // 즉시 전환
-          reverseTransitionDuration: Duration.zero, // 즉시 전환
-          opaque: false, // 투명한 페이지
+        MaterialPageRoute(
+          builder: (context) {
+            if (kDebugMode) print('✅ 광고 화면 빌드됨');
+            return InterstitialAdWidget(
+              onAdDismissed: () {
+                if (kDebugMode) print('📺 광고 종료, API 진행 중...');
+              },
+              onAnalysisCancelled: () {
+                if (kDebugMode) print('❌ 분석 취소됨');
+                _isAnalysisCancelled = true;
+                Navigator.pop(context); // 광고 화면 닫기
+              },
+            );
+          },
         ),
       );
+    }
+  }
+
+  void _performAnalysis(File imageFile) async {
+    try {
+      final langCode = Localizations.localeOf(context).languageCode;
+
+      if (kDebugMode) {
+        print('🔄 API 분석 시작...');
+        print('📍 언어: $langCode, 카테고리: ${widget.category}');
+      }
+
+      final result = await ApiService.analyzeIngredients(
+        imageFile: imageFile,
+        category: widget.category,
+        langCode: langCode,
+      );
+
+      if (kDebugMode) print('✅ API 분석 완료!');
+
+      if (mounted && !_isAnalysisCancelled) {
+        if (kDebugMode) print('📄 결과 화면으로 이동...');
+        // 모든 중간 화면을 제거하고 결과 화면으로 이동
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AnalysisResultScreen(
+              analysisResult: result,
+              category: widget.category,
+            ),
+          ),
+          (route) => route.isFirst, // 홈 화면만 남김
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) print('💥 분석 에러: $e');
+      if (mounted && !_isAnalysisCancelled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.translate('analysis_failed')),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+        Navigator.pop(context); // 광고 화면 닫기 (있는 경우)
+      }
     }
   }
 
@@ -258,25 +528,26 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.translate('crop_image').toUpperCase(),
-          style: TextStyle(
-            color: AppTheme.primaryGreen,
+          style: const TextStyle(
+            color: AppTheme.blackColor,
             fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w500,
             letterSpacing: 0.4,
           ),
         ),
         backgroundColor: AppTheme.backgroundColor,
         elevation: 0,
-        centerTitle: false,
+        centerTitle: true,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: AppTheme.backgroundColor,
+          statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: AppTheme.backgroundColor,
+          systemNavigationBarColor: Colors.transparent,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 24),
+          icon: const Icon(Icons.arrow_back,
+              color: AppTheme.blackColor, size: 24),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -284,21 +555,41 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
         children: [
           Expanded(
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+              child: Container(
+                margin: const EdgeInsets.only(
+                    left: 20, right: 20, bottom: 0, top: 0),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, bottom: 20, top: 20),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardBackgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.cardBorderColor,
+                    width: 1,
+                  ),
+                ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return GestureDetector(
-                      onPanStart: (details) => _onPanStart(details, constraints),
-                      onPanUpdate: (details) => _onPanUpdate(details, constraints),
+                      onPanStart: (details) =>
+                          _onPanStart(details, constraints),
+                      onPanUpdate: (details) =>
+                          _onPanUpdate(details, constraints),
                       onPanEnd: _onPanEnd,
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.file(
-                            File(widget.imagePath),
-                            key: _imageKey,
-                            fit: BoxFit.contain,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Transform.rotate(
+                              angle: _rotationAngle *
+                                  (3.14159 / 180), // Convert degrees to radians
+                              child: Image.file(
+                                File(widget.imagePath),
+                                key: _imageKey,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
                           ),
                           if (_imageSize != null)
                             CustomPaint(
@@ -316,14 +607,72 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               ),
             ),
           ),
+          // 회전 슬라이더
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.rotate_left,
+                      color: AppTheme.gray500,
+                      size: 20,
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: _rotationAngle,
+                        min: -45.0,
+                        max: 45.0,
+                        divisions: 180, // 0.5도씩 조절 가능
+                        activeColor: AppTheme.blackColor,
+                        inactiveColor: AppTheme.gray300,
+                        onChanged: (value) {
+                          setState(() {
+                            _rotationAngle = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const Icon(
+                      Icons.rotate_right,
+                      color: AppTheme.gray500,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _rotationAngle = 0.0;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.gray200,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(
+                          Icons.refresh,
+                          color: AppTheme.gray500,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+
           // 안내 텍스트
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
               AppLocalizations.of(context)!.translate('crop_instruction'),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
-                color: AppTheme.gray700,
+                color: AppTheme.gray500,
                 height: 1.3,
               ),
               textAlign: TextAlign.center,
@@ -335,17 +684,24 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: _isProcessing ? null : () => Navigator.pop(context),
+                    onPressed:
+                        _isProcessing ? null : () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: AppTheme.gray500, width: 1),
+                      minimumSize: const Size(double.infinity, 46),
+                      backgroundColor: AppTheme.whiteColor,
+                      foregroundColor: AppTheme.blackColor,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        side: const BorderSide(
+                          color: AppTheme.blackColor,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppTheme.gray700,
                         fontSize: 14,
                         fontWeight: FontWeight.w300,
@@ -358,12 +714,13 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   child: ElevatedButton(
                     onPressed: _isProcessing ? null : _cropAndSave,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
+                      backgroundColor: AppTheme.blackColor,
                       foregroundColor: AppTheme.whiteColor,
-                      minimumSize: const Size(double.infinity, 50),
+                      minimumSize: const Size(double.infinity, 46),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      elevation: 0,
                     ),
                     child: _isProcessing
                         ? const SizedBox(
@@ -376,7 +733,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                           )
                         : Text(
                             AppLocalizations.of(context)!.translate('confirm'),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w300,
                             ),
@@ -416,7 +773,7 @@ class CropOverlayPainter extends CustomPainter {
     if (imageSize != null) {
       final containerAspectRatio = size.width / size.height;
       final imageAspectRatio = imageSize!.width / imageSize!.height;
-      
+
       if (imageAspectRatio > containerAspectRatio) {
         // 이미지가 더 가로로 길면, 좌우 꽉 채우고 상하에 여백
         final imageHeight = size.width / imageAspectRatio;
@@ -501,8 +858,8 @@ class CropOverlayPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CropOverlayPainter oldDelegate) {
-    return cropRect != oldDelegate.cropRect || 
-           isDragging != oldDelegate.isDragging ||
-           imageSize != oldDelegate.imageSize;
+    return cropRect != oldDelegate.cropRect ||
+        isDragging != oldDelegate.isDragging ||
+        imageSize != oldDelegate.imageSize;
   }
 }

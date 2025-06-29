@@ -6,6 +6,7 @@ import '../config/ad_config.dart';
 import '../config/app_config.dart';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
+import '../services/consent_service.dart';
 
 class InterstitialAdWidget extends StatefulWidget {
   final VoidCallback onAdDismissed;
@@ -25,7 +26,6 @@ class InterstitialAdWidget extends StatefulWidget {
 
 class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
   InterstitialAd? _interstitialAd;
-  bool _isAdLoaded = false;
   bool _isAdShown = false;
   bool _isLoadingAfterAd = false;
   bool _isCancelled = false;
@@ -36,10 +36,26 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
   void initState() {
     super.initState();
     if (AppConfig.enableAds) {
+      _checkConsentAndLoadAd();
+    } else {
+      // 광고가 비활성화되어 있으면 바로 로딩 화면으로
+      setState(() {
+        _isLoadingAfterAd = true;
+      });
+      widget.onAdDismissed();
+    }
+  }
+
+  void _checkConsentAndLoadAd() async {
+    final canRequestAds = await ConsentService().canRequestAds();
+    if (canRequestAds && mounted) {
       _loadInterstitialAd();
       _startCountdown();
     } else {
-      // 광고가 비활성화되어 있으면 바로 로딩 화면으로
+      if (kDebugMode) {
+        print('Cannot request interstitial ads due to consent status');
+      }
+      // 동의가 없으면 광고 없이 진행
       setState(() {
         _isLoadingAfterAd = true;
       });
@@ -80,7 +96,6 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
         onAdLoaded: (ad) {
           setState(() {
             _interstitialAd = ad;
-            _isAdLoaded = true;
           });
           _showAd();
         },
@@ -237,10 +252,10 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
     // 광고 로딩 중이거나 광고가 닫힌 후 항상 로딩 화면 표시
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: AppTheme.backgroundColor,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.backgroundColor,
+        systemNavigationBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -252,7 +267,7 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const CircularProgressIndicator(
-                    color: AppTheme.primaryGreen,
+                    color: AppTheme.blackColor,
                   ),
                   const SizedBox(height: 24),
                   Text(
