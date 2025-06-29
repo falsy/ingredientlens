@@ -77,7 +77,6 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -91,52 +90,52 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     );
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!
+              .translate('compare_ingredients')
+              .toUpperCase(),
+          style: const TextStyle(
+            color: AppTheme.blackColor,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.4,
+          ),
+        ),
         backgroundColor: AppTheme.backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context)!
-                .translate('compare_ingredients')
-                .toUpperCase(),
-            style: const TextStyle(
-              color: AppTheme.blackColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.4,
-            ),
-          ),
-          backgroundColor: AppTheme.backgroundColor,
-          elevation: 0,
-          centerTitle: true,
-          scrolledUnderElevation: 0,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.light,
-            systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness: Brightness.dark,
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back,
-                color: AppTheme.blackColor, size: 24),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
-        body: SafeArea(
-          child: ListView(
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.all(20),
-            children: [
-              IntrinsicHeight(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: _buildSectionsWithSpacing(context),
-                ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,
+              color: AppTheme.blackColor, size: 24),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SafeArea(
+        child: ListView(
+          physics: const ClampingScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          children: [
+            IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: _buildSectionsWithSpacing(context),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildSection({
@@ -361,7 +360,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
                   style: const TextStyle(
                     fontSize: 15,
                     color: AppTheme.gray700,
-                    height: 1.4,
+                    height: 1.45,
                   ),
                 ),
                 if (i < reviewList.length - 1) const SizedBox(height: 12),

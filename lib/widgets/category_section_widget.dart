@@ -35,21 +35,22 @@ class CategorySectionWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 중앙 아이콘
+              const SizedBox(height: 4),
               SvgPicture.asset(
                 category.iconPath,
-                width: 28,
-                height: 28,
+                width: 32,
+                height: 32,
                 colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               // 중앙 정렬 텍스트
               Text(
                 AppLocalizations.of(context)!.translate(category.nameKey),
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.blackColor,
                   height: 1.3,
@@ -86,22 +87,23 @@ class CategorySectionWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 4),
               // 중앙 아이콘
               SvgPicture.asset(
                 'assets/icons/custom.svg',
-                width: 28,
-                height: 28,
+                width: 32,
+                height: 32,
                 colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               // 중앙 정렬 텍스트
               Text(
                 AppLocalizations.of(context)!.translate('other'),
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.blackColor,
                   height: 1.3,
@@ -127,10 +129,10 @@ class CategorySectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('section_title'),
           style: const TextStyle(
             color: AppTheme.blackColor,
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
-            height: 1.3,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 6),
@@ -139,9 +141,9 @@ class CategorySectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('section_subtitle'),
           style: const TextStyle(
             color: AppTheme.gray500,
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w400,
-            height: 1.3,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 20),

@@ -76,7 +76,6 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     // 결과 화면에서도 상태바와 네비게이션 바를 배경색으로 설정
@@ -91,50 +90,50 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     );
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        title: Text(
+          AppLocalizations.of(context)!
+              .translate('analysis_results')
+              .toUpperCase(),
+          style: const TextStyle(
+            color: AppTheme.blackColor,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.4,
+          ),
+        ),
         backgroundColor: AppTheme.backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context)!
-                .translate('analysis_results')
-                .toUpperCase(),
-            style: const TextStyle(
-              color: AppTheme.blackColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.4,
-            ),
+        elevation: 0,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,
+              color: AppTheme.blackColor, size: 24),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
           ),
-          backgroundColor: AppTheme.backgroundColor,
-          elevation: 0,
-          centerTitle: true,
-          scrolledUnderElevation: 0,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.light,
-            systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness: Brightness.dark,
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back,
-                color: AppTheme.blackColor, size: 24),
-            onPressed: () => Navigator.of(context).pop(),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: _buildSectionsWithSpacing(context),
           ),
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: _buildSectionsWithSpacing(context),
-            ),
-          ),
-        ),
-      );
+      ),
+    );
   }
 
   Widget _buildSection(
@@ -377,7 +376,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                   style: const TextStyle(
                     fontSize: 15,
                     color: AppTheme.gray700,
-                    height: 1.4,
+                    height: 1.45,
                   ),
                 ),
                 if (i < reviewList.length - 1) const SizedBox(height: 12),

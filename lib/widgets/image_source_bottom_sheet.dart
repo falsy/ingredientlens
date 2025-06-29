@@ -40,19 +40,19 @@ class ImageSourceBottomSheet extends StatelessWidget {
               // Icon
               SvgPicture.asset(
                 iconPath,
-                width: 32,
-                height: 32,
+                width: 34,
+                height: 34,
                 colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
               // Title
               Text(
                 AppLocalizations.of(context)!.translate(titleKey),
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.blackColor,
                   height: 1.3,

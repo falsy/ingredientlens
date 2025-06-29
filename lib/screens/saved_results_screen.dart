@@ -168,14 +168,14 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                             children: [
                               SvgPicture.asset(
                                 'assets/icons/bookmark.svg',
-                                width: 48,
-                                height: 48,
+                                width: 38,
+                                height: 38,
                                 colorFilter: const ColorFilter.mode(
                                   AppTheme.gray500,
                                   BlendMode.srcIn,
                                 ),
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 8),
                               Text(
                                 AppLocalizations.of(context)!
                                     .translate('no_saved_results'),

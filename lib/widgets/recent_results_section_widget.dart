@@ -46,10 +46,10 @@ class RecentResultsSectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('recent_results_title'),
           style: const TextStyle(
             color: AppTheme.blackColor,
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
-            height: 1.3,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 6),
@@ -58,9 +58,9 @@ class RecentResultsSectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('recent_results_subtitle'),
           style: const TextStyle(
             color: AppTheme.gray500,
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w400,
-            height: 1.3,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 20),
@@ -140,10 +140,10 @@ class RecentResultsSectionWidget extends StatelessWidget {
                                   Text(
                                     result.overallReview,
                                     style: const TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                       color: AppTheme.gray700,
-                                      height: 1.3,
+                                      height: 1.2,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
