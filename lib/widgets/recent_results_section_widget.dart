@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/recent_result.dart';
+import '../models/category.dart';
 import '../services/localization_service.dart';
 import '../utils/theme.dart';
 
@@ -8,13 +9,32 @@ class RecentResultsSectionWidget extends StatelessWidget {
   final List<RecentResult> recentResults;
   final String Function(DateTime) formatDateTime;
   final Function(RecentResult) onResultTap;
+  final Function(RecentResult) onDeleteTap;
 
   const RecentResultsSectionWidget({
     super.key,
     required this.recentResults,
     required this.formatDateTime,
     required this.onResultTap,
+    required this.onDeleteTap,
   });
+
+  String _getCategoryDisplayName(BuildContext context, String category) {
+    // Check if it's a predefined category
+    final predefinedCategory = categories.firstWhere(
+      (cat) => cat.id == category,
+      orElse: () => const Category(id: '', nameKey: '', iconPath: ''),
+    );
+
+    if (predefinedCategory.id.isNotEmpty) {
+      // It's a predefined category, return translated name
+      return AppLocalizations.of(context)!
+          .translate(predefinedCategory.nameKey);
+    } else {
+      // It's a custom category, return as is
+      return category;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +44,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
         // Section Title
         Text(
           AppLocalizations.of(context)!.translate('recent_results_title'),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 15,
             fontWeight: FontWeight.w500,
@@ -36,7 +56,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
         // Section Subtitle
         Text(
           AppLocalizations.of(context)!.translate('recent_results_subtitle'),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.gray500,
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -47,7 +67,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
 
         // Recent Results Content
         Container(
-          constraints: const BoxConstraints(minHeight: 120),
+          constraints: const BoxConstraints(minHeight: 80),
           child: recentResults.isEmpty
               ? Center(
                   child: Padding(
@@ -55,7 +75,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
                     child: Text(
                       AppLocalizations.of(context)!
                           .translate('no_recent_results'),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.gray500,
@@ -71,8 +91,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
                       onTap: () => onResultTap(result),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 14),
+                        padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
                         decoration: BoxDecoration(
                           color: AppTheme.cardBackgroundColor,
                           borderRadius: BorderRadius.circular(10),
@@ -81,70 +100,85 @@ class RecentResultsSectionWidget extends StatelessWidget {
                             width: 1,
                           ),
                         ),
-                      child: Row(
-                        children: [
-                          // Icon
-                          SvgPicture.asset(
-                            result.type == 'analysis'
-                                ? 'assets/icons/analytics.svg'
-                                : 'assets/icons/compare.svg',
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(
-                              AppTheme.blackColor,
-                              BlendMode.srcIn,
+                        child: Row(
+                          children: [
+                            // Icon
+                            SvgPicture.asset(
+                              result.type == 'analysis'
+                                  ? 'assets/icons/analytics.svg'
+                                  : 'assets/icons/compare.svg',
+                              width: 24,
+                              height: 24,
+                              colorFilter: const ColorFilter.mode(
+                                AppTheme.blackColor,
+                                BlendMode.srcIn,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
+                            const SizedBox(width: 14),
 
-                          // Content
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Category name
-                                Text(
-                                  result.category,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.blackColor,
-                                    height: 1.1,
+                            // Content
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Category name (translated)
+                                  Text(
+                                    _getCategoryDisplayName(
+                                        context, result.category),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppTheme.blackColor,
+                                      height: 1.1,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
+                                  const SizedBox(height: 4),
 
-                                // Overall review
-                                Text(
-                                  result.overallReview,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppTheme.gray700,
-                                    height: 1.2,
+                                  // Overall review
+                                  Text(
+                                    result.overallReview,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppTheme.gray700,
+                                      height: 1.2,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
+                                  const SizedBox(height: 4),
 
-                                // Date time
-                                Text(
-                                  formatDateTime(result.createdAt),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppTheme.gray500,
-                                    height: 1.1,
+                                  // Date time
+                                  Text(
+                                    formatDateTime(result.createdAt),
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppTheme.gray500,
+                                      height: 1.1,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 14),
+                            // Delete button
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => onDeleteTap(result),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: AppTheme.gray400,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),

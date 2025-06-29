@@ -1,74 +1,48 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/database_service.dart';
 import '../models/saved_result.dart';
 
-class SaveResultBottomSheet extends StatefulWidget {
-  final Map<String, dynamic> resultData;
-  final String resultType; // 'analysis' 또는 'comparison'
-  final String category;
+class DeleteConfirmBottomSheet extends StatefulWidget {
+  final SavedResult savedResult;
+  final VoidCallback onDeleted;
 
-  const SaveResultBottomSheet({
+  const DeleteConfirmBottomSheet({
     super.key,
-    required this.resultData,
-    required this.resultType,
-    required this.category,
+    required this.savedResult,
+    required this.onDeleted,
   });
 
   @override
-  State<SaveResultBottomSheet> createState() => _SaveResultBottomSheetState();
+  State<DeleteConfirmBottomSheet> createState() =>
+      _DeleteConfirmBottomSheetState();
 }
 
-class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
-  final TextEditingController _nameController = TextEditingController();
-  bool _isSaving = false;
+class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
+  bool _isDeleting = false;
 
   @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
   }
 
-  Future<void> _saveResult() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              AppLocalizations.of(context)!.translate('enter_result_name')),
-          backgroundColor: AppTheme.negativeColor,
-        ),
-      );
-      return;
-    }
-
+  Future<void> _performDelete() async {
     setState(() {
-      _isSaving = true;
+      _isDeleting = true;
     });
 
     try {
-      final now = DateTime.now();
-      final savedResult = SavedResult(
-        name: name,
-        resultType: widget.resultType,
-        responseData: jsonEncode(widget.resultData),
-        category: widget.category,
-        createdAt: now,
-        updatedAt: now,
-      );
-
-      await DatabaseService().saveResult(savedResult);
+      await DatabaseService().deleteResult(widget.savedResult.id!);
 
       if (mounted) {
         Navigator.pop(context, true); // 성공했음을 알림
+        widget.onDeleted(); // 삭제 완료 콜백 호출
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:
-                Text(AppLocalizations.of(context)!.translate('result_saved')),
+                Text(AppLocalizations.of(context)!.translate('delete_success')),
             backgroundColor: AppTheme.blackColor,
           ),
         );
@@ -79,7 +53,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content:
-                Text(AppLocalizations.of(context)!.translate('save_failed')),
+                Text(AppLocalizations.of(context)!.translate('delete_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -87,7 +61,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
     } finally {
       if (mounted) {
         setState(() {
-          _isSaving = false;
+          _isDeleting = false;
         });
       }
     }
@@ -101,9 +75,9 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
       ),
       child: Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
+          borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
@@ -126,7 +100,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
             const SizedBox(height: 20),
             // Title
             Text(
-              AppLocalizations.of(context)!.translate('save_result'),
+              AppLocalizations.of(context)!.translate('confirm_delete'),
               style: const TextStyle(
                 color: AppTheme.blackColor,
                 fontSize: 18,
@@ -138,7 +112,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
 
             // Subtitle
             Text(
-              AppLocalizations.of(context)!.translate('enter_result_name'),
+              AppLocalizations.of(context)!.translate('confirm_delete_message'),
               style: const TextStyle(
                 color: AppTheme.gray500,
                 fontSize: 14,
@@ -148,46 +122,14 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
             ),
             const SizedBox(height: 18),
 
-            // 이름 입력 필드
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.cardBackgroundColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.cardBorderColor,
-                  width: 1,
-                ),
-              ),
-              child: TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!
-                      .translate('enter_result_name'),
-                  hintStyle: const TextStyle(
-                    color: AppTheme.gray500,
-                    fontSize: 14,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                ),
-                style: const TextStyle(
-                  color: AppTheme.blackColor,
-                  fontSize: 14,
-                ),
-                enabled: !_isSaving,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // 버튼들
+            // Action buttons
             Row(
               children: [
+                // Cancel button
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: _isSaving ? null : () => Navigator.pop(context),
+                    onPressed:
+                        _isDeleting ? null : () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 46),
                       side: const BorderSide(color: AppTheme.gray500, width: 1),
@@ -205,10 +147,12 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
+
+                // Delete button
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _isSaving ? null : _saveResult,
+                    onPressed: _isDeleting ? null : _performDelete,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.blackColor,
                       foregroundColor: AppTheme.whiteColor,
@@ -218,7 +162,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                       ),
                       elevation: 0,
                     ),
-                    child: _isSaving
+                    child: _isDeleting
                         ? const SizedBox(
                             width: 20,
                             height: 20,
@@ -228,7 +172,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                             ),
                           )
                         : Text(
-                            AppLocalizations.of(context)!.translate('save'),
+                            AppLocalizations.of(context)!.translate('delete'),
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -239,8 +183,8 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
               ],
             ),
 
-            // 하단 SafeArea 확보
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
+            // Bottom safe area
+            SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
           ],
         ),
       ),

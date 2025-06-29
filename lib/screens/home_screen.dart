@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
-import '../models/category.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/recent_result.dart';
 import '../services/database_service.dart';
 import '../services/localization_service.dart';
@@ -11,10 +11,11 @@ import '../widgets/ad_banner_widget.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/category_section_widget.dart';
 import '../widgets/recent_results_section_widget.dart';
-import '../widgets/announcements_section_widget.dart';
 import '../widgets/category_action_bottom_sheet.dart';
+import '../widgets/image_source_bottom_sheet.dart';
 import '../widgets/home_footer_widget.dart';
-import 'image_source_screen.dart';
+import 'custom_camera_screen.dart';
+import 'image_crop_screen.dart';
 import 'compare_screen.dart';
 import 'saved_results_screen.dart';
 import 'analysis_result_screen.dart';
@@ -27,19 +28,21 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<RecentResult> _recentResults = [];
   String? _currentCategoryId;
   String? _currentCategoryName;
   String? _customCategoryText;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadRecentResults();
     // 홈 화면에서 상태바와 네비게이션 바를 투명하게 설정
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+      const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
@@ -50,10 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // 화면이 다시 포커스될 때마다 Recent Results 새로고침
-    _loadRecentResults();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // 앱이 다시 활성화될 때 Recent Results 새로고침
+      _loadRecentResults();
+    }
   }
 
   void _loadRecentResults() async {
@@ -69,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -90,29 +96,48 @@ class _HomeScreenState extends State<HomeScreen> {
         onCustomCategoryChanged: (customText) {
           _customCategoryText = customText;
         },
-        onAnalyze: _onAnalyzePressed,
+        onAnalyze: _showImageSourceBottomSheet,
         onCompare: _onComparePressed,
       ),
     );
   }
 
-  void _onAnalyzePressed() {
-    String? categoryToAnalyze;
-
-    if (_currentCategoryId == 'other') {
-      // Custom category - this will be handled in the bottom sheet
-      categoryToAnalyze = _customCategoryText?.trim();
-    } else {
-      categoryToAnalyze = _currentCategoryId;
+  void _showImageSourceBottomSheet(String category) {
+    // Save last selected category
+    if (_currentCategoryId != null && _currentCategoryId != 'other') {
+      PreferencesService.instance.setLastSelectedCategory(_currentCategoryId!);
     }
 
-    if (categoryToAnalyze != null && categoryToAnalyze.isNotEmpty) {
-      if (_currentCategoryId != 'other') {
-        PreferencesService.instance
-            .setLastSelectedCategory(_currentCategoryId!);
-      }
-      _navigateToImageSource(categoryToAnalyze);
-    }
+    // 바텀시트 열기 전에 상태바 설정
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ImageSourceBottomSheet(
+        categoryName: _currentCategoryName ?? category,
+        onGalleryTap: () {
+          Navigator.pop(context);
+          // 바텀시트 닫힌 후 잠시 대기
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _pickImageFromGallery(category);
+          });
+        },
+        onCameraTap: () {
+          Navigator.pop(context);
+          _openCustomCamera(category);
+        },
+      ),
+    );
   }
 
   void _onComparePressed() {
@@ -132,19 +157,75 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context) => CompareScreen(category: categoryToCompare!),
           settings: const RouteSettings(name: '/compare'),
         ),
-      );
+      ).then((_) {
+        // 비교 화면에서 돌아왔을 때 Recent Results 새로고침
+        _loadRecentResults();
+      });
     }
   }
 
-  void _navigateToImageSource(String category) {
-    if (mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageSourceScreen(category: category),
+  Future<void> _pickImageFromGallery(String category) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 85,
+      );
+
+      if (image != null && mounted) {
+        // 갤러리에서 선택한 이미지를 크롭 화면으로 전달
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ImageCropScreen(
+              imagePath: image.path,
+              category: category,
+              isCompareMode: false,
+            ),
+          ),
+        ).then((_) {
+          // 분석 화면에서 돌아왔을 때 Recent Results 새로고침
+          _loadRecentResults();
+        });
+      }
+    } catch (e) {
+      // 오류 발생 시에도 상태바 복원
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
       );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .translate('photo_error', {'error': e.toString()})),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+      }
     }
+  }
+
+  void _openCustomCamera(String category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomCameraScreen(
+          category: category,
+          isCompareMode: false,
+        ),
+      ),
+    ).then((_) {
+      // 카메라 화면에서 돌아왔을 때 Recent Results 새로고침
+      _loadRecentResults();
+    });
   }
 
   void _navigateToSavedResults() {
@@ -186,6 +267,15 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       // JSON parsing failed - ignore silently
+    }
+  }
+
+  void _onRecentResultDelete(RecentResult result) async {
+    try {
+      await DatabaseService().deleteRecentResult(result.id!);
+      _loadRecentResults(); // Refresh the list
+    } catch (e) {
+      // Error deleting - ignore silently
     }
   }
 
@@ -265,6 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       recentResults: _recentResults,
                                       formatDateTime: _formatDateTime,
                                       onResultTap: _onRecentResultTap,
+                                      onDeleteTap: _onRecentResultDelete,
                                     ),
                                     const SizedBox(height: 38),
 

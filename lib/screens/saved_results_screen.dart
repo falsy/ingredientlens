@@ -7,7 +7,7 @@ import '../services/localization_service.dart';
 import '../models/saved_result.dart';
 import 'analysis_result_screen.dart';
 import 'comparison_result_screen.dart';
-import 'delete_confirm_overlay_screen.dart';
+import '../widgets/delete_confirm_bottom_sheet.dart';
 
 class SavedResultsScreen extends StatefulWidget {
   const SavedResultsScreen({super.key});
@@ -40,7 +40,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('데이터 로드에 실패했습니다'),
             backgroundColor: AppTheme.negativeColor,
           ),
@@ -90,19 +90,20 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
   }
 
   void _deleteResult(SavedResult savedResult) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            DeleteConfirmOverlayScreen(
-          savedResult: savedResult,
-          onDeleted: _loadSavedResults,
-        ),
-        transitionDuration: Duration.zero, // 즉시 전환
-        reverseTransitionDuration: Duration.zero, // 즉시 전환
-        opaque: false, // 투명한 페이지
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) => DeleteConfirmBottomSheet(
+        savedResult: savedResult,
+        onDeleted: _loadSavedResults,
       ),
-    );
+    ).then((result) {
+      if (result == true && mounted) {
+        // 삭제 성공 시 처리는 bottom sheet에서 이미 했으므로 추가 작업 없음
+      }
+    });
   }
 
   String _formatDate(DateTime dateTime) {
@@ -112,11 +113,11 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: AppTheme.backgroundColor,
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.backgroundColor,
+        systemNavigationBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -126,37 +127,37 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
             AppLocalizations.of(context)!
                 .translate('saved_results')
                 .toUpperCase(),
-            style: TextStyle(
-              color: AppTheme.primaryGreen,
+            style: const TextStyle(
+              color: AppTheme.blackColor,
               fontSize: 18,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w500,
               letterSpacing: 0.4,
             ),
           ),
           backgroundColor: AppTheme.backgroundColor,
           elevation: 0,
-          centerTitle: false,
+          centerTitle: true,
           scrolledUnderElevation: 0,
           systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: AppTheme.backgroundColor,
+            statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.dark,
             statusBarBrightness: Brightness.light,
-            systemNavigationBarColor: AppTheme.backgroundColor,
+            systemNavigationBarColor: Colors.transparent,
             systemNavigationBarIconBrightness: Brightness.dark,
           ),
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon:
-                Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 28),
+            icon: const Icon(Icons.arrow_back,
+                color: AppTheme.blackColor, size: 24),
           ),
         ),
         body: Column(
           children: [
             Expanded(
               child: _isLoading
-                  ? Center(
+                  ? const Center(
                       child: CircularProgressIndicator(
-                        color: AppTheme.primaryGreen,
+                        color: AppTheme.blackColor,
                       ),
                     )
                   : _savedResults.isEmpty
@@ -167,165 +168,119 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                               Icon(
                                 Icons.bookmark_outline,
                                 size: 64,
-                                color: AppTheme.primaryGreen.withOpacity(0.3),
+                                color: AppTheme.blackColor.withOpacity(0.3),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 14),
                               Text(
                                 AppLocalizations.of(context)!
                                     .translate('no_saved_results'),
                                 style: TextStyle(
-                                  color: AppTheme.primaryGreen.withOpacity(0.6),
-                                  fontSize: 16,
+                                  color: AppTheme.blackColor.withOpacity(0.6),
+                                  fontSize: 15,
                                 ),
                               ),
                             ],
                           ),
                         )
                       : RefreshIndicator(
-                          color: AppTheme.primaryGreen,
+                          color: AppTheme.blackColor,
                           onRefresh: _loadSavedResults,
                           child: ListView.builder(
                             padding: const EdgeInsets.all(16),
                             itemCount: _savedResults.length,
                             itemBuilder: (context, index) {
                               final savedResult = _savedResults[index];
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.whiteColor,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppTheme.primaryGreen
-                                          .withOpacity(0.1),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
+                              return GestureDetector(
+                                onTap: () => _viewResult(savedResult),
+                                child: Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.cardBackgroundColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: AppTheme.cardBorderColor,
+                                      width: 1,
                                     ),
-                                  ],
-                                ),
-                                child: InkWell(
-                                  onTap: () => _viewResult(savedResult),
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16,
-                                        top: 16,
-                                        bottom: 16,
-                                        right: 12),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.primaryGreen
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: Icon(
-                                            savedResult.resultType == 'analysis'
-                                                ? Icons.analytics_outlined
-                                                : Icons.compare_outlined,
-                                            color: AppTheme.primaryGreen,
-                                            size: 20,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                savedResult.name,
-                                                style: TextStyle(
-                                                  color: AppTheme.blackColor,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      // Icon
+                                      Icon(
+                                        savedResult.resultType == 'analysis'
+                                            ? Icons.analytics_outlined
+                                            : Icons.compare_outlined,
+                                        color: AppTheme.blackColor,
+                                        size: 24,
+                                      ),
+                                      const SizedBox(width: 14),
+
+                                      // Content
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Name
+                                            Text(
+                                              savedResult.name,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppTheme.blackColor,
+                                                height: 1.1,
                                               ),
-                                              const SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .translate(savedResult
-                                                            .category),
-                                                    style: TextStyle(
-                                                      color:
-                                                          AppTheme.primaryGreen,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    ' • ',
-                                                    style: TextStyle(
-                                                      color: AppTheme
-                                                          .primaryGreen
-                                                          .withOpacity(0.5),
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    AppLocalizations.of(
-                                                            context)!
-                                                        .translate(savedResult
-                                                                    .resultType ==
-                                                                'analysis'
-                                                            ? 'analysis'
-                                                            : 'comparison'),
-                                                    style: TextStyle(
-                                                      color: AppTheme
-                                                          .primaryGreen
-                                                          .withOpacity(0.7),
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                ],
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 4),
+
+                                            // Category
+                                            Text(
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      savedResult.category),
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                                color: AppTheme.gray700,
+                                                height: 1.2,
                                               ),
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                _formatDate(
-                                                    savedResult.createdAt),
-                                                style: TextStyle(
-                                                  color: AppTheme.primaryGreen
-                                                      .withOpacity(0.5),
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(right: 0),
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () =>
-                                                  _deleteResult(savedResult),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(12),
-                                                child: Icon(
-                                                  Icons.close,
-                                                  color: AppTheme.gray400,
-                                                  size: 20,
-                                                ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 4),
+
+                                            // Date time
+                                            Text(
+                                              _formatDate(
+                                                  savedResult.createdAt),
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w400,
+                                                color: AppTheme.gray500,
+                                                height: 1.1,
                                               ),
                                             ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      // Delete button
+                                      GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () => _deleteResult(savedResult),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 18,
+                                            color: AppTheme.gray500,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

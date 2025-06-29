@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
 import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/database_service.dart';
 import '../models/recent_result.dart';
 import '../widgets/ad_banner_widget.dart';
-import 'save_result_overlay_screen.dart';
+import '../widgets/save_result_bottom_sheet.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
   final Map<String, dynamic> analysisResult;
@@ -35,13 +34,14 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
   void _saveRecentResult() async {
     // Don't save if this result is from saved results
     if (widget.fromSavedResults) return;
-    
+
     try {
-      final overallReviewList = widget.analysisResult['overall_review'] as List<dynamic>?;
-      final overallReview = overallReviewList?.isNotEmpty == true 
-          ? overallReviewList!.join(' ') 
+      final overallReviewList =
+          widget.analysisResult['overall_review'] as List<dynamic>?;
+      final overallReview = overallReviewList?.isNotEmpty == true
+          ? overallReviewList!.join(' ')
           : '';
-      
+
       if (overallReview.isNotEmpty) {
         final recentResult = RecentResult(
           type: 'analysis',
@@ -50,28 +50,28 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           resultData: jsonEncode(widget.analysisResult),
           createdAt: DateTime.now(),
         );
-        
+
         await DatabaseService().saveRecentResult(recentResult);
       }
     } catch (e) {
       // Error saving recent result - ignore silently
     }
   }
+
   void _showSaveBottomSheet() {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        opaque: false,
-        barrierColor: Colors.transparent,
-        pageBuilder: (context, animation, secondaryAnimation) => SaveResultOverlayScreen(
-          resultData: widget.analysisResult,
-          resultType: 'analysis',
-          category: widget.category,
-        ),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) => SaveResultBottomSheet(
+        resultData: widget.analysisResult,
+        resultType: 'analysis',
+        category: widget.category,
       ),
     ).then((result) {
       if (result == true && mounted) {
-        // 저장 성공 시 처리는 overlay screen에서 이미 했으므로 추가 작업 없음
+        // 저장 성공 시 처리는 bottom sheet에서 이미 했으므로 추가 작업 없음
       }
     });
   }
@@ -91,70 +91,64 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     // 결과 화면에서도 상태바와 네비게이션 바를 배경색으로 설정
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: AppTheme.backgroundColor,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.backgroundColor,
+        systemNavigationBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) return;
         _handleBackNavigation();
-        return false; // 기본 뒤로가기 동작을 막음
       },
       child: Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context)!
-              .translate('analysis_results')
-              .toUpperCase(),
-          style: TextStyle(
-            color: AppTheme.primaryGreen,
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.4,
-          ),
-        ),
         backgroundColor: AppTheme.backgroundColor,
-        elevation: 0,
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: AppTheme.backgroundColor,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: AppTheme.backgroundColor,
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.primaryGreen, size: 28),
-          onPressed: _handleBackNavigation,
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: _buildSectionsWithSpacing(context),
-              ),
+        appBar: AppBar(
+          title: Text(
+            AppLocalizations.of(context)!
+                .translate('analysis_results')
+                .toUpperCase(),
+            style: const TextStyle(
+              color: AppTheme.blackColor,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.4,
             ),
           ),
-          // 하단 광고 배너
-          const AdBannerWidget(),
-          // 안드로이드 시스템 네비게이션 바 영역 고려
-          SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
-        ],
-      ),
+          backgroundColor: AppTheme.backgroundColor,
+          elevation: 0,
+          centerTitle: true,
+          scrolledUnderElevation: 0,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.dark,
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back,
+                color: AppTheme.blackColor, size: 24),
+            onPressed: _handleBackNavigation,
+          ),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: _buildSectionsWithSpacing(context),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -173,13 +167,13 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       children: [
         Row(
           children: [
-            Icon(icon, color: color, size: 20),
+            Icon(icon, color: color, size: 18),
             const SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
                 color: color,
               ),
             ),
@@ -196,13 +190,13 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       BuildContext context, dynamic item, Color accentColor) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
       decoration: BoxDecoration(
-        color: AppTheme.whiteColor,
-        borderRadius: BorderRadius.circular(20),
+        color: AppTheme.cardBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.gray100,
+          color: AppTheme.cardBorderColor,
           width: 1,
         ),
       ),
@@ -211,9 +205,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         children: [
           Text(
             item['name'] ?? '',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
               color: AppTheme.blackColor,
             ),
           ),
@@ -222,7 +216,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
             item['description'] ?? '',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppTheme.gray700,
-                  height: 1.5,
+                  height: 1.4,
                 ),
           ),
         ],
@@ -238,7 +232,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       context,
       title: AppLocalizations.of(context)!.translate('positive_ingredients'),
       items: widget.analysisResult['positive_ingredients'] ?? [],
-      color: AppTheme.primaryGreen,
+      color: AppTheme.blackColor,
       icon: Icons.check,
     );
     if (positiveSection is! SizedBox) {
@@ -250,7 +244,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       context,
       title: AppLocalizations.of(context)!.translate('negative_ingredients'),
       items: widget.analysisResult['negative_ingredients'] ?? [],
-      color: AppTheme.negativeColor,
+      color: AppTheme.blackColor,
       icon: Icons.not_interested,
     );
     if (negativeSection is! SizedBox) {
@@ -263,7 +257,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       context,
       title: AppLocalizations.of(context)!.translate('other_ingredients'),
       items: widget.analysisResult['other_ingredients'] ?? [],
-      color: AppTheme.gray700,
+      color: AppTheme.blackColor,
       icon: Icons.local_offer_outlined,
     );
     if (otherSection is! SizedBox) {
@@ -278,7 +272,13 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       sections.add(overallSection);
     }
 
-    // 스크린샷 저장 버튼 추가 (저장된 결과에서 온 경우가 아닐 때만)
+    // 광고 섹션 (총평 후에)
+    if (sections.isNotEmpty) {
+      sections.add(const SizedBox(height: 24));
+      sections.add(const AdBannerWidget());
+    }
+
+    // 저장 버튼 추가 (저장된 결과에서 온 경우가 아닐 때만)
     if (sections.isNotEmpty && !widget.fromSavedResults) {
       sections.add(const SizedBox(height: 32));
       sections.add(_buildScreenshotButton(context));
@@ -290,17 +290,21 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       sections.add(
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppTheme.gray100,
+            color: AppTheme.cardBackgroundColor,
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.cardBorderColor,
+              width: 1,
+            ),
           ),
           child: Text(
             AppLocalizations.of(context)!.translate('ai_disclaimer'),
-            style: TextStyle(
-              fontSize: 14,
-              color: AppTheme.gray700,
-              height: 1.5,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppTheme.gray500,
+              height: 1.3,
             ),
             textAlign: TextAlign.center,
           ),
@@ -312,7 +316,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
   }
 
   Widget _buildScreenshotButton(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _showSaveBottomSheet,
@@ -321,18 +325,18 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           AppLocalizations.of(context)!.translate('save_result'),
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.primaryGreen,
+          backgroundColor: AppTheme.blackColor,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 56),
+          minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 2,
+          elevation: 0,
         ),
       ),
     );
@@ -340,12 +344,13 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
   Widget _buildOverallReview(BuildContext context) {
     final overallReview = widget.analysisResult['overall_review'];
-    if (overallReview == null || (overallReview is List && overallReview.isEmpty)) {
+    if (overallReview == null ||
+        (overallReview is List && overallReview.isEmpty)) {
       return const SizedBox.shrink();
     }
 
     // 이전 버전 호환성을 위해 String인 경우도 처리
-    final List<String> reviewList = overallReview is String 
+    final List<String> reviewList = overallReview is String
         ? [overallReview]
         : (overallReview as List).cast<String>();
 
@@ -354,15 +359,15 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       children: [
         Row(
           children: [
-            Icon(Icons.lightbulb_outline,
-                color: AppTheme.primaryGreen, size: 20),
+            const Icon(Icons.lightbulb_outline,
+                color: AppTheme.blackColor, size: 18),
             const SizedBox(width: 8),
             Text(
               AppLocalizations.of(context)!.translate('overall_review'),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.primaryGreen,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.blackColor,
               ),
             ),
           ],
@@ -370,12 +375,12 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         const SizedBox(height: 16),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppTheme.whiteColor,
-            borderRadius: BorderRadius.circular(20),
+            color: AppTheme.cardBackgroundColor,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppTheme.gray100,
+              color: AppTheme.cardBorderColor,
               width: 1,
             ),
           ),
@@ -385,11 +390,11 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               for (int i = 0; i < reviewList.length; i++) ...[
                 Text(
                   reviewList[i],
-                  style: TextStyle(
-                        fontSize: 15,
-                        color: AppTheme.blackColor,
-                        height: 1.6,
-                      ),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppTheme.gray700,
+                    height: 1.4,
+                  ),
                 ),
                 if (i < reviewList.length - 1) const SizedBox(height: 12),
               ],

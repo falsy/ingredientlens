@@ -172,6 +172,16 @@ class DatabaseService {
       return RecentResult.fromMap(maps[i]);
     });
   }
+  
+  // 최근 분석 기록 삭제
+  Future<int> deleteRecentResult(int id) async {
+    final db = await database;
+    return await db.delete(
+      'recent_results',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 
   // 데이터베이스 닫기
   Future<void> close() async {

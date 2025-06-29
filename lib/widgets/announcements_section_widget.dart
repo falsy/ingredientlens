@@ -13,7 +13,7 @@ class AnnouncementsSectionWidget extends StatelessWidget {
         // Section Title
         Text(
           AppLocalizations.of(context)!.translate('announcements_title'),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 15,
             fontWeight: FontWeight.w500,
@@ -25,7 +25,7 @@ class AnnouncementsSectionWidget extends StatelessWidget {
         // Section Subtitle
         Text(
           AppLocalizations.of(context)!.translate('announcements_subtitle'),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.gray500,
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -33,7 +33,7 @@ class AnnouncementsSectionWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        
+
         // Announcements Content (placeholder)
         Container(
           constraints: const BoxConstraints(minHeight: 120),
@@ -42,7 +42,7 @@ class AnnouncementsSectionWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 32),
               child: Text(
                 AppLocalizations.of(context)!.translate('no_announcements'),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w400,
                   color: AppTheme.gray500,

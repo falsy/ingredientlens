@@ -5,7 +5,8 @@ import '../services/localization_service.dart';
 import '../utils/theme.dart';
 
 class CategorySectionWidget extends StatelessWidget {
-  final Function(String categoryId, String categoryName, bool isCustom) onCategoryTap;
+  final Function(String categoryId, String categoryName, bool isCustom)
+      onCategoryTap;
 
   const CategorySectionWidget({
     super.key,
@@ -38,7 +39,7 @@ class CategorySectionWidget extends StatelessWidget {
                 category.iconPath,
                 width: 28,
                 height: 28,
-                colorFilter: ColorFilter.mode(
+                colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
                 ),
@@ -47,7 +48,7 @@ class CategorySectionWidget extends StatelessWidget {
               // 중앙 정렬 텍스트
               Text(
                 AppLocalizations.of(context)!.translate(category.nameKey),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.blackColor,
@@ -90,7 +91,7 @@ class CategorySectionWidget extends StatelessWidget {
                 'assets/icons/custom.svg',
                 width: 28,
                 height: 28,
-                colorFilter: ColorFilter.mode(
+                colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
                 ),
@@ -99,7 +100,7 @@ class CategorySectionWidget extends StatelessWidget {
               // 중앙 정렬 텍스트
               Text(
                 AppLocalizations.of(context)!.translate('other'),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.blackColor,
@@ -124,7 +125,7 @@ class CategorySectionWidget extends StatelessWidget {
         // Section Title
         Text(
           AppLocalizations.of(context)!.translate('section_title'),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 15,
             fontWeight: FontWeight.w500,
@@ -136,7 +137,7 @@ class CategorySectionWidget extends StatelessWidget {
         // Section Subtitle
         Text(
           AppLocalizations.of(context)!.translate('section_subtitle'),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppTheme.gray500,
             fontSize: 14,
             fontWeight: FontWeight.w400,

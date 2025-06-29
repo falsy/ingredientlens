@@ -25,7 +25,6 @@ class InterstitialAdWidget extends StatefulWidget {
 
 class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
   InterstitialAd? _interstitialAd;
-  bool _isAdLoaded = false;
   bool _isAdShown = false;
   bool _isLoadingAfterAd = false;
   bool _isCancelled = false;
@@ -80,7 +79,6 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
         onAdLoaded: (ad) {
           setState(() {
             _interstitialAd = ad;
-            _isAdLoaded = true;
           });
           _showAd();
         },
@@ -237,10 +235,10 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
     // 광고 로딩 중이거나 광고가 닫힌 후 항상 로딩 화면 표시
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: AppTheme.backgroundColor,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.backgroundColor,
+        systemNavigationBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
@@ -252,7 +250,7 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const CircularProgressIndicator(
-                    color: AppTheme.primaryGreen,
+                    color: AppTheme.blackColor,
                   ),
                   const SizedBox(height: 24),
                   Text(

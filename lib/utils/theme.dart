@@ -13,14 +13,15 @@ class AppTheme {
   static const Color gray500 = Color(0xFF8A8A8A);
   static const Color gray400 = Color(0xFFB0B0B0);
   static const Color gray300 = Color(0xFFD0D0D0);
+  static const Color gray200 = Color(0xFFE0E0E0);
   static const Color gray100 = Color(0xFFF0F0F0);
 
   static const Color positiveColor = Color(0xFF22C55E);
   static const Color negativeColor = Color(0xFFEF4444);
-  
+
   // 새로운 카드 색상
   static const Color cardBackgroundColor = Color(0xFFF9F9F9);
-  static const Color cardBorderColor = Color(0xFFDDDDDD);
+  static const Color cardBorderColor = Color(0xFFEEEEEE);
 
   // 새로운 디자인 색상
   static const Color backgroundColor = Color(0xFFFFFFFF); // White background
