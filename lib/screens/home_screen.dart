@@ -6,6 +6,7 @@ import '../models/recent_result.dart';
 import '../services/database_service.dart';
 import '../services/localization_service.dart';
 import '../services/preferences_service.dart';
+import '../services/consent_service.dart';
 import '../utils/theme.dart';
 import '../widgets/ad_banner_widget.dart';
 import '../widgets/home_header_widget.dart';
@@ -20,15 +21,18 @@ import 'compare_screen.dart';
 import 'saved_results_screen.dart';
 import 'analysis_result_screen.dart';
 import 'comparison_result_screen.dart';
+import 'consent_required_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, RouteAware {
   List<RecentResult> _recentResults = [];
   String? _currentCategoryId;
   String? _currentCategoryName;
@@ -73,9 +77,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      HomeScreen.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    HomeScreen.routeObserver.unsubscribe(this);
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // 다른 화면에서 돌아왔을 때 갱신
+    _loadRecentResults();
   }
 
   void _showCategoryActionBottomSheet(
@@ -102,7 +122,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  void _showImageSourceBottomSheet(String category) {
+  void _showImageSourceBottomSheet(String category) async {
+    // 동의 상태 확인
+    final canUseService = await ConsentService().canUseService();
+    if (!canUseService && mounted) {
+      // 동의하지 않은 경우 동의 화면으로 이동
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const ConsentRequiredScreen()),
+      );
+      return;
+    }
+
     // Save last selected category
     if (_currentCategoryId != null && _currentCategoryId != 'other') {
       PreferencesService.instance.setLastSelectedCategory(_currentCategoryId!);
@@ -140,7 +170,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  void _onComparePressed() {
+  void _onComparePressed() async {
+    // 동의 상태 확인
+    final canUseService = await ConsentService().canUseService();
+    if (!canUseService && mounted) {
+      // 동의하지 않은 경우 동의 화면으로 이동
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const ConsentRequiredScreen()),
+      );
+      return;
+    }
+
     String? categoryToCompare;
 
     if (_currentCategoryId == 'other') {
@@ -252,7 +292,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               fromSavedResults: true,
             ),
           ),
-        );
+        ).then((_) {
+          _loadRecentResults();
+        });
       } else if (result.type == 'compare') {
         Navigator.push(
           context,
@@ -263,7 +305,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               fromSavedResults: true,
             ),
           ),
-        );
+        ).then((_) {
+          _loadRecentResults();
+        });
       }
     } catch (e) {
       // JSON parsing failed - ignore silently

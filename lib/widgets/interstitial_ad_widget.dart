@@ -6,6 +6,7 @@ import '../config/ad_config.dart';
 import '../config/app_config.dart';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
+import '../services/consent_service.dart';
 
 class InterstitialAdWidget extends StatefulWidget {
   final VoidCallback onAdDismissed;
@@ -35,10 +36,26 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
   void initState() {
     super.initState();
     if (AppConfig.enableAds) {
+      _checkConsentAndLoadAd();
+    } else {
+      // 광고가 비활성화되어 있으면 바로 로딩 화면으로
+      setState(() {
+        _isLoadingAfterAd = true;
+      });
+      widget.onAdDismissed();
+    }
+  }
+
+  void _checkConsentAndLoadAd() async {
+    final canRequestAds = await ConsentService().canRequestAds();
+    if (canRequestAds && mounted) {
       _loadInterstitialAd();
       _startCountdown();
     } else {
-      // 광고가 비활성화되어 있으면 바로 로딩 화면으로
+      if (kDebugMode) {
+        print('Cannot request interstitial ads due to consent status');
+      }
+      // 동의가 없으면 광고 없이 진행
       setState(() {
         _isLoadingAfterAd = true;
       });

@@ -112,7 +112,7 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                 color: AppTheme.blackColor,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                height: 1.2,
+                height: 1.3,
               ),
             ),
             const SizedBox(height: 8),
@@ -124,7 +124,7 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                 color: AppTheme.gray500,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                height: 1.2,
+                height: 1.3,
               ),
             ),
             const SizedBox(height: 18),
@@ -209,9 +209,13 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                     child: ElevatedButton(
                       onPressed: _handleAnalyze,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.blackColor,
-                        foregroundColor: AppTheme.whiteColor,
+                        backgroundColor: AppTheme.whiteColor,
+                        foregroundColor: AppTheme.blackColor,
                         shape: RoundedRectangleBorder(
+                          side: const BorderSide(
+                            color: AppTheme.blackColor,
+                            width: 1,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,

@@ -5,6 +5,7 @@ import '../utils/theme.dart';
 import '../config/ad_config.dart';
 import '../config/app_config.dart';
 import '../services/localization_service.dart';
+import '../services/consent_service.dart';
 
 class AdBannerWidget extends StatefulWidget {
   const AdBannerWidget({super.key});
@@ -26,9 +27,23 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   void initState() {
     super.initState();
     if (_enableAds) {
-      _loadBannerAd();
+      _checkConsentAndLoadAd();
     } else {
       setState(() {});
+    }
+  }
+
+  void _checkConsentAndLoadAd() async {
+    final canRequestAds = await ConsentService().canRequestAds();
+    if (canRequestAds && mounted) {
+      _loadBannerAd();
+    } else {
+      if (kDebugMode) {
+        print('Cannot request ads due to consent status');
+      }
+      setState(() {
+        _isBannerAdReady = false;
+      });
     }
   }
 

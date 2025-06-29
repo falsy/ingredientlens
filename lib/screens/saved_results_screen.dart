@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/database_service.dart';
@@ -165,18 +166,22 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.bookmark_outline,
-                                size: 64,
-                                color: AppTheme.blackColor.withOpacity(0.3),
+                              SvgPicture.asset(
+                                'assets/icons/bookmark.svg',
+                                width: 48,
+                                height: 48,
+                                colorFilter: const ColorFilter.mode(
+                                  AppTheme.gray500,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                               const SizedBox(height: 14),
                               Text(
                                 AppLocalizations.of(context)!
                                     .translate('no_saved_results'),
-                                style: TextStyle(
-                                  color: AppTheme.blackColor.withOpacity(0.6),
-                                  fontSize: 15,
+                                style: const TextStyle(
+                                  color: AppTheme.gray500,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -245,7 +250,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w400,
                                                 color: AppTheme.gray700,
-                                                height: 1.2,
+                                                height: 1.3,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,

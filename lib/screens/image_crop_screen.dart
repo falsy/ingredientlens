@@ -7,6 +7,7 @@ import 'package:image/image.dart' as img;
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/api_service.dart';
+import '../services/usage_limit_service.dart';
 import '../widgets/interstitial_ad_widget.dart';
 import '../config/app_config.dart';
 import 'analysis_result_screen.dart';
@@ -310,7 +311,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               //     color: AppTheme.blackColor,
               //     fontSize: 18,
               //     fontWeight: FontWeight.w500,
-              //     height: 1.2,
+              //     height: 1.3,
               //   ),
               // ),
               const SizedBox(height: 20),
@@ -418,9 +419,30 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     );
   }
 
-  void _startAnalysis(File imageFile) {
+  void _startAnalysis(File imageFile) async {
     if (kDebugMode) print('🚀 분석 시작!');
+
+    // 사용량 제한 확인
+    final usageLimitService = UsageLimitService();
+    final canMakeRequest = await usageLimitService.canMakeRequest();
+
+    if (!canMakeRequest) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.translate('daily_limit_reached')),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     _isAnalysisCancelled = false;
+
+    // 사용량 증가
+    await usageLimitService.incrementUsage();
 
     // API 호출을 먼저 시작
     _performAnalysis(imageFile);
@@ -467,8 +489,8 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
 
       if (mounted && !_isAnalysisCancelled) {
         if (kDebugMode) print('📄 결과 화면으로 이동...');
-        Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.push(
+        // 모든 중간 화면을 제거하고 결과 화면으로 이동
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => AnalysisResultScreen(
@@ -476,6 +498,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               category: widget.category,
             ),
           ),
+          (route) => route.isFirst, // 홈 화면만 남김
         );
       }
     } catch (e) {
@@ -650,7 +673,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               style: const TextStyle(
                 fontSize: 14,
                 color: AppTheme.gray500,
-                height: 1.2,
+                height: 1.3,
               ),
               textAlign: TextAlign.center,
             ),

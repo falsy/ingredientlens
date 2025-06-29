@@ -39,7 +39,7 @@ class DatabaseService {
         updatedAt TEXT NOT NULL
       )
     ''');
-    
+
     await db.execute('''
       CREATE TABLE recent_results (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,9 +57,10 @@ class DatabaseService {
       // updatedAt 컬럼 추가
       await db.execute('ALTER TABLE saved_results ADD COLUMN updatedAt TEXT');
       // 기존 레코드들의 updatedAt을 createdAt과 동일하게 설정
-      await db.execute('UPDATE saved_results SET updatedAt = createdAt WHERE updatedAt IS NULL');
+      await db.execute(
+          'UPDATE saved_results SET updatedAt = createdAt WHERE updatedAt IS NULL');
     }
-    
+
     if (oldVersion < 3) {
       // recent_results 테이블 추가
       await db.execute('''
@@ -74,7 +75,6 @@ class DatabaseService {
       ''');
     }
   }
-
 
   // 결과 저장
   Future<int> saveResult(SavedResult result) async {
@@ -134,19 +134,21 @@ class DatabaseService {
     );
   }
 
-  // 최근 분석 기록 저장 (최대 10개까지)
+  // 최근 분석 기록 저장 (최대 3개까지)
   Future<int> saveRecentResult(RecentResult result) async {
     final db = await database;
-    
-    // 최신 순으로 기록 조회
-    final List<Map<String, dynamic>> existing = await db.query(
+
+    // 새 항목을 추가
+    final insertResult = await db.insert('recent_results', result.toMap());
+
+    // 추가 후 3개를 초과하면 가장 오래된 것들 삭제
+    final List<Map<String, dynamic>> afterInsert = await db.query(
       'recent_results',
       orderBy: 'created_at DESC',
     );
-    
-    // 10개를 초과하면 가장 오래된 기록들 삭제
-    if (existing.length >= 10) {
-      final toDelete = existing.skip(9).toList();
+
+    if (afterInsert.length > 3) {
+      final toDelete = afterInsert.skip(3).toList();
       for (final record in toDelete) {
         await db.delete(
           'recent_results',
@@ -155,10 +157,10 @@ class DatabaseService {
         );
       }
     }
-    
-    return await db.insert('recent_results', result.toMap());
+
+    return insertResult;
   }
-  
+
   // 최근 분석 기록 조회 (최대 3개)
   Future<List<RecentResult>> getRecentResults() async {
     final db = await database;
@@ -167,12 +169,12 @@ class DatabaseService {
       orderBy: 'created_at DESC',
       limit: 3,
     );
-    
+
     return List.generate(maps.length, (i) {
       return RecentResult.fromMap(maps[i]);
     });
   }
-  
+
   // 최근 분석 기록 삭제
   Future<int> deleteRecentResult(int id) async {
     final db = await database;

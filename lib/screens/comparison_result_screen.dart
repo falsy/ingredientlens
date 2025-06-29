@@ -77,15 +77,6 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     });
   }
 
-  void _handleBackNavigation() {
-    if (widget.fromSavedResults) {
-      // 저장된 결과에서 온 경우 저장된 결과 목록으로 돌아가기
-      Navigator.pop(context);
-    } else {
-      // 그 외의 경우는 모두 홈 화면으로 돌아가기
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,14 +90,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
       ),
     );
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop) {
-        if (!didPop) {
-          _handleBackNavigation();
-        }
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: AppTheme.backgroundColor,
         appBar: AppBar(
           title: Text(
@@ -134,7 +118,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back,
                 color: AppTheme.blackColor, size: 24),
-            onPressed: _handleBackNavigation,
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
         body: SafeArea(
@@ -152,8 +136,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildSection({

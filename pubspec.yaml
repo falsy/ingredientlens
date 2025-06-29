@@ -1,7 +1,7 @@
 name: ingredient_lens
 description: AI-powered ingredient analyzer app
 publish_to: "none"
-version: 1.0.1+19
+version: 1.1.0+20
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -23,12 +23,14 @@ dependencies:
   flutter_dotenv: ^5.1.0
   sqflite: ^2.3.0
   flutter_svg: ^2.2.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
   flutter_native_splash: ^2.3.10
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -49,11 +51,18 @@ flutter:
 
 flutter_native_splash:
   color: "#F5F5F5" # 앱 배경색과 동일
-  image: assets/images/icon1024.png
+  image: assets/images/splash.png
   android_12:
-    image: assets/images/icon1024.png
+    image: assets/images/splash.png
     color: "#F5F5F5"
   # 이미지 표시 방식 - 패딩이 있는 고해상도 이미지
   android_gravity: center
   ios_content_mode: scaleAspectFit
   fullscreen: false
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true

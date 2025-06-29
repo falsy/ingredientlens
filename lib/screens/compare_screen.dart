@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
+import '../services/usage_limit_service.dart';
 import '../widgets/interstitial_ad_widget.dart';
 import '../widgets/image_source_bottom_sheet.dart';
 import '../services/api_service.dart';
@@ -51,11 +52,11 @@ class _CompareScreenState extends State<CompareScreen> {
     // 상태바 색상 설정
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: AppTheme.backgroundColor,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: AppTheme.backgroundColor,
-        systemNavigationBarIconBrightness: Brightness.dark,
+        statusBarColor: Colors.transparent, // 투명한 상태바
+        statusBarIconBrightness: Brightness.dark, // 상태바 아이콘 색상 (어두운 색)
+        statusBarBrightness: Brightness.light, // iOS용 상태바 밝기
+        systemNavigationBarColor: Colors.transparent, // 투명한 네비게이션 바
+        systemNavigationBarIconBrightness: Brightness.dark, // 네비게이션 바 아이콘 색상
       ),
     );
   }
@@ -162,9 +163,29 @@ class _CompareScreenState extends State<CompareScreen> {
     _startComparison();
   }
 
-  void _startComparison() {
+  void _startComparison() async {
+    // 사용량 제한 확인
+    final usageLimitService = UsageLimitService();
+    final canMakeRequest = await usageLimitService.canMakeRequest();
+
+    if (!canMakeRequest) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.translate('daily_limit_reached')),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     // 분석 시작 시 취소 플래그 초기화
     _isAnalysisCancelled = false;
+
+    // 사용량 증가
+    await usageLimitService.incrementUsage();
 
     // API 호출을 먼저 시작
     _performComparison();
@@ -206,9 +227,8 @@ class _CompareScreenState extends State<CompareScreen> {
 
       // 취소되지 않았을 때만 결과 화면으로 이동
       if (mounted && !_isAnalysisCancelled) {
-        // 모든 화면을 닫고 결과 화면으로 이동
-        Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.push(
+        // 모든 중간 화면을 제거하고 결과 화면으로 이동
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => ComparisonResultScreen(
@@ -216,6 +236,7 @@ class _CompareScreenState extends State<CompareScreen> {
               category: widget.category,
             ),
           ),
+          (route) => route.isFirst, // 홈 화면만 남김
         );
       }
     } catch (e) {
@@ -321,11 +342,11 @@ class _CompareScreenState extends State<CompareScreen> {
         centerTitle: true,
         scrolledUnderElevation: 0,
         systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarColor: AppTheme.backgroundColor,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: AppTheme.backgroundColor,
-          systemNavigationBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.transparent, // 투명한 상태바
+          statusBarIconBrightness: Brightness.dark, // 상태바 아이콘 색상 (어두운 색)
+          statusBarBrightness: Brightness.light, // iOS용 상태바 밝기
+          systemNavigationBarColor: Colors.transparent, // 투명한 네비게이션 바
+          systemNavigationBarIconBrightness: Brightness.dark, // 네비게이션 바 아이콘 색상
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
