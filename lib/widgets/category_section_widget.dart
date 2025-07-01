@@ -45,7 +45,7 @@ class CategorySectionWidget extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               // 중앙 정렬 텍스트
               Text(
                 AppLocalizations.of(context)!.translate(category.nameKey),
@@ -53,7 +53,7 @@ class CategorySectionWidget extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: AppTheme.blackColor,
-                  height: 1.3,
+                  height: 1.4,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -98,7 +98,7 @@ class CategorySectionWidget extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               // 중앙 정렬 텍스트
               Text(
                 AppLocalizations.of(context)!.translate('other'),
@@ -106,7 +106,7 @@ class CategorySectionWidget extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: AppTheme.blackColor,
-                  height: 1.3,
+                  height: 1.4,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -142,7 +142,7 @@ class CategorySectionWidget extends StatelessWidget {
           style: const TextStyle(
             color: AppTheme.gray500,
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w400,
             height: 1.2,
           ),
         ),
@@ -155,8 +155,8 @@ class CategorySectionWidget extends StatelessWidget {
           padding: EdgeInsets.zero,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
             childAspectRatio: 1.0,
           ),
           itemCount: categories.length + 1, // +1 for Other

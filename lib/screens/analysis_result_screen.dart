@@ -101,7 +101,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
           ),
         ),
@@ -152,12 +152,12 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       children: [
         Row(
           children: [
-            Icon(icon, color: color, size: 20),
+            Icon(icon, color: color, size: 18),
             const SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: color,
               ),
@@ -191,7 +191,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           Text(
             item['name'] ?? '',
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 17,
               fontWeight: FontWeight.w500,
               color: AppTheme.blackColor,
             ),
@@ -334,12 +334,12 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         Row(
           children: [
             const Icon(Icons.lightbulb_outline,
-                color: AppTheme.blackColor, size: 20),
+                color: AppTheme.blackColor, size: 18),
             const SizedBox(width: 8),
             Text(
               AppLocalizations.of(context)!.translate('overall_review'),
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: AppTheme.blackColor,
               ),

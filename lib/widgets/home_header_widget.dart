@@ -36,8 +36,8 @@ class HomeHeaderWidget extends StatelessWidget {
                 child: Center(
                   child: SvgPicture.asset(
                     'assets/icons/bookmark.svg',
-                    width: 22,
-                    height: 22,
+                    width: 24,
+                    height: 24,
                     colorFilter: const ColorFilter.mode(
                       AppTheme.blackColor,
                       BlendMode.srcIn,
@@ -56,7 +56,7 @@ class HomeHeaderWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('main_title'),
           style: const TextStyle(
             color: AppTheme.blackColor,
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             letterSpacing: 0,
           ),

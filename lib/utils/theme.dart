@@ -91,7 +91,7 @@ class AppTheme {
       onSecondary: whiteColor,
       onSurface: blackColor,
     ),
-    fontFamily: 'Pretendard',
+    fontFamily: getFontFamily('en'), // 기본값으로 영어 설정
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,

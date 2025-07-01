@@ -97,7 +97,7 @@ class AppLocalizations {
   final Map<String, Map<String, String>> _localizedStrings = {
     'en': {
       'app_name': 'IngredientLens',
-      'main_title': 'AI ingredient analyzer',
+      'main_title': 'AI Ingredient Analyzer',
       'section_title': 'Category',
       'section_subtitle': 'Take a picture and analyze the ingredients',
       'recent_results_title': 'Recent Results',
@@ -105,8 +105,10 @@ class AppLocalizations {
       'no_recent_results': 'No recent analysis results',
       'ads_title': 'Advertisement',
       'consent_required_title': 'Consent Required',
-      'consent_required_description': 'To provide our AI-powered ingredient analysis service, we need to show personalized ads. This helps us cover the costs of AI processing.',
-      'consent_required_info': 'Your privacy is important to us. We only collect data necessary for showing relevant ads and improving your experience.',
+      'consent_required_description':
+          'To provide our AI-powered ingredient analysis service, we need to show personalized ads. This helps us cover the costs of AI processing.',
+      'consent_required_info':
+          'Your privacy is important to us. We only collect data necessary for showing relevant ads and improving your experience.',
       'consent_agree_button': 'Agree and Continue',
       'consent_exit_button': 'Exit App',
       'consent_decline_button': 'Decline',
@@ -215,8 +217,10 @@ class AppLocalizations {
       'no_recent_results': '최근 분석 결과가 없습니다',
       'ads_title': '광고',
       'consent_required_title': '동의가 필요합니다',
-      'consent_required_description': 'AI 기반 성분 분석 서비스를 제공하기 위해 맞춤형 광고를 표시해야 합니다. 이는 AI 처리 비용을 충당하는 데 도움이 됩니다.',
-      'consent_required_info': '귀하의 개인정보는 저희에게 중요합니다. 관련 광고 표시와 사용자 경험 개선에 필요한 데이터만 수집합니다.',
+      'consent_required_description':
+          'AI 기반 성분 분석 서비스를 제공하기 위해 맞춤형 광고를 표시해야 합니다. 이는 AI 처리 비용을 충당하는 데 도움이 됩니다.',
+      'consent_required_info':
+          '귀하의 개인정보는 저희에게 중요합니다. 관련 광고 표시와 사용자 경험 개선에 필요한 데이터만 수집합니다.',
       'consent_agree_button': '동의하고 계속하기',
       'consent_exit_button': '앱 종료',
       'consent_decline_button': '동의 안 함',
@@ -321,7 +325,8 @@ class AppLocalizations {
       'no_recent_results': '没有最近的分析结果',
       'ads_title': '广告',
       'consent_required_title': '需要同意',
-      'consent_required_description': '为了提供我们的AI驱动的成分分析服务，我们需要显示个性化广告。这有助于我们支付AI处理成本。',
+      'consent_required_description':
+          '为了提供我们的AI驱动的成分分析服务，我们需要显示个性化广告。这有助于我们支付AI处理成本。',
       'consent_required_info': '您的隐私对我们很重要。我们只收集显示相关广告和改善您的体验所需的数据。',
       'consent_agree_button': '同意并继续',
       'consent_exit_button': '退出应用',
@@ -423,8 +428,10 @@ class AppLocalizations {
       'no_recent_results': '最近の分析結果がありません',
       'ads_title': '広告',
       'consent_required_title': '同意が必要です',
-      'consent_required_description': 'AI搭載の成分分析サービスを提供するために、パーソナライズされた広告を表示する必要があります。これはAI処理のコストをカバーするのに役立ちます。',
-      'consent_required_info': 'あなたのプライバシーは私たちにとって重要です。関連する広告の表示と体験の向上に必要なデータのみを収集します。',
+      'consent_required_description':
+          'AI搭載の成分分析サービスを提供するために、パーソナライズされた広告を表示する必要があります。これはAI処理のコストをカバーするのに役立ちます。',
+      'consent_required_info':
+          'あなたのプライバシーは私たちにとって重要です。関連する広告の表示と体験の向上に必要なデータのみを収集します。',
       'consent_agree_button': '同意して続行',
       'consent_exit_button': 'アプリを終了',
       'consent_decline_button': '同意しない',
@@ -483,8 +490,7 @@ class AppLocalizations {
       'horizontal_guide': '横向',
       'vertical_guide': '縦向',
       'close': '閉じる',
-      'confirm_analysis_notice':
-          '分析を押すとAI分析がすぐに開始され、分析中は広告が表示されます。',
+      'confirm_analysis_notice': '分析を押すとAI分析がすぐに開始され、分析中は広告が表示されます。',
       'app_subtitle': 'AI搭載の成分分析ツール',
       'ai_disclaimer': 'AIが提供する情報には誤りがある可能性があります。重要な決定は必ず専門家にご相談ください。😊',
       'save_screenshot': '結果を保存',
@@ -519,7 +525,7 @@ class AppLocalizations {
     },
     'es': {
       'app_name': 'Analizador de Ingredientes',
-      'main_title': 'Analizador de ingredientes IA',
+      'main_title': 'Analizador de Ingredientes IA',
       'section_title': 'Categoría',
       'section_subtitle': 'Toma una foto y analiza los ingredientes',
       'recent_results_title': 'Resultados Recientes',
@@ -528,8 +534,10 @@ class AppLocalizations {
       'no_recent_results': 'No hay resultados de análisis recientes',
       'ads_title': 'Publicidad',
       'consent_required_title': 'Se requiere consentimiento',
-      'consent_required_description': 'Para proporcionar nuestro servicio de análisis de ingredientes con IA, necesitamos mostrar anuncios personalizados. Esto nos ayuda a cubrir los costos del procesamiento de IA.',
-      'consent_required_info': 'Su privacidad es importante para nosotros. Solo recopilamos los datos necesarios para mostrar anuncios relevantes y mejorar su experiencia.',
+      'consent_required_description':
+          'Para proporcionar nuestro servicio de análisis de ingredientes con IA, necesitamos mostrar anuncios personalizados. Esto nos ayuda a cubrir los costos del procesamiento de IA.',
+      'consent_required_info':
+          'Su privacidad es importante para nosotros. Solo recopilamos los datos necesarios para mostrar anuncios relevantes y mejorar su experiencia.',
       'consent_agree_button': 'Aceptar y continuar',
       'consent_exit_button': 'Salir de la aplicación',
       'consent_decline_button': 'Declinar',
@@ -632,7 +640,7 @@ class AppLocalizations {
     },
     'pt': {
       'app_name': 'Analisador de Ingredientes',
-      'main_title': 'Analisador de ingredientes IA',
+      'main_title': 'Analisador de Ingredientes IA',
       'section_title': 'Categoria',
       'section_subtitle': 'Tire uma foto e analise os ingredientes',
       'recent_results_title': 'Resultados Recentes',
@@ -641,8 +649,10 @@ class AppLocalizations {
       'no_recent_results': 'Nenhum resultado de análise recente',
       'ads_title': 'Publicidade',
       'consent_required_title': 'Consentimento necessário',
-      'consent_required_description': 'Para fornecer nosso serviço de análise de ingredientes com IA, precisamos exibir anúncios personalizados. Isso nos ajuda a cobrir os custos do processamento de IA.',
-      'consent_required_info': 'Sua privacidade é importante para nós. Coletamos apenas os dados necessários para exibir anúncios relevantes e melhorar sua experiência.',
+      'consent_required_description':
+          'Para fornecer nosso serviço de análise de ingredientes com IA, precisamos exibir anúncios personalizados. Isso nos ajuda a cobrir os custos do processamento de IA.',
+      'consent_required_info':
+          'Sua privacidade é importante para nós. Coletamos apenas os dados necessários para exibir anúncios relevantes e melhorar sua experiência.',
       'consent_agree_button': 'Concordar e continuar',
       'consent_exit_button': 'Sair do aplicativo',
       'consent_decline_button': 'Recusar',
@@ -753,8 +763,10 @@ class AppLocalizations {
       'no_recent_results': 'ไม่มีผลการวิเคราะห์ล่าสุด',
       'ads_title': 'โฆษณา',
       'consent_required_title': 'ต้องการความยินยอม',
-      'consent_required_description': 'เพื่อให้บริการวิเคราะห์ส่วนผสมด้วย AI ของเรา เราจำเป็นต้องแสดงโฆษณาแบบปรับแต่ง ซึ่งช่วยให้เราสามารถครอบคลุมค่าใช้จ่ายในการประมวลผล AI ได้',
-      'consent_required_info': 'ความเป็นส่วนตัวของคุณมีความสำคัญสำหรับเรา เราจะเก็บรวบรวมเฉพาะข้อมูลที่จำเป็นสำหรับการแสดงโฆษณาที่เกี่ยวข้องและการปรับปรุงประสบการณ์ของคุณเท่านั้น',
+      'consent_required_description':
+          'เพื่อให้บริการวิเคราะห์ส่วนผสมด้วย AI ของเรา เราจำเป็นต้องแสดงโฆษณาแบบปรับแต่ง ซึ่งช่วยให้เราสามารถครอบคลุมค่าใช้จ่ายในการประมวลผล AI ได้',
+      'consent_required_info':
+          'ความเป็นส่วนตัวของคุณมีความสำคัญสำหรับเรา เราจะเก็บรวบรวมเฉพาะข้อมูลที่จำเป็นสำหรับการแสดงโฆษณาที่เกี่ยวข้องและการปรับปรุงประสบการณ์ของคุณเท่านั้น',
       'consent_agree_button': 'ยอมรับและดำเนินการต่อ',
       'consent_exit_button': 'ออกจากแอป',
       'consent_decline_button': 'ปฏิเสธ',
@@ -861,8 +873,10 @@ class AppLocalizations {
       'no_recent_results': 'Không có kết quả phân tích gần đây',
       'ads_title': 'Quảng Cáo',
       'consent_required_title': 'Cần Sự Đồng Ý',
-      'consent_required_description': 'Để cung cấp dịch vụ phân tích thành phần bằng AI, chúng tôi cần hiển thị quảng cáo được cá nhân hóa. Điều này giúp chúng tôi trang trải chi phí xử lý AI.',
-      'consent_required_info': 'Quyền riêng tư của bạn rất quan trọng đối với chúng tôi. Chúng tôi chỉ thu thập dữ liệu cần thiết để hiển thị quảng cáo phù hợp và cải thiện trải nghiệm của bạn.',
+      'consent_required_description':
+          'Để cung cấp dịch vụ phân tích thành phần bằng AI, chúng tôi cần hiển thị quảng cáo được cá nhân hóa. Điều này giúp chúng tôi trang trải chi phí xử lý AI.',
+      'consent_required_info':
+          'Quyền riêng tư của bạn rất quan trọng đối với chúng tôi. Chúng tôi chỉ thu thập dữ liệu cần thiết để hiển thị quảng cáo phù hợp và cải thiện trải nghiệm của bạn.',
       'consent_agree_button': 'Đồng ý và tiếp tục',
       'consent_exit_button': 'Thoát ứng dụng',
       'consent_decline_button': 'Từ chối',

@@ -101,7 +101,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
           ),
         ),
@@ -158,7 +158,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: color,
               ),
@@ -190,7 +190,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           Text(
             item['name'] ?? '',
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 17,
               fontWeight: FontWeight.w500,
               color: AppTheme.blackColor,
             ),
@@ -199,6 +199,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           Text(
             item['description'] ?? '',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: 15,
                   color: AppTheme.gray700,
                   height: 1.4,
                 ),
@@ -322,7 +323,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
             Text(
               AppLocalizations.of(context)!.translate('overall_comparison'),
               style: const TextStyle(
-                fontSize: 15,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: AppTheme.blackColor,
               ),
@@ -348,9 +349,9 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
                 Text(
                   reviewList[i],
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 16,
                     color: AppTheme.gray700,
-                    height: 1.45,
+                    height: 1.5,
                   ),
                 ),
                 if (i < reviewList.length - 1) const SizedBox(height: 12),

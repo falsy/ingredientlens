@@ -131,7 +131,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
             style: const TextStyle(
               color: AppTheme.blackColor,
               fontSize: 18,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               letterSpacing: 0.4,
             ),
           ),

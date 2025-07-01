@@ -1,6 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../utils/theme.dart';
@@ -333,7 +334,7 @@ class _CompareScreenState extends State<CompareScreen> {
           style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
           ),
         ),
