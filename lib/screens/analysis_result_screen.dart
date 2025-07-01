@@ -12,12 +12,14 @@ class AnalysisResultScreen extends StatefulWidget {
   final Map<String, dynamic> analysisResult;
   final String category;
   final bool fromSavedResults;
+  final bool isFromRecentResults;
 
   const AnalysisResultScreen({
     super.key,
     required this.analysisResult,
     required this.category,
     this.fromSavedResults = false,
+    this.isFromRecentResults = false,
   });
 
   @override
@@ -32,8 +34,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
   }
 
   void _saveRecentResult() async {
-    // Don't save if this result is from saved results
-    if (widget.fromSavedResults) return;
+    // Don't save to recent results if this is from saved results screen or from recent results
+    if (widget.fromSavedResults || widget.isFromRecentResults) return;
 
     try {
       final overallReviewList =
@@ -150,12 +152,12 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       children: [
         Row(
           children: [
-            Icon(icon, color: color, size: 18),
+            Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 20,
                 fontWeight: FontWeight.w500,
                 color: color,
               ),
@@ -189,7 +191,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           Text(
             item['name'] ?? '',
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.w500,
               color: AppTheme.blackColor,
             ),
@@ -198,8 +200,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           Text(
             item['description'] ?? '',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: 15,
                   color: AppTheme.gray700,
-                  height: 1.4,
+                  height: 1.5,
                 ),
           ),
         ],
@@ -285,9 +288,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           child: Text(
             AppLocalizations.of(context)!.translate('ai_disclaimer'),
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               color: AppTheme.gray500,
-              height: 1.3,
+              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
@@ -306,21 +309,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         icon: const Icon(Icons.save_alt, color: Colors.white),
         label: Text(
           AppLocalizations.of(context)!.translate('save_result'),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTheme.getButtonTextStyle(color: Colors.white),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.blackColor,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 52),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
+        style: AppTheme.getButtonStyle('action'),
       ),
     );
   }
@@ -343,12 +334,12 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         Row(
           children: [
             const Icon(Icons.lightbulb_outline,
-                color: AppTheme.blackColor, size: 18),
+                color: AppTheme.blackColor, size: 20),
             const SizedBox(width: 8),
             Text(
               AppLocalizations.of(context)!.translate('overall_review'),
               style: const TextStyle(
-                fontSize: 15,
+                fontSize: 20,
                 fontWeight: FontWeight.w500,
                 color: AppTheme.blackColor,
               ),
@@ -374,9 +365,9 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
                 Text(
                   reviewList[i],
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 16,
                     color: AppTheme.gray700,
-                    height: 1.45,
+                    height: 1.5,
                   ),
                 ),
                 if (i < reviewList.length - 1) const SizedBox(height: 12),

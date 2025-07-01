@@ -69,7 +69,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
           SnackBar(
             content:
                 Text(AppLocalizations.of(context)!.translate('result_saved')),
-            backgroundColor: AppTheme.blackColor,
+            backgroundColor: AppTheme.positiveColor,
           ),
         );
       }
@@ -188,20 +188,10 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _isSaving ? null : () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 46),
-                      side: const BorderSide(color: AppTheme.gray500, width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: const TextStyle(
-                        color: AppTheme.gray700,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: AppTheme.getButtonTextStyle(color: AppTheme.gray700),
                     ),
                   ),
                 ),
@@ -209,15 +199,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isSaving ? null : _saveResult,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.blackColor,
-                      foregroundColor: AppTheme.whiteColor,
-                      minimumSize: const Size(double.infinity, 46),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: AppTheme.getButtonStyle('action'),
                     child: _isSaving
                         ? const SizedBox(
                             width: 20,
@@ -229,10 +211,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                           )
                         : Text(
                             AppLocalizations.of(context)!.translate('save'),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
+                            style: AppTheme.getButtonTextStyle(),
                           ),
                   ),
                 ),

@@ -111,24 +111,14 @@ class ConsentRequiredScreen extends StatelessWidget {
               // 동의하기 버튼
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: AppTheme.buttonHeight,
                 child: ElevatedButton(
                   onPressed: () => _handleConsentRequest(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.blackColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
+                  style: AppTheme.getButtonStyle('action'),
                   child: Text(
                     AppLocalizations.of(context)!
                         .translate('consent_agree_button'),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTheme.getButtonTextStyle(),
                   ),
                 ),
               ),
@@ -137,23 +127,14 @@ class ConsentRequiredScreen extends StatelessWidget {
               // 동의 안 함 버튼
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: AppTheme.buttonHeight,
                 child: OutlinedButton(
                   onPressed: () => _handleContinueWithoutConsent(context),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppTheme.gray300),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  style: AppTheme.getButtonStyle('cancel'),
                   child: Text(
                     AppLocalizations.of(context)!
                         .translate('consent_decline_button'),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.gray700,
-                    ),
+                    style: AppTheme.getButtonTextStyle(color: AppTheme.gray700),
                   ),
                 ),
               ),

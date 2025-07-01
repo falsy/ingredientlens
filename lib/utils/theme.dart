@@ -28,6 +28,58 @@ class AppTheme {
   static const Color primaryGreen = Color(0xFF1B5E3F); // 더 어두운 초록색
   static const Color cardShadow = Color(0x1A000000);
 
+  // Button Style Constants
+  static const double buttonHeight = 48.0;
+  static const double buttonRadius = 28.0;
+  static const double buttonFontSize = 15.0;
+  static const FontWeight buttonFontWeight = FontWeight.w500;
+
+  // Button Color Schemes
+  static const Map<String, Map<String, Color>> buttonColors = {
+    'action': {
+      'background': blackColor,
+      'text': whiteColor,
+      'border': blackColor,
+    },
+    'cancel': {
+      'background': whiteColor,
+      'text': gray700,
+      'border': gray500,
+    },
+    'disabled': {
+      'background': cardBackgroundColor,
+      'text': gray500,
+      'border': cardBorderColor,
+    },
+  };
+
+  // Get button style by type
+  static ButtonStyle getButtonStyle(String type) {
+    final colors = buttonColors[type] ?? buttonColors['action']!;
+
+    return ElevatedButton.styleFrom(
+      backgroundColor: colors['background'],
+      foregroundColor: colors['text'],
+      minimumSize: const Size(double.infinity, buttonHeight),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(buttonRadius),
+        side: type == 'cancel' || type == 'disabled'
+            ? BorderSide(color: colors['border']!, width: 1)
+            : BorderSide.none,
+      ),
+      elevation: 0,
+    );
+  }
+
+  // Get text style for buttons
+  static TextStyle getButtonTextStyle({Color? color}) {
+    return TextStyle(
+      fontSize: buttonFontSize,
+      fontWeight: buttonFontWeight,
+      color: color,
+    );
+  }
+
   static ThemeData lightTheme = ThemeData(
     scaffoldBackgroundColor: whiteColor,
     primaryColor: blackColor,

@@ -59,7 +59,7 @@ class HomeFooterWidget extends StatelessWidget {
                     'ⓒ falsy',
                     style: TextStyle(
                       color: AppTheme.gray400,
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -85,7 +85,7 @@ class HomeFooterWidget extends StatelessWidget {
                         'Privacy Policy',
                         style: TextStyle(
                           color: AppTheme.gray400,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -114,7 +114,7 @@ class HomeFooterWidget extends StatelessWidget {
                         'Terms of Service',
                         style: TextStyle(
                           color: AppTheme.gray400,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w400,
                         ),
                       ),

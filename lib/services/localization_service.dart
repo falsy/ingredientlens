@@ -170,7 +170,7 @@ class AppLocalizations {
       'vertical_guide': 'Vertical',
       'close': 'Close',
       'confirm_analysis_notice':
-          'Clicking Confirm will start AI analysis immediately and display ads.\n(AI analysis takes about 10 seconds.)',
+          'When you press analyze, AI analysis will proceed immediately, and ads will be displayed during analysis.',
       'app_subtitle': 'AI-powered ingredient analyzer',
       'ai_disclaimer':
           'AI-provided information may contain errors. Please consult with professionals for important decisions. 😊',
@@ -276,7 +276,7 @@ class AppLocalizations {
       'vertical_guide': '세로',
       'close': '닫기',
       'confirm_analysis_notice':
-          '확인을 클릭하면 광고가 표시되며 AI 분석이 시작됩니다.\n(AI 분석에는 10초 정도의 시간이 소요됩니다.)',
+          '분석을 누르시면 AI 분석이 즉시 진행되며, 분석 중에는 광고가 함께 표시됩니다.',
       'app_subtitle': 'AI를 활용한 성분표 분석기',
       'ai_disclaimer':
           'AI가 제공하는 정보에는 오류가 있을 수 있습니다. 중요한 결정은 반드시 전문가와 상담해 주세요. 😊',
@@ -380,7 +380,7 @@ class AppLocalizations {
       'horizontal_guide': '横向',
       'vertical_guide': '纵向',
       'close': '关闭',
-      'confirm_analysis_notice': '点击确认将立即开始AI分析并显示广告。\n(AI分析大约需要10秒时间。)',
+      'confirm_analysis_notice': '点击分析时，AI分析将立即进行，分析过程中会显示广告。',
       'app_subtitle': '基于AI的成分分析器',
       'ai_disclaimer': 'AI提供的信息可能存在错误。重要决定请务必咨询专业人士。😊',
       'save_screenshot': '保存结果',
@@ -484,7 +484,7 @@ class AppLocalizations {
       'vertical_guide': '縦向',
       'close': '閉じる',
       'confirm_analysis_notice':
-          '確認をクリックするとすぐにAI分析が開始され、広告が表示されます。\n(AI分析には約10秒かかります。)',
+          '分析を押すとAI分析がすぐに開始され、分析中は広告が表示されます。',
       'app_subtitle': 'AI搭載の成分分析ツール',
       'ai_disclaimer': 'AIが提供する情報には誤りがある可能性があります。重要な決定は必ず専門家にご相談ください。😊',
       'save_screenshot': '結果を保存',
@@ -594,7 +594,7 @@ class AppLocalizations {
       'vertical_guide': 'Vertical',
       'close': 'Cerrar',
       'confirm_analysis_notice':
-          'Hacer clic en Confirmar iniciará el análisis de IA inmediatamente y mostrará anuncios.\n(El análisis de IA toma aproximadamente 10 segundos.)',
+          'Al presionar analizar, el análisis de IA procederá inmediatamente y se mostrarán anuncios durante el análisis.',
       'app_subtitle': 'Analizador de ingredientes con IA',
       'ai_disclaimer':
           'La información proporcionada por la IA puede contener errores. Consulte siempre a profesionales para decisiones importantes. 😊',
@@ -707,7 +707,7 @@ class AppLocalizations {
       'vertical_guide': 'Vertical',
       'close': 'Fechar',
       'confirm_analysis_notice':
-          'Clicar em Confirmar iniciará imediatamente a análise de IA e exibirá anúncios.\n(A análise de IA leva aproximadamente 10 segundos.)',
+          'Ao pressionar analisar, a análise de IA prosseguirá imediatamente e anúncios serão exibidos durante a análise.',
       'app_subtitle': 'Analisador de ingredientes com IA',
       'ai_disclaimer':
           'As informações fornecidas pela IA podem conter erros. Sempre consulte profissionais para decisões importantes. 😊',
@@ -816,7 +816,7 @@ class AppLocalizations {
       'vertical_guide': 'แนวตั้ง',
       'close': 'ปิด',
       'confirm_analysis_notice':
-          'การคลิกยืนยันจะเริ่มการวิเคราะห์ AI ทันทีและแสดงโฆษณา\n(การวิเคราะห์ AI ใช้เวลาประมาณ 10 วินาที)',
+          'เมื่อกดวิเคราะห์ การวิเคราะห์ AI จะดำเนินการทันทีและจะแสดงโฆษณาระหว่างการวิเคราะห์',
       'app_subtitle': 'เครื่องวิเคราะห์ส่วนผสมด้วย AI',
       'ai_disclaimer':
           'ข้อมูลที่ AI ให้มาอาจมีข้อผิดพลาดได้ การตัดสินใจที่สำคัญควรปรึกษาผู้เชี่ยวชาญเสมอ 😊',
@@ -927,7 +927,7 @@ class AppLocalizations {
       'vertical_guide': 'Dọc',
       'close': 'Đóng',
       'confirm_analysis_notice':
-          'Nhấp vào Xác nhận sẽ bắt đầu phân tích AI ngay lập tức và hiển thị quảng cáo.\n(Phân tích AI mất khoảng 10 giây.)',
+          'Khi bạn nhấn phân tích, việc phân tích AI sẽ tiến hành ngay lập tức và quảng cáo sẽ được hiển thị trong quá trình phân tích.',
       'app_subtitle': 'Công cụ phân tích thành phần bằng AI',
       'ai_disclaimer':
           'Thông tin do AI cung cấp có thể chứa lỗi. Luôn tham khảo ý kiến chuyên gia cho các quyết định quan trọng. 😊',

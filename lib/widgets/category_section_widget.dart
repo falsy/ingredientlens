@@ -23,7 +23,7 @@ class CategorySectionWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppTheme.cardBackgroundColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(2),
           border: Border.all(
             color: AppTheme.cardBorderColor,
             width: 1,
@@ -35,11 +35,11 @@ class CategorySectionWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 중앙 아이콘
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               SvgPicture.asset(
                 category.iconPath,
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
@@ -50,8 +50,8 @@ class CategorySectionWidget extends StatelessWidget {
               Text(
                 AppLocalizations.of(context)!.translate(category.nameKey),
                 style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   color: AppTheme.blackColor,
                   height: 1.3,
                 ),
@@ -76,7 +76,7 @@ class CategorySectionWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppTheme.cardBackgroundColor,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(2),
           border: Border.all(
             color: AppTheme.cardBorderColor,
             width: 1,
@@ -87,12 +87,12 @@ class CategorySectionWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               // 중앙 아이콘
               SvgPicture.asset(
                 'assets/icons/custom.svg',
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 colorFilter: const ColorFilter.mode(
                   AppTheme.blackColor,
                   BlendMode.srcIn,
@@ -103,8 +103,8 @@ class CategorySectionWidget extends StatelessWidget {
               Text(
                 AppLocalizations.of(context)!.translate('other'),
                 style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   color: AppTheme.blackColor,
                   height: 1.3,
                 ),
@@ -129,7 +129,7 @@ class CategorySectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('section_title'),
           style: const TextStyle(
             color: AppTheme.blackColor,
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
             height: 1.2,
@@ -141,8 +141,8 @@ class CategorySectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('section_subtitle'),
           style: const TextStyle(
             color: AppTheme.gray500,
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
             height: 1.2,
           ),
         ),
@@ -155,8 +155,8 @@ class CategorySectionWidget extends StatelessWidget {
           padding: EdgeInsets.zero,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
             childAspectRatio: 1.0,
           ),
           itemCount: categories.length + 1, // +1 for Other

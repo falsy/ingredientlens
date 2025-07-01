@@ -122,7 +122,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
           AppLocalizations.of(context)!.translate('ads_title'),
           style: const TextStyle(
             color: AppTheme.gray400,
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: FontWeight.w400,
             letterSpacing: 0,
             height: 1.2,

@@ -235,7 +235,7 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],

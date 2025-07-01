@@ -122,7 +122,7 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
               AppLocalizations.of(context)!.translate('select_action'),
               style: const TextStyle(
                 color: AppTheme.gray500,
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w400,
                 height: 1.3,
               ),
@@ -154,7 +154,7 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                         .translate('enter_custom_category'),
                     hintStyle: const TextStyle(
                       color: AppTheme.gray500,
-                      fontSize: 14,
+                      fontSize: 15,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -164,11 +164,11 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                   ),
                   style: const TextStyle(
                     color: AppTheme.blackColor,
-                    fontSize: 14,
+                    fontSize: 15,
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
               // Error message
               if (_errorMessage != null) ...[
@@ -205,27 +205,13 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                 // Analyze button
                 Expanded(
                   child: SizedBox(
-                    height: 46,
+                    height: AppTheme.buttonHeight,
                     child: ElevatedButton(
                       onPressed: _handleAnalyze,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.whiteColor,
-                        foregroundColor: AppTheme.blackColor,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: AppTheme.blackColor,
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
+                      style: AppTheme.getButtonStyle('action'),
                       child: Text(
                         AppLocalizations.of(context)!.translate('analyze'),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: AppTheme.getButtonTextStyle(),
                       ),
                     ),
                   ),
@@ -235,27 +221,13 @@ class _CategoryActionBottomSheetState extends State<CategoryActionBottomSheet> {
                 // Compare button
                 Expanded(
                   child: SizedBox(
-                    height: 46,
+                    height: AppTheme.buttonHeight,
                     child: ElevatedButton(
                       onPressed: _handleCompare,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.whiteColor,
-                        foregroundColor: AppTheme.blackColor,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: AppTheme.blackColor,
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
+                      style: AppTheme.getButtonStyle('action'),
                       child: Text(
                         AppLocalizations.of(context)!.translate('compare'),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: AppTheme.getButtonTextStyle(),
                       ),
                     ),
                   ),

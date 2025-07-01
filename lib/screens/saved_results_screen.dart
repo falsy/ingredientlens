@@ -200,7 +200,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                                 child: Container(
                                   margin: const EdgeInsets.only(bottom: 12),
                                   padding:
-                                      const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                                      const EdgeInsets.fromLTRB(16, 12, 6, 12),
                                   decoration: BoxDecoration(
                                     color: AppTheme.cardBackgroundColor,
                                     borderRadius: BorderRadius.circular(10),
@@ -217,9 +217,9 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                                             ? Icons.analytics_outlined
                                             : Icons.compare_outlined,
                                         color: AppTheme.blackColor,
-                                        size: 24,
+                                        size: 28,
                                       ),
-                                      const SizedBox(width: 14),
+                                      const SizedBox(width: 16),
 
                                       // Content
                                       Expanded(
@@ -227,12 +227,14 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            // Name
+                                            // Category
                                             Text(
-                                              savedResult.name,
+                                              AppLocalizations.of(context)!
+                                                  .translate(
+                                                      savedResult.category),
                                               style: const TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
                                                 color: AppTheme.blackColor,
                                                 height: 1.1,
                                               ),
@@ -241,16 +243,14 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                                             ),
                                             const SizedBox(height: 4),
 
-                                            // Category
+                                            // Name
                                             Text(
-                                              AppLocalizations.of(context)!
-                                                  .translate(
-                                                      savedResult.category),
+                                              savedResult.name,
                                               style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
                                                 color: AppTheme.gray700,
-                                                height: 1.3,
+                                                height: 1.2,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -262,7 +262,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> {
                                               _formatDate(
                                                   savedResult.createdAt),
                                               style: const TextStyle(
-                                                fontSize: 11,
+                                                fontSize: 12,
                                                 fontWeight: FontWeight.w400,
                                                 color: AppTheme.gray500,
                                                 height: 1.1,

@@ -46,7 +46,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('recent_results_title'),
           style: const TextStyle(
             color: AppTheme.blackColor,
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w500,
             letterSpacing: 0,
             height: 1.2,
@@ -58,7 +58,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
           AppLocalizations.of(context)!.translate('recent_results_subtitle'),
           style: const TextStyle(
             color: AppTheme.gray500,
-            fontSize: 15,
+            fontSize: 18,
             fontWeight: FontWeight.w400,
             height: 1.2,
           ),
@@ -76,7 +76,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
                       AppLocalizations.of(context)!
                           .translate('no_recent_results'),
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.gray500,
                         height: 1.3,
@@ -91,7 +91,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
                       onTap: () => onResultTap(result),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                        padding: const EdgeInsets.fromLTRB(16, 12, 6, 12),
                         decoration: BoxDecoration(
                           color: AppTheme.cardBackgroundColor,
                           borderRadius: BorderRadius.circular(10),
@@ -107,14 +107,14 @@ class RecentResultsSectionWidget extends StatelessWidget {
                               result.type == 'analysis'
                                   ? 'assets/icons/analytics.svg'
                                   : 'assets/icons/compare.svg',
-                              width: 24,
-                              height: 24,
+                              width: 28,
+                              height: 28,
                               colorFilter: const ColorFilter.mode(
                                 AppTheme.blackColor,
                                 BlendMode.srcIn,
                               ),
                             ),
-                            const SizedBox(width: 14),
+                            const SizedBox(width: 16),
 
                             // Content
                             Expanded(
@@ -126,8 +126,8 @@ class RecentResultsSectionWidget extends StatelessWidget {
                                     _getCategoryDisplayName(
                                         context, result.category),
                                     style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
                                       color: AppTheme.blackColor,
                                       height: 1.1,
                                     ),
@@ -140,8 +140,8 @@ class RecentResultsSectionWidget extends StatelessWidget {
                                   Text(
                                     result.overallReview,
                                     style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
                                       color: AppTheme.gray700,
                                       height: 1.2,
                                     ),
@@ -154,7 +154,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
                                   Text(
                                     formatDateTime(result.createdAt),
                                     style: const TextStyle(
-                                      fontSize: 11,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w400,
                                       color: AppTheme.gray500,
                                       height: 1.1,
@@ -163,7 +163,7 @@ class RecentResultsSectionWidget extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 14),
+                            const SizedBox(width: 12),
                             // Delete button
                             GestureDetector(
                               behavior: HitTestBehavior.opaque,

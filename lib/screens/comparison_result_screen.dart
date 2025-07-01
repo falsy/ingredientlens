@@ -12,12 +12,14 @@ class ComparisonResultScreen extends StatefulWidget {
   final Map<String, dynamic> comparisonResult;
   final String category;
   final bool fromSavedResults;
+  final bool isFromRecentResults;
 
   const ComparisonResultScreen({
     super.key,
     required this.comparisonResult,
     required this.category,
     this.fromSavedResults = false,
+    this.isFromRecentResults = false,
   });
 
   @override
@@ -32,8 +34,8 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
   }
 
   void _saveRecentResult() async {
-    // Don't save if this result is from saved results
-    if (widget.fromSavedResults) return;
+    // Don't save to recent results if this is from saved results screen or from recent results
+    if (widget.fromSavedResults || widget.isFromRecentResults) return;
 
     try {
       final overallComparativeReviewList = widget
@@ -269,9 +271,9 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
           child: Text(
             AppLocalizations.of(context)!.translate('ai_disclaimer'),
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               color: AppTheme.gray500,
-              height: 1.3,
+              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
@@ -290,21 +292,9 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         icon: const Icon(Icons.save_alt, color: Colors.white),
         label: Text(
           AppLocalizations.of(context)!.translate('save_result'),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTheme.getButtonTextStyle(color: Colors.white),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.blackColor,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 52),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
+        style: AppTheme.getButtonStyle('action'),
       ),
     );
   }

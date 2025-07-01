@@ -53,7 +53,7 @@ class ImageSourceBottomSheet extends StatelessWidget {
                 AppLocalizations.of(context)!.translate(titleKey),
                 style: const TextStyle(
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: AppTheme.blackColor,
                   height: 1.3,
                 ),
@@ -100,7 +100,7 @@ class ImageSourceBottomSheet extends StatelessWidget {
             style: const TextStyle(
               color: AppTheme.blackColor,
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               height: 1.3,
             ),
           ),
@@ -112,9 +112,9 @@ class ImageSourceBottomSheet extends StatelessWidget {
                 'take_photo_of_ingredients', {'category': categoryName}),
             style: const TextStyle(
               color: AppTheme.gray500,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w400,
-              height: 1.3,
+              height: 1.5,
             ),
           ),
           const SizedBox(height: 24),

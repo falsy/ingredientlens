@@ -261,7 +261,7 @@ class _CompareScreenState extends State<CompareScreen> {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             color: AppTheme.blackColor,
           ),
@@ -311,7 +311,7 @@ class _CompareScreenState extends State<CompareScreen> {
                           AppLocalizations.of(context)!.translate('tap_to_add'),
                           style: const TextStyle(
                             color: AppTheme.gray500,
-                            fontSize: 12,
+                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -382,7 +382,7 @@ class _CompareScreenState extends State<CompareScreen> {
                         }),
                         style: const TextStyle(
                           color: AppTheme.blackColor,
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -419,7 +419,7 @@ class _CompareScreenState extends State<CompareScreen> {
                           .translate('compare_instruction'),
                       style: const TextStyle(
                         color: AppTheme.gray500,
-                        fontSize: 12,
+                        fontSize: 14,
                         height: 1.3,
                       ),
                       textAlign: TextAlign.center,
@@ -430,34 +430,18 @@ class _CompareScreenState extends State<CompareScreen> {
                     // Compare button
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: AppTheme.buttonHeight,
                       child: ElevatedButton(
                         onPressed: (_imageA != null && _imageB != null)
                             ? _compareProducts
                             : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.blackColor,
-                          disabledBackgroundColor: AppTheme.cardBackgroundColor,
-                          foregroundColor: AppTheme.whiteColor,
-                          disabledForegroundColor: AppTheme.gray500,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: (_imageA == null || _imageB == null)
-                                ? const BorderSide(
-                                    color: AppTheme.cardBorderColor,
-                                    width: 1,
-                                  )
-                                : BorderSide.none,
-                          ),
-                          elevation: 0,
-                        ),
+                        style: (_imageA == null || _imageB == null)
+                            ? AppTheme.getButtonStyle('disabled')
+                            : AppTheme.getButtonStyle('action'),
                         child: Text(
                           AppLocalizations.of(context)!
                               .translate('compare_ingredients'),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTheme.getButtonTextStyle(),
                         ),
                       ),
                     ),

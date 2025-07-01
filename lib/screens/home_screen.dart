@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../models/recent_result.dart';
 import '../services/database_service.dart';
@@ -26,13 +27,15 @@ import 'consent_required_screen.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+  static final RouteObserver<PageRoute> routeObserver =
+      RouteObserver<PageRoute>();
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, RouteAware {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, RouteAware {
   List<RecentResult> _recentResults = [];
   String? _currentCategoryId;
   String? _currentCategoryName;
@@ -150,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ro
     );
 
     showModalBottomSheet(
+      // ignore: use_build_context_synchronously
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -192,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ro
 
     if (categoryToCompare != null && categoryToCompare.isNotEmpty) {
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (context) => CompareScreen(category: categoryToCompare!),
@@ -289,7 +294,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ro
             builder: (context) => AnalysisResultScreen(
               analysisResult: resultData,
               category: result.category,
-              fromSavedResults: true,
+              fromSavedResults: false, // Show save button
+              isFromRecentResults: true, // Don't save to recent results again
             ),
           ),
         ).then((_) {
@@ -302,7 +308,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ro
             builder: (context) => ComparisonResultScreen(
               comparisonResult: resultData,
               category: result.category,
-              fromSavedResults: true,
+              fromSavedResults: false, // Show save button
+              isFromRecentResults: true, // Don't save to recent results again
             ),
           ),
         ).then((_) {
@@ -369,7 +376,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Ro
                         children: [
                           Center(
                             child: Container(
-                              constraints: const BoxConstraints(maxWidth: 340),
+                              constraints: BoxConstraints(
+                                maxWidth: Platform.isIOS ? 360 : 340,
+                              ),
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8),

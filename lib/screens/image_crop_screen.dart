@@ -348,7 +348,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   AppLocalizations.of(context)!
                       .translate('confirm_analysis_notice'),
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: AppTheme.gray500,
                   ),
                   textAlign: TextAlign.center,
@@ -360,27 +360,13 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        Navigator.pop(context); // 바텀시트 닫기
+                        Navigator.pop(context);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.whiteColor,
-                        foregroundColor: AppTheme.blackColor,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: AppTheme.blackColor,
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
+                      style: AppTheme.getButtonStyle('cancel'),
                       child: Text(
                         AppLocalizations.of(context)!.translate('cancel'),
-                        style: const TextStyle(
-                          color: AppTheme.blackColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: AppTheme.getButtonTextStyle(
+                            color: AppTheme.blackColor),
                       ),
                     ),
                   ),
@@ -388,23 +374,13 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context); // 바텀시트 닫기
-                        _startAnalysis(imageFile); // 분석 시작
+                        Navigator.pop(context);
+                        _startAnalysis(imageFile);
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.blackColor,
-                        foregroundColor: AppTheme.whiteColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
+                      style: AppTheme.getButtonStyle('action'),
                       child: Text(
                         AppLocalizations.of(context)!.translate('analyze'),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: AppTheme.getButtonTextStyle(),
                       ),
                     ),
                   ),
@@ -686,26 +662,11 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                   child: OutlinedButton(
                     onPressed:
                         _isProcessing ? null : () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 46),
-                      backgroundColor: AppTheme.whiteColor,
-                      foregroundColor: AppTheme.blackColor,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                          color: AppTheme.blackColor,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: const TextStyle(
-                        color: AppTheme.gray700,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w300,
-                      ),
+                      style:
+                          AppTheme.getButtonTextStyle(color: AppTheme.gray700),
                     ),
                   ),
                 ),
@@ -713,15 +674,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isProcessing ? null : _cropAndSave,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.blackColor,
-                      foregroundColor: AppTheme.whiteColor,
-                      minimumSize: const Size(double.infinity, 46),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: AppTheme.getButtonStyle('action'),
                     child: _isProcessing
                         ? const SizedBox(
                             width: 20,
@@ -733,10 +686,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
                           )
                         : Text(
                             AppLocalizations.of(context)!.translate('confirm'),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w300,
-                            ),
+                            style: AppTheme.getButtonTextStyle(),
                           ),
                   ),
                 ),

@@ -130,20 +130,10 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
                   child: OutlinedButton(
                     onPressed:
                         _isDeleting ? null : () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 46),
-                      side: const BorderSide(color: AppTheme.gray500, width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: const TextStyle(
-                        color: AppTheme.gray700,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: AppTheme.getButtonTextStyle(color: AppTheme.gray700),
                     ),
                   ),
                 ),
@@ -153,15 +143,7 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isDeleting ? null : _performDelete,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.blackColor,
-                      foregroundColor: AppTheme.whiteColor,
-                      minimumSize: const Size(double.infinity, 46),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
+                    style: AppTheme.getButtonStyle('action'),
                     child: _isDeleting
                         ? const SizedBox(
                             width: 20,
@@ -173,10 +155,7 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
                           )
                         : Text(
                             AppLocalizations.of(context)!.translate('delete'),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
+                            style: AppTheme.getButtonTextStyle(),
                           ),
                   ),
                 ),
