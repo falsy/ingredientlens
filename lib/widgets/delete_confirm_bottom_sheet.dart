@@ -115,12 +115,12 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
               AppLocalizations.of(context)!.translate('confirm_delete_message'),
               style: const TextStyle(
                 color: AppTheme.gray500,
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.w400,
                 height: 1.3,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 24),
 
             // Action buttons
             Row(
@@ -133,11 +133,12 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
                     style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: AppTheme.getButtonTextStyle(color: AppTheme.gray700),
+                      style: AppTheme.getButtonTextStyle(
+                          color: AppTheme.blackColor),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
 
                 // Delete button
                 Expanded(

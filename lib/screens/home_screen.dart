@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../models/recent_result.dart';
+import '../models/recent_ingredient.dart';
 import '../services/database_service.dart';
 import '../services/localization_service.dart';
 import '../services/preferences_service.dart';
@@ -22,6 +23,7 @@ import 'compare_screen.dart';
 import 'saved_results_screen.dart';
 import 'analysis_result_screen.dart';
 import 'comparison_result_screen.dart';
+import 'ingredient_detail_screen.dart';
 import 'consent_required_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,6 +39,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with WidgetsBindingObserver, RouteAware {
   List<RecentResult> _recentResults = [];
+  List<RecentIngredient> _recentIngredients = [];
   String? _currentCategoryId;
   String? _currentCategoryName;
   String? _customCategoryText;
@@ -47,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadRecentResults();
+    _loadRecentIngredients();
     // 홈 화면에서 상태바와 네비게이션 바를 투명하게 설정
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -63,8 +67,9 @@ class _HomeScreenState extends State<HomeScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // 앱이 다시 활성화될 때 Recent Results 새로고침
+      // 앱이 다시 활성화될 때 갱신
       _loadRecentResults();
+      _loadRecentIngredients();
     }
   }
 
@@ -76,6 +81,17 @@ class _HomeScreenState extends State<HomeScreen>
       });
     } catch (e) {
       // Error loading recent results - ignore silently
+    }
+  }
+
+  void _loadRecentIngredients() async {
+    try {
+      final ingredients = await DatabaseService().getRecentIngredients();
+      setState(() {
+        _recentIngredients = ingredients;
+      });
+    } catch (e) {
+      // Error loading recent ingredients - ignore silently
     }
   }
 
@@ -99,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen>
   void didPopNext() {
     // 다른 화면에서 돌아왔을 때 갱신
     _loadRecentResults();
+    _loadRecentIngredients();
   }
 
   void _showCategoryActionBottomSheet(
@@ -325,8 +342,25 @@ class _HomeScreenState extends State<HomeScreen>
     try {
       await DatabaseService().deleteRecentResult(result.id!);
       _loadRecentResults(); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.translate('delete_success')),
+            backgroundColor: AppTheme.positiveColor,
+          ),
+        );
+      }
     } catch (e) {
-      // Error deleting - ignore silently
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.translate('delete_failed')),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+      }
     }
   }
 
@@ -349,6 +383,220 @@ class _HomeScreenState extends State<HomeScreen>
     } else {
       return AppLocalizations.of(context)!.translate('time_just_now');
     }
+  }
+
+  void _onRecentIngredientTap(RecentIngredient ingredient) {
+    try {
+      final resultData = jsonDecode(ingredient.resultData);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IngredientDetailScreen(
+            ingredientDetail: resultData,
+            ingredientName: ingredient.ingredientName,
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.translate('analysis_failed'),
+          ),
+          backgroundColor: AppTheme.negativeColor,
+        ),
+      );
+    }
+  }
+
+  void _onRecentIngredientDelete(RecentIngredient ingredient) async {
+    try {
+      await DatabaseService().deleteRecentIngredient(ingredient.id!);
+      _loadRecentIngredients(); // 목록 새로고침
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.translate('delete_success')),
+            backgroundColor: AppTheme.positiveColor,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.translate('delete_failed')),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildRecentIngredientsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.translate('recent_ingredients_title'),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.blackColor,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          AppLocalizations.of(context)!.translate('recent_ingredients_subtitle'),
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppTheme.gray500,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildRecentIngredientsContent(),
+      ],
+    );
+  }
+
+  Widget _buildRecentIngredientsContent() {
+    if (_recentIngredients.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppTheme.cardBackgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppTheme.cardBorderColor,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.search_off,
+              size: 48,
+              color: AppTheme.gray300,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              AppLocalizations.of(context)!.translate('no_recent_ingredients'),
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppTheme.gray500,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: _recentIngredients.map((ingredient) {
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => _onRecentIngredientTap(ingredient),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardBackgroundColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppTheme.cardBorderColor,
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            ingredient.ingredientName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.blackColor,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _onRecentIngredientDelete(ingredient),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            child: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: AppTheme.gray500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      ingredient.description,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.gray700,
+                        height: 1.4,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.gray100,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context)!.translate(ingredient.category),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppTheme.gray500,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatDateTime(ingredient.createdAt),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.gray400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   @override
@@ -410,6 +658,10 @@ class _HomeScreenState extends State<HomeScreen>
                                       onResultTap: _onRecentResultTap,
                                       onDeleteTap: _onRecentResultDelete,
                                     ),
+                                    const SizedBox(height: 38),
+
+                                    // Recent Ingredients Section
+                                    _buildRecentIngredientsSection(),
                                     const SizedBox(height: 38),
 
                                     // Announcements Section

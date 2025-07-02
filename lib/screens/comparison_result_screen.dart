@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/database_service.dart';
+import '../services/api_service.dart';
+import '../services/usage_limit_service.dart';
 import '../models/recent_result.dart';
 import '../widgets/ad_banner_widget.dart';
 import '../widgets/save_result_bottom_sheet.dart';
+import '../widgets/ingredient_search_bottom_sheet.dart';
+import '../widgets/interstitial_ad_widget.dart';
+import '../screens/ingredient_detail_screen.dart';
+import '../config/app_config.dart';
 
 class ComparisonResultScreen extends StatefulWidget {
   final Map<String, dynamic> comparisonResult;
@@ -77,6 +84,134 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         // 저장 성공 시 처리는 bottom sheet에서 이미 했으므로 추가 작업 없음
       }
     });
+  }
+
+  void _showIngredientSearchBottomSheet(String ingredientName) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) => IngredientSearchBottomSheet(
+        ingredientName: ingredientName,
+        category: widget.category,
+        onSearchRequested: () => _startIngredientSearch(ingredientName),
+      ),
+    );
+  }
+
+  bool _isAdShowing = false;
+  Map<String, dynamic>? _pendingApiResult;
+
+  void _startIngredientSearch(String ingredientName) async {
+    // 사용량 제한 확인
+    final usageLimitService = UsageLimitService();
+    final canMakeRequest = await usageLimitService.canMakeRequest();
+
+    if (!canMakeRequest) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.translate('daily_limit_reached')),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
+    // 사용량 증가
+    await usageLimitService.incrementUsage();
+
+    // 상태 초기화
+    _isAdShowing = false;
+    _pendingApiResult = null;
+
+    // API 호출 시작
+    _performIngredientSearch(ingredientName);
+
+    // 광고 표시 (로딩과 광고를 한번에)
+    if (AppConfig.enableAds) {
+      _isAdShowing = true;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InterstitialAdWidget(
+            onAdDismissed: () {
+              _isAdShowing = false;
+              // 광고가 닫혔을 때 대기 중인 결과가 있으면 처리
+              if (_pendingApiResult != null) {
+                _navigateToResult(_pendingApiResult!, ingredientName);
+                _pendingApiResult = null;
+              }
+            },
+            onAnalysisCancelled: () {
+              _isAdShowing = false;
+              _pendingApiResult = null;
+              // 취소 시 현재 화면만 닫기
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  void _performIngredientSearch(String ingredientName) async {
+    try {
+      final langCode = Localizations.localeOf(context).languageCode;
+      
+      final result = await ApiService.getIngredientDetail(
+        ingredient: ingredientName,
+        category: widget.category,
+        langCode: langCode,
+      );
+
+      if (mounted) {
+        if (_isAdShowing) {
+          // 광고가 표시 중이면 결과를 저장하고 대기
+          _pendingApiResult = result;
+        } else {
+          // 광고가 없으면 바로 결과 화면으로 이동
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => IngredientDetailScreen(
+                ingredientDetail: result,
+                ingredientName: ingredientName,
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.translate('analysis_failed')),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+        // 에러 시 로딩 화면까지 모두 닫기
+        Navigator.popUntil(context, (route) => 
+          route.settings.name != null || route.isFirst);
+      }
+    }
+  }
+
+  void _navigateToResult(Map<String, dynamic> result, String ingredientName) {
+    // 광고 화면을 결과 화면으로 교체
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => IngredientDetailScreen(
+          ingredientDetail: result,
+          ingredientName: ingredientName,
+        ),
+      ),
+    );
   }
 
   @override
@@ -151,19 +286,13 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(icon, color: color, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
-            ),
-          ],
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: AppTheme.blackColor,
+          ),
         ),
         const SizedBox(height: 16),
         ...items.map((item) => _buildIngredientCard(item, color)),
@@ -187,12 +316,35 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            item['name'] ?? '',
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppTheme.blackColor,
+          SizedBox(
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    item['name'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.blackColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => _showIngredientSearchBottomSheet(item['name'] ?? ''),
+                  child: SvgPicture.asset(
+                    'assets/icons/wandstars.svg',
+                    width: 20,
+                    height: 20,
+                    colorFilter: const ColorFilter.mode(
+                      AppTheme.gray500,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -315,20 +467,13 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const Icon(Icons.compare_arrows,
-                color: AppTheme.blackColor, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              AppLocalizations.of(context)!.translate('overall_comparison'),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppTheme.blackColor,
-              ),
-            ),
-          ],
+        Text(
+          AppLocalizations.of(context)!.translate('overall_comparison'),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: AppTheme.blackColor,
+          ),
         ),
         const SizedBox(height: 16),
         Container(
