@@ -3,27 +3,33 @@ import 'dart:convert';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/database_service.dart';
-import '../models/saved_result.dart';
+import '../models/saved_ingredient.dart';
 
-class SaveResultBottomSheet extends StatefulWidget {
-  final Map<String, dynamic> resultData;
-  final String resultType; // 'analysis' 또는 'comparison'
-  final String category;
+class SaveIngredientBottomSheet extends StatefulWidget {
+  final Map<String, dynamic> ingredientDetail;
+  final String ingredientName;
 
-  const SaveResultBottomSheet({
+  const SaveIngredientBottomSheet({
     super.key,
-    required this.resultData,
-    required this.resultType,
-    required this.category,
+    required this.ingredientDetail,
+    required this.ingredientName,
   });
 
   @override
-  State<SaveResultBottomSheet> createState() => _SaveResultBottomSheetState();
+  State<SaveIngredientBottomSheet> createState() =>
+      _SaveIngredientBottomSheetState();
 }
 
-class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
+class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
   final TextEditingController _nameController = TextEditingController();
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 기본 이름을 성분 이름으로 설정
+    _nameController.text = widget.ingredientName;
+  }
 
   @override
   void dispose() {
@@ -31,14 +37,13 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
     super.dispose();
   }
 
-  Future<void> _saveResult() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).clearSnackBars();
+  Future<void> _saveIngredient() async {
+    if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              AppLocalizations.of(context)!.translate('enter_result_name')),
+            AppLocalizations.of(context)!.translate('enter_name'),
+          ),
           backgroundColor: AppTheme.negativeColor,
         ),
       );
@@ -50,45 +55,41 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
     });
 
     try {
-      final now = DateTime.now();
-      final savedResult = SavedResult(
-        name: name,
-        resultType: widget.resultType,
-        responseData: jsonEncode(widget.resultData),
-        category: widget.category,
-        createdAt: now,
-        updatedAt: now,
+      final savedIngredient = SavedIngredient(
+        name: _nameController.text.trim(),
+        ingredientName: widget.ingredientName,
+        category: widget.ingredientDetail['category'] ?? '',
+        responseData: jsonEncode(widget.ingredientDetail),
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
-      await DatabaseService().saveResult(savedResult);
+      await DatabaseService().saveIngredient(savedIngredient);
 
       if (mounted) {
-        Navigator.pop(context, true); // 성공했음을 알림
-        ScaffoldMessenger.of(context).clearSnackBars();
+        Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(AppLocalizations.of(context)!.translate('result_saved')),
+            content: Text(
+              AppLocalizations.of(context)!.translate('save_complete'),
+            ),
             backgroundColor: AppTheme.positiveColor,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text(AppLocalizations.of(context)!.translate('save_failed')),
-            backgroundColor: AppTheme.negativeColor,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
         setState(() {
           _isSaving = false;
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.translate('save_failed'),
+            ),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
       }
     }
   }
@@ -124,9 +125,10 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
               ),
             ),
             const SizedBox(height: 20),
+
             // Title
             Text(
-              AppLocalizations.of(context)!.translate('save_result'),
+              AppLocalizations.of(context)!.translate('save_ingredient'),
               style: const TextStyle(
                 color: AppTheme.bottomSheetTitleColor,
                 fontSize: AppTheme.bottomSheetTitleFontSize,
@@ -138,7 +140,7 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
 
             // Subtitle
             Text(
-              AppLocalizations.of(context)!.translate('enter_result_name'),
+              AppLocalizations.of(context)!.translate('enter_save_name'),
               style: const TextStyle(
                 color: AppTheme.bottomSheetSubtitleColor,
                 fontSize: AppTheme.bottomSheetSubtitleFontSize,
@@ -146,41 +148,34 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                 height: AppTheme.bottomSheetSubtitleLineHeight,
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 24),
 
-            // 이름 입력 필드
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.cardBackgroundColor,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.cardBorderColor,
-                  width: 1,
+            // Name input field
+            TextField(
+              controller: _nameController,
+              enabled: !_isSaving,
+              maxLength: 50,
+              decoration: InputDecoration(
+                hintText:
+                    AppLocalizations.of(context)!.translate('save_name_hint'),
+                counterText: '',
+                filled: true,
+                fillColor: AppTheme.gray100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
                 ),
               ),
-              child: TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!
-                      .translate('enter_result_name'),
-                  hintStyle: const TextStyle(
-                    color: AppTheme.gray500,
-                    fontSize: 14,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                ),
-                style: const TextStyle(
-                  color: AppTheme.blackColor,
-                  fontSize: 14,
-                ),
-                enabled: !_isSaving,
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppTheme.blackColor,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // 버튼들
             Row(
@@ -192,23 +187,23 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
                       style: AppTheme.getButtonTextStyle(
-                        color: AppTheme.buttonColors['cancel']!['text'],
-                      ),
+                          color: AppTheme.blackColor),
                     ),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _isSaving ? null : _saveResult,
+                    onPressed: _isSaving ? null : _saveIngredient,
                     style: AppTheme.getButtonStyle('action'),
                     child: _isSaving
                         ? const SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color: Colors.white,
                               strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : Text(
@@ -220,8 +215,8 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
               ],
             ),
 
-            // 하단 SafeArea 확보
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
+            // Bottom safe area
+            SizedBox(height: MediaQuery.of(context).viewPadding.bottom),
           ],
         ),
       ),

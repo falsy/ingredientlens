@@ -32,8 +32,6 @@
 	<string>IngredientLens uses the camera to capture photos of product ingredient labels for AI-powered analysis. For example, you can take a photo of a food package's ingredient list to get detailed information about each ingredient's nutritional benefits and potential concerns. The captured photos are processed locally and sent to our AI service for ingredient analysis only.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>IngredientLens accesses your photo library to select existing photos of ingredient labels for analysis. For example, you can choose a previously taken photo of a supplement bottle's ingredient list to analyze its contents. Selected photos are only used for ingredient recognition and analysis purposes.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized ads to you. We use this information to show you relevant advertisements based on your interests while maintaining your privacy. You can change this setting anytime in your device settings.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

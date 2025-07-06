@@ -123,7 +123,8 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
             _isAdShown = false;
             _isLoadingAfterAd = true;
           });
-          // 광고가 닫혔을 때는 API 호출하지 않음 (이미 시작됨)
+          // 광고가 닫혔을 때 콜백 호출 (결과 화면으로 전환)
+          widget.onAdDismissed();
         }
       },
       onAdFailedToShowFullScreenContent: (ad, error) {

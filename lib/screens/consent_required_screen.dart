@@ -128,7 +128,7 @@ class ConsentRequiredScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: AppTheme.buttonHeight,
-                child: OutlinedButton(
+                child: ElevatedButton(
                   onPressed: () => _handleContinueWithoutConsent(context),
                   style: AppTheme.getButtonStyle('cancel'),
                   child: Text(

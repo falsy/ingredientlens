@@ -1,7 +1,8 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import '../models/saved_result.dart';
 import '../models/recent_result.dart';
+import '../models/saved_ingredient.dart';
+import '../models/recent_ingredient.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -17,11 +18,11 @@ class DatabaseService {
 
   Future<Database> _initDatabase() async {
     final databasePath = await getDatabasesPath();
-    final path = join(databasePath, 'ingredient_lens.db');
+    final path = '$databasePath/ingredient_lens.db';
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -69,6 +70,32 @@ class DatabaseService {
           type TEXT NOT NULL,
           category TEXT NOT NULL,
           overall_review TEXT NOT NULL,
+          result_data TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        )
+      ''');
+    }
+
+    if (oldVersion < 4) {
+      // 성분 검색 테이블 추가
+      await db.execute('''
+        CREATE TABLE saved_ingredients (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          ingredientName TEXT NOT NULL,
+          category TEXT NOT NULL,
+          responseData TEXT NOT NULL,
+          createdAt TEXT NOT NULL,
+          updatedAt TEXT NOT NULL
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE recent_ingredients (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          ingredient_name TEXT NOT NULL,
+          category TEXT NOT NULL,
+          description TEXT NOT NULL,
           result_data TEXT NOT NULL,
           created_at TEXT NOT NULL
         )
@@ -180,6 +207,115 @@ class DatabaseService {
     final db = await database;
     return await db.delete(
       'recent_results',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // 성분 검색 결과 저장
+  Future<int> saveIngredient(SavedIngredient ingredient) async {
+    final db = await database;
+    return await db.insert('saved_ingredients', ingredient.toMap());
+  }
+
+  // 모든 저장된 성분 검색 결과 조회 (최신순)
+  Future<List<SavedIngredient>> getAllIngredients() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'saved_ingredients',
+      orderBy: 'createdAt DESC',
+    );
+
+    return List.generate(maps.length, (i) {
+      return SavedIngredient.fromMap(maps[i]);
+    });
+  }
+
+  // 특정 성분 검색 결과 조회
+  Future<SavedIngredient?> getIngredient(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'saved_ingredients',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return SavedIngredient.fromMap(maps.first);
+    }
+    return null;
+  }
+
+  // 성분 검색 결과 이름 수정
+  Future<int> updateIngredientName(int id, String newName) async {
+    final db = await database;
+    return await db.update(
+      'saved_ingredients',
+      {
+        'name': newName,
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // 성분 검색 결과 삭제
+  Future<int> deleteIngredient(int id) async {
+    final db = await database;
+    return await db.delete(
+      'saved_ingredients',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // 최근 성분 검색 기록 저장 (최대 3개까지)
+  Future<int> saveRecentIngredient(RecentIngredient ingredient) async {
+    final db = await database;
+
+    // 새 항목을 추가
+    final insertResult = await db.insert('recent_ingredients', ingredient.toMap());
+
+    // 추가 후 3개를 초과하면 가장 오래된 것들 삭제
+    final List<Map<String, dynamic>> afterInsert = await db.query(
+      'recent_ingredients',
+      orderBy: 'created_at DESC',
+    );
+
+    if (afterInsert.length > 3) {
+      final toDelete = afterInsert.skip(3).toList();
+      for (final record in toDelete) {
+        await db.delete(
+          'recent_ingredients',
+          where: 'id = ?',
+          whereArgs: [record['id']],
+        );
+      }
+    }
+
+    return insertResult;
+  }
+
+  // 최근 성분 검색 기록 조회 (최대 3개)
+  Future<List<RecentIngredient>> getRecentIngredients() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'recent_ingredients',
+      orderBy: 'created_at DESC',
+      limit: 3,
+    );
+
+    return List.generate(maps.length, (i) {
+      return RecentIngredient.fromMap(maps[i]);
+    });
+  }
+
+  // 최근 성분 검색 기록 삭제
+  Future<int> deleteRecentIngredient(int id) async {
+    final db = await database;
+    return await db.delete(
+      'recent_ingredients',
       where: 'id = ?',
       whereArgs: [id],
     );

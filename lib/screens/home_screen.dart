@@ -13,9 +13,11 @@ import '../widgets/ad_banner_widget.dart';
 import '../widgets/home_header_widget.dart';
 import '../widgets/category_section_widget.dart';
 import '../widgets/recent_results_section_widget.dart';
+import '../widgets/recent_ingredients_section_widget.dart';
 import '../widgets/category_action_bottom_sheet.dart';
 import '../widgets/image_source_bottom_sheet.dart';
 import '../widgets/home_footer_widget.dart';
+// import '../widgets/main_footer_ad_banner_widget.dart';
 import 'custom_camera_screen.dart';
 import 'image_crop_screen.dart';
 import 'compare_screen.dart';
@@ -63,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // 앱이 다시 활성화될 때 Recent Results 새로고침
+      // 앱이 다시 활성화될 때 갱신
       _loadRecentResults();
     }
   }
@@ -325,8 +327,27 @@ class _HomeScreenState extends State<HomeScreen>
     try {
       await DatabaseService().deleteRecentResult(result.id!);
       _loadRecentResults(); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(AppLocalizations.of(context)!.translate('delete_success')),
+            backgroundColor: AppTheme.positiveColor,
+          ),
+        );
+      }
     } catch (e) {
-      // Error deleting - ignore silently
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(AppLocalizations.of(context)!.translate('delete_failed')),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+      }
     }
   }
 
@@ -412,8 +433,12 @@ class _HomeScreenState extends State<HomeScreen>
                                     ),
                                     const SizedBox(height: 38),
 
-                                    // Announcements Section
-                                    // const AnnouncementsSectionWidget(),
+                                    // Recent Ingredients Section
+                                    const RecentIngredientsSectionWidget(),
+                                    const SizedBox(height: 38),
+
+                                    // // Main Footer Ad Banner
+                                    // const MainFooterAdBannerWidget(),
                                     // const SizedBox(height: 38),
                                   ],
                                 ),

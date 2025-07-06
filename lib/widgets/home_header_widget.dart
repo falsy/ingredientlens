@@ -57,7 +57,7 @@ class HomeHeaderWidget extends StatelessWidget {
           style: const TextStyle(
             color: AppTheme.blackColor,
             fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             letterSpacing: 0,
           ),
           textAlign: TextAlign.left,

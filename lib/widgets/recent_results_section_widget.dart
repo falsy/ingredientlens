@@ -45,11 +45,10 @@ class RecentResultsSectionWidget extends StatelessWidget {
         Text(
           AppLocalizations.of(context)!.translate('recent_results_title'),
           style: const TextStyle(
-            color: AppTheme.blackColor,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0,
-            height: 1.2,
+            color: AppTheme.sectionTitleColor,
+            fontSize: AppTheme.sectionTitleFontSize,
+            fontWeight: AppTheme.sectionTitleFontWeight,
+            height: AppTheme.sectionTitleLineHeight,
           ),
         ),
         const SizedBox(height: 6),
@@ -57,10 +56,10 @@ class RecentResultsSectionWidget extends StatelessWidget {
         Text(
           AppLocalizations.of(context)!.translate('recent_results_subtitle'),
           style: const TextStyle(
-            color: AppTheme.gray500,
-            fontSize: 18,
-            fontWeight: FontWeight.w400,
-            height: 1.2,
+            color: AppTheme.sectionSubtitleColor,
+            fontSize: AppTheme.sectionSubtitleFontSize,
+            fontWeight: AppTheme.sectionSubtitleFontWeight,
+            height: AppTheme.sectionSubtitleLineHeight,
           ),
         ),
         const SizedBox(height: 20),
@@ -107,14 +106,14 @@ class RecentResultsSectionWidget extends StatelessWidget {
                               result.type == 'analysis'
                                   ? 'assets/icons/analytics.svg'
                                   : 'assets/icons/compare.svg',
-                              width: 28,
-                              height: 28,
+                              width: 24,
+                              height: 24,
                               colorFilter: const ColorFilter.mode(
                                 AppTheme.blackColor,
                                 BlendMode.srcIn,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: 18),
 
                             // Content
                             Expanded(

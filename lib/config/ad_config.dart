@@ -77,4 +77,23 @@ class AdConfig {
       throw UnsupportedError('Unsupported platform');
     }
   }
+
+  // Home Footer Banner Ad Unit ID
+  static String get homeFooterBannerAdUnitId {
+    if (Platform.isAndroid) {
+      final id = dotenv.env['ADMOB_ANDROID_HOME_BOTTOM_AD_UNIT_ID'];
+      if (id == null || id.isEmpty) {
+        throw Exception('ADMOB_ANDROID_HOME_BOTTOM_AD_UNIT_ID not found in environment variables');
+      }
+      return id;
+    } else if (Platform.isIOS) {
+      final id = dotenv.env['ADMOB_IOS_HOME_BOTTOM_AD_UNIT_ID'];
+      if (id == null || id.isEmpty) {
+        throw Exception('ADMOB_IOS_HOME_BOTTOM_AD_UNIT_ID not found in environment variables');
+      }
+      return id;
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
+  }
 }

@@ -117,6 +117,37 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>> getIngredientDetail({
+    required String ingredient,
+    required String category,
+    required String langCode,
+  }) async {
+    try {
+      final uri = Uri.parse('https://us-central1-ingredient-lens-463212.cloudfunctions.net/ingredientDetail');
+      
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'ingredient': ingredient,
+          'category': category,
+          'langCode': langCode,
+        }),
+      ).timeout(_timeout);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(utf8.decode(response.bodyBytes));
+        return jsonData;
+      } else {
+        throw Exception('API error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to get ingredient detail: $e');
+    }
+  }
+
   static Future<File> _resizeImage(File imageFile) async {
     // 이미지 로드
     final imageBytes = await imageFile.readAsBytes();
