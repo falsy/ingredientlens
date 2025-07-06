@@ -11,12 +11,14 @@ import '../widgets/save_ingredient_bottom_sheet.dart';
 class IngredientDetailScreen extends StatefulWidget {
   final Map<String, dynamic> ingredientDetail;
   final String ingredientName;
+  final String category;
   final bool fromSavedResults;
 
   const IngredientDetailScreen({
     super.key,
     required this.ingredientDetail,
     required this.ingredientName,
+    required this.category,
     this.fromSavedResults = false,
   });
 

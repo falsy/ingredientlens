@@ -101,9 +101,9 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
       ),
       child: Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
+          borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
@@ -128,10 +128,10 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
             Text(
               AppLocalizations.of(context)!.translate('save_result'),
               style: const TextStyle(
-                color: AppTheme.blackColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
+                color: AppTheme.bottomSheetTitleColor,
+                fontSize: AppTheme.bottomSheetTitleFontSize,
+                fontWeight: AppTheme.bottomSheetTitleFontWeight,
+                height: AppTheme.bottomSheetTitleLineHeight,
               ),
             ),
             const SizedBox(height: 8),
@@ -140,10 +140,10 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
             Text(
               AppLocalizations.of(context)!.translate('enter_result_name'),
               style: const TextStyle(
-                color: AppTheme.gray500,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
+                color: AppTheme.bottomSheetSubtitleColor,
+                fontSize: AppTheme.bottomSheetSubtitleFontSize,
+                fontWeight: AppTheme.bottomSheetSubtitleFontWeight,
+                height: AppTheme.bottomSheetSubtitleLineHeight,
               ),
             ),
             const SizedBox(height: 18),
@@ -186,12 +186,14 @@ class _SaveResultBottomSheetState extends State<SaveResultBottomSheet> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     onPressed: _isSaving ? null : () => Navigator.pop(context),
                     style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: AppTheme.getButtonTextStyle(color: AppTheme.gray700),
+                      style: AppTheme.getButtonTextStyle(
+                        color: AppTheme.buttonColors['cancel']!['text'],
+                      ),
                     ),
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:convert';
 import '../models/recent_ingredient.dart';
 import '../services/database_service.dart';
@@ -10,10 +11,12 @@ class RecentIngredientsSectionWidget extends StatefulWidget {
   const RecentIngredientsSectionWidget({super.key});
 
   @override
-  State<RecentIngredientsSectionWidget> createState() => _RecentIngredientsSectionWidgetState();
+  State<RecentIngredientsSectionWidget> createState() =>
+      _RecentIngredientsSectionWidgetState();
 }
 
-class _RecentIngredientsSectionWidgetState extends State<RecentIngredientsSectionWidget> {
+class _RecentIngredientsSectionWidgetState
+    extends State<RecentIngredientsSectionWidget> {
   List<RecentIngredient> _recentIngredients = [];
   bool _isLoading = true;
 
@@ -50,6 +53,7 @@ class _RecentIngredientsSectionWidgetState extends State<RecentIngredientsSectio
           builder: (context) => IngredientDetailScreen(
             ingredientDetail: resultData,
             ingredientName: ingredient.ingredientName,
+            category: ingredient.category,
           ),
         ),
       );
@@ -73,7 +77,8 @@ class _RecentIngredientsSectionWidgetState extends State<RecentIngredientsSectio
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('delete_success')),
+            content:
+                Text(AppLocalizations.of(context)!.translate('delete_success')),
             backgroundColor: AppTheme.positiveColor,
           ),
         );
@@ -83,7 +88,8 @@ class _RecentIngredientsSectionWidgetState extends State<RecentIngredientsSectio
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('delete_failed')),
+            content:
+                Text(AppLocalizations.of(context)!.translate('delete_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -93,150 +99,143 @@ class _RecentIngredientsSectionWidgetState extends State<RecentIngredientsSectio
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const SizedBox(
-        height: 80,
-        child: Center(
-          child: CircularProgressIndicator(
-            color: AppTheme.blackColor,
-          ),
-        ),
-      );
-    }
-
-    if (_recentIngredients.isEmpty) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppTheme.cardBackgroundColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppTheme.cardBorderColor,
-            width: 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off,
-              size: 48,
-              color: AppTheme.gray300,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              AppLocalizations.of(context)!.translate('no_recent_ingredients'),
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppTheme.gray500,
-                fontWeight: FontWeight.w400,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
     return Column(
-      children: _recentIngredients.map((ingredient) {
-        return Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 12),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => _onIngredientTap(ingredient),
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.cardBackgroundColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppTheme.cardBorderColor,
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            ingredient.ingredientName,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.blackColor,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => _deleteIngredient(ingredient),
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            child: const Icon(
-                              Icons.close,
-                              size: 18,
-                              color: AppTheme.gray500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      ingredient.description,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppTheme.gray700,
-                        height: 1.4,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.gray100,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context)!.translate(ingredient.category),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: AppTheme.gray500,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _formatDate(ingredient.createdAt),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppTheme.gray400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section Title
+        Text(
+          AppLocalizations.of(context)!.translate('recent_ingredients_title'),
+          style: const TextStyle(
+            color: AppTheme.sectionTitleColor,
+            fontSize: AppTheme.sectionTitleFontSize,
+            fontWeight: AppTheme.sectionTitleFontWeight,
+            height: AppTheme.sectionTitleLineHeight,
           ),
-        );
-      }).toList(),
+        ),
+        const SizedBox(height: 6),
+        // Section Subtitle
+        Text(
+          AppLocalizations.of(context)!
+              .translate('recent_ingredients_subtitle'),
+          style: const TextStyle(
+            color: AppTheme.sectionSubtitleColor,
+            fontSize: AppTheme.sectionSubtitleFontSize,
+            fontWeight: AppTheme.sectionSubtitleFontWeight,
+            height: AppTheme.sectionSubtitleLineHeight,
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Recent Ingredients Content
+        Container(
+          constraints: const BoxConstraints(minHeight: 80),
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppTheme.blackColor,
+                  ),
+                )
+              : _recentIngredients.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .translate('no_recent_ingredients'),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: AppTheme.gray500,
+                            height: 1.3,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: _recentIngredients.map((ingredient) {
+                        return GestureDetector(
+                          onTap: () => _onIngredientTap(ingredient),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.fromLTRB(16, 12, 6, 12),
+                            decoration: BoxDecoration(
+                              color: AppTheme.cardBackgroundColor,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: AppTheme.cardBorderColor,
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                // Icon
+                                SvgPicture.asset(
+                                  'assets/icons/bolt.svg',
+                                  width: 24,
+                                  height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppTheme.blackColor,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                const SizedBox(width: 18),
+
+                                // Content
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Ingredient name
+                                      Text(
+                                        ingredient.ingredientName,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppTheme.gray700,
+                                          height: 1.2,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+
+                                      // Date time
+                                      Text(
+                                        _formatDate(ingredient.createdAt),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: AppTheme.gray500,
+                                          height: 1.1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                // Delete button
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () => _deleteIngredient(ingredient),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 18,
+                                      color: AppTheme.gray400,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+        ),
+      ],
     );
   }
 

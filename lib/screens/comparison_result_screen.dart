@@ -180,6 +180,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
               builder: (context) => IngredientDetailScreen(
                 ingredientDetail: result,
                 ingredientName: ingredientName,
+                category: widget.category,
               ),
             ),
           );
@@ -209,6 +210,7 @@ class _ComparisonResultScreenState extends State<ComparisonResultScreen> {
         builder: (context) => IngredientDetailScreen(
           ingredientDetail: result,
           ingredientName: ingredientName,
+          category: widget.category,
         ),
       ),
     );

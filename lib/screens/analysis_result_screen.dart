@@ -179,6 +179,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
               builder: (context) => IngredientDetailScreen(
                 ingredientDetail: result,
                 ingredientName: ingredientName,
+                category: widget.category,
               ),
             ),
           );
@@ -208,6 +209,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
         builder: (context) => IngredientDetailScreen(
           ingredientDetail: result,
           ingredientName: ingredientName,
+          category: widget.category,
         ),
       ),
     );

@@ -3,14 +3,15 @@ import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/database_service.dart';
 import '../models/saved_result.dart';
+import '../models/saved_ingredient.dart';
 
 class DeleteConfirmBottomSheet extends StatefulWidget {
-  final SavedResult savedResult;
+  final dynamic itemToDelete;
   final VoidCallback onDeleted;
 
   const DeleteConfirmBottomSheet({
     super.key,
-    required this.savedResult,
+    required this.itemToDelete,
     required this.onDeleted,
   });
 
@@ -33,7 +34,11 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
     });
 
     try {
-      await DatabaseService().deleteResult(widget.savedResult.id!);
+      if (widget.itemToDelete is SavedResult) {
+        await DatabaseService().deleteResult(widget.itemToDelete.id!);
+      } else if (widget.itemToDelete is SavedIngredient) {
+        await DatabaseService().deleteIngredient(widget.itemToDelete.id!);
+      }
 
       if (mounted) {
         Navigator.pop(context, true); // 성공했음을 알림
@@ -102,10 +107,10 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
             Text(
               AppLocalizations.of(context)!.translate('confirm_delete'),
               style: const TextStyle(
-                color: AppTheme.blackColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
+                color: AppTheme.bottomSheetTitleColor,
+                fontSize: AppTheme.bottomSheetTitleFontSize,
+                fontWeight: AppTheme.bottomSheetTitleFontWeight,
+                height: AppTheme.bottomSheetTitleLineHeight,
               ),
             ),
             const SizedBox(height: 8),
@@ -114,10 +119,10 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
             Text(
               AppLocalizations.of(context)!.translate('confirm_delete_message'),
               style: const TextStyle(
-                color: AppTheme.gray500,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
+                color: AppTheme.bottomSheetSubtitleColor,
+                fontSize: AppTheme.bottomSheetSubtitleFontSize,
+                fontWeight: AppTheme.bottomSheetSubtitleFontWeight,
+                height: AppTheme.bottomSheetSubtitleLineHeight,
               ),
             ),
             const SizedBox(height: 24),
@@ -127,14 +132,15 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
               children: [
                 // Cancel button
                 Expanded(
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     onPressed:
                         _isDeleting ? null : () => Navigator.pop(context),
                     style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
                       style: AppTheme.getButtonTextStyle(
-                          color: AppTheme.blackColor),
+                        color: AppTheme.buttonColors['cancel']!['text'],
+                      ),
                     ),
                   ),
                 ),

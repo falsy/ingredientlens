@@ -25,7 +25,8 @@ class IngredientSearchBottomSheet extends StatefulWidget {
       _IngredientSearchBottomSheetState();
 }
 
-class _IngredientSearchBottomSheetState extends State<IngredientSearchBottomSheet> {
+class _IngredientSearchBottomSheetState
+    extends State<IngredientSearchBottomSheet> {
   bool _isSearchCancelled = false;
 
   void _startSearch() async {
@@ -62,10 +63,10 @@ class _IngredientSearchBottomSheetState extends State<IngredientSearchBottomShee
     // 광고가 활성화된 경우만 전면 광고 표시
     if (AppConfig.enableAds) {
       if (kDebugMode) print('📱 성분 검색 광고 화면 표시 시도...');
-      
+
       // 약간의 딜레이 후 광고 화면 표시
       await Future.delayed(const Duration(milliseconds: 100));
-      
+
       if (mounted && !_isSearchCancelled) {
         Navigator.push(
           context,
@@ -95,7 +96,8 @@ class _IngredientSearchBottomSheetState extends State<IngredientSearchBottomShee
 
       if (kDebugMode) {
         print('🔄 성분 검색 API 시작...');
-        print('📍 성분: ${widget.ingredientName}, 카테고리: ${widget.category}, 언어: $langCode');
+        print(
+            '📍 성분: ${widget.ingredientName}, 카테고리: ${widget.category}, 언어: $langCode');
       }
 
       final result = await ApiService.getIngredientDetail(
@@ -115,6 +117,7 @@ class _IngredientSearchBottomSheetState extends State<IngredientSearchBottomShee
             builder: (context) => IngredientDetailScreen(
               ingredientDetail: result,
               ingredientName: widget.ingredientName,
+              category: widget.category,
             ),
           ),
           (route) => route.isFirst, // 홈 화면만 남김
@@ -194,40 +197,40 @@ class _IngredientSearchBottomSheetState extends State<IngredientSearchBottomShee
             ),
             const SizedBox(height: 24),
 
-          // 버튼들
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: AppTheme.getButtonStyle('cancel'),
-                  child: Text(
-                    AppLocalizations.of(context)!.translate('cancel'),
-                    style:
-                        AppTheme.getButtonTextStyle(color: AppTheme.blackColor),
+            // 버튼들
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: AppTheme.getButtonStyle('cancel'),
+                    child: Text(
+                      AppLocalizations.of(context)!.translate('cancel'),
+                      style: AppTheme.getButtonTextStyle(
+                          color: AppTheme.blackColor),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // 바텀시트 닫기
-                    if (widget.onSearchRequested != null) {
-                      widget.onSearchRequested!();
-                    } else {
-                      _startSearch();
-                    }
-                  },
-                  style: AppTheme.getButtonStyle('action'),
-                  child: Text(
-                    AppLocalizations.of(context)!.translate('search'),
-                    style: AppTheme.getButtonTextStyle(),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // 바텀시트 닫기
+                      if (widget.onSearchRequested != null) {
+                        widget.onSearchRequested!();
+                      } else {
+                        _startSearch();
+                      }
+                    },
+                    style: AppTheme.getButtonStyle('action'),
+                    child: Text(
+                      AppLocalizations.of(context)!.translate('search'),
+                      style: AppTheme.getButtonTextStyle(),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
             // Bottom safe area
             SizedBox(height: MediaQuery.of(context).viewPadding.bottom),

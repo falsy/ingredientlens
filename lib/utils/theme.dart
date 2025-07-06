@@ -9,7 +9,9 @@ class AppTheme {
   static const Color blackColor = Color(0xFF000000);
   static const Color whiteColor = Color(0xFFFFFFFF);
   static const Color gray900 = Color(0xFF1A1A1A);
+  static const Color gray800 = Color(0xFF2A2A2A);
   static const Color gray700 = Color(0xFF4A4A4A);
+  static const Color gray600 = Color(0xFF6A6A6A);
   static const Color gray500 = Color(0xFF8A8A8A);
   static const Color gray400 = Color(0xFFB0B0B0);
   static const Color gray300 = Color(0xFFD0D0D0);
@@ -28,11 +30,47 @@ class AppTheme {
   static const Color primaryGreen = Color(0xFF1B5E3F); // 더 어두운 초록색
   static const Color cardShadow = Color(0x1A000000);
 
+  // App Bar
+  static const double appBarTitleFontSize = 20.0;
+  static const FontWeight appBarTitleFontWeight = FontWeight.w600;
+
   // Button Style Constants
   static const double buttonHeight = 48.0;
   static const double buttonRadius = 28.0;
   static const double buttonFontSize = 15.0;
   static const FontWeight buttonFontWeight = FontWeight.w500;
+
+  // 섹션
+  static const Color sectionTitleColor = blackColor;
+  static const double sectionTitleFontSize = 18.0;
+  static const FontWeight sectionTitleFontWeight = FontWeight.w500;
+  static const double sectionTitleLineHeight = 1.2;
+
+  static const Color sectionSubtitleColor = gray600;
+  static const double sectionSubtitleFontSize = 17.0;
+  static const FontWeight sectionSubtitleFontWeight = FontWeight.w400;
+  static const double sectionSubtitleLineHeight = 1.2;
+
+  static const Color bodyTitleColor = blackColor;
+  static const double bodyTitleFontSize = 17.0;
+  static const FontWeight bodyTitleFontWeight = FontWeight.w400;
+  static const double bodyTitleLineHeight = 1.5;
+
+  static const Color bodyTextColor = gray700;
+  static const double bodyTextFontSize = 16.0;
+  static const FontWeight bodyTextFontWeight = FontWeight.w400;
+  static const double bodyTextLineHeight = 1.5;
+
+  // Bottom Sheet
+  static const Color bottomSheetTitleColor = blackColor;
+  static const double bottomSheetTitleFontSize = 18.0;
+  static const FontWeight bottomSheetTitleFontWeight = FontWeight.w500;
+  static const double bottomSheetTitleLineHeight = 1.3;
+
+  static const Color bottomSheetSubtitleColor = gray500;
+  static const double bottomSheetSubtitleFontSize = 17.0;
+  static const FontWeight bottomSheetSubtitleFontWeight = FontWeight.w400;
+  static const double bottomSheetSubtitleLineHeight = 1.3;
 
   // Button Color Schemes
   static const Map<String, Map<String, Color>> buttonColors = {
@@ -41,15 +79,20 @@ class AppTheme {
       'text': whiteColor,
       'border': blackColor,
     },
-    'cancel': {
+    'action2': {
       'background': whiteColor,
-      'text': gray700,
-      'border': gray500,
+      'text': blackColor,
+      'border': blackColor,
+    },
+    'cancel': {
+      'background': gray100,
+      'text': gray800,
+      'border': gray100,
     },
     'disabled': {
-      'background': cardBackgroundColor,
+      'background': gray100,
       'text': gray500,
-      'border': cardBorderColor,
+      'border': gray100,
     },
   };
 
@@ -63,7 +106,7 @@ class AppTheme {
       minimumSize: const Size(double.infinity, buttonHeight),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(buttonRadius),
-        side: type == 'cancel' || type == 'disabled'
+        side: type == 'cancel' || type == 'disabled' || type == 'action2'
             ? BorderSide(color: colors['border']!, width: 1)
             : BorderSide.none,
       ),

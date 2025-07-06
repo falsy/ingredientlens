@@ -129,10 +129,10 @@ class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
             Text(
               AppLocalizations.of(context)!.translate('save_ingredient'),
               style: const TextStyle(
-                color: AppTheme.blackColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
+                color: AppTheme.bottomSheetTitleColor,
+                fontSize: AppTheme.bottomSheetTitleFontSize,
+                fontWeight: AppTheme.bottomSheetTitleFontWeight,
+                height: AppTheme.bottomSheetTitleLineHeight,
               ),
             ),
             const SizedBox(height: 8),
@@ -141,10 +141,10 @@ class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
             Text(
               AppLocalizations.of(context)!.translate('enter_save_name'),
               style: const TextStyle(
-                color: AppTheme.gray500,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
+                color: AppTheme.bottomSheetSubtitleColor,
+                fontSize: AppTheme.bottomSheetSubtitleFontSize,
+                fontWeight: AppTheme.bottomSheetSubtitleFontWeight,
+                height: AppTheme.bottomSheetSubtitleLineHeight,
               ),
             ),
             const SizedBox(height: 24),

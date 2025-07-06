@@ -6,14 +6,14 @@ import '../config/ad_config.dart';
 import '../config/app_config.dart';
 import '../services/consent_service.dart';
 
-class AdBannerWidget extends StatefulWidget {
-  const AdBannerWidget({super.key});
+class MainFooterAdBannerWidget extends StatefulWidget {
+  const MainFooterAdBannerWidget({super.key});
 
   @override
-  State<AdBannerWidget> createState() => _AdBannerWidgetState();
+  State<MainFooterAdBannerWidget> createState() => _MainFooterAdBannerWidgetState();
 }
 
-class _AdBannerWidgetState extends State<AdBannerWidget> {
+class _MainFooterAdBannerWidgetState extends State<MainFooterAdBannerWidget> {
   BannerAd? _bannerAd;
   bool _isBannerAdReady = false;
   int _retryCount = 0;
@@ -46,7 +46,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     }
   }
 
-  String get _adUnitId => AdConfig.bannerAdUnitId;
+  String get _adUnitId => AdConfig.homeFooterBannerAdUnitId;
 
   void _loadBannerAd() {
     _bannerAd = BannerAd(
@@ -56,7 +56,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           if (kDebugMode) {
-            print('Banner ad loaded successfully');
+            print('Home footer banner ad loaded successfully');
           }
           setState(() {
             _isBannerAdReady = true;
@@ -65,7 +65,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         onAdFailedToLoad: (ad, error) {
           if (kDebugMode) {
             print(
-                'Failed to load banner ad: \${error.code} - \${error.message}');
+                'Failed to load home footer banner ad: \${error.code} - \${error.message}');
             print('Retry count: \$_retryCount / \$_maxRetries');
           }
           ad.dispose();
@@ -85,12 +85,12 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         },
         onAdOpened: (ad) {
           if (kDebugMode) {
-            print('Banner ad opened');
+            print('Home footer banner ad opened');
           }
         },
         onAdClosed: (ad) {
           if (kDebugMode) {
-            print('Banner ad closed');
+            print('Home footer banner ad closed');
           }
         },
       ),
@@ -116,19 +116,6 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section Title
-        // Text(
-        //   AppLocalizations.of(context)!.translate('ads_title'),
-        //   style: const TextStyle(
-        //     color: AppTheme.gray400,
-        //     fontSize: 16,
-        //     fontWeight: FontWeight.w400,
-        //     letterSpacing: 0,
-        //     height: 1.2,
-        //   ),
-        // ),
-        // const SizedBox(height: 6),
-
         // Ad Banner
         Container(
           width: double.infinity,

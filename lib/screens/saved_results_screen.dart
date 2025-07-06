@@ -19,7 +19,8 @@ class SavedResultsScreen extends StatefulWidget {
   State<SavedResultsScreen> createState() => _SavedResultsScreenState();
 }
 
-class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTickerProviderStateMixin {
+class _SavedResultsScreenState extends State<SavedResultsScreen>
+    with SingleTickerProviderStateMixin {
   List<SavedResult> _savedResults = [];
   List<SavedIngredient> _savedIngredients = [];
   bool _isLoading = true;
@@ -52,7 +53,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('save_failed')),
+            content:
+                Text(AppLocalizations.of(context)!.translate('save_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -77,7 +79,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('save_failed')),
+            content:
+                Text(AppLocalizations.of(context)!.translate('save_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -117,7 +120,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('analysis_failed')),
+            content: Text(
+                AppLocalizations.of(context)!.translate('analysis_failed')),
             backgroundColor: AppTheme.negativeColor,
           ),
         );
@@ -130,9 +134,9 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.6),
+      barrierColor: Colors.black.withOpacity(0.6),
       builder: (context) => DeleteConfirmBottomSheet(
-        savedResult: savedResult,
+        itemToDelete: savedResult,
         onDeleted: _loadSavedResults,
       ),
     ).then((result) {
@@ -155,6 +159,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
           builder: (context) => IngredientDetailScreen(
             ingredientDetail: jsonData,
             ingredientName: savedIngredient.ingredientName,
+            category: savedIngredient.category,
             fromSavedResults: true,
           ),
         ),
@@ -166,58 +171,25 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.translate('analysis_failed')),
+          content:
+              Text(AppLocalizations.of(context)!.translate('analysis_failed')),
           backgroundColor: AppTheme.negativeColor,
         ),
       );
     }
   }
 
-  void _deleteIngredient(SavedIngredient savedIngredient) async {
-    // 삭제 확인 다이얼로그
-    final shouldDelete = await showDialog<bool>(
+  void _deleteIngredient(SavedIngredient savedIngredient) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.translate('confirm_delete')),
-        content: Text(AppLocalizations.of(context)!.translate('confirm_delete_message')),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.translate('cancel')),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)!.translate('delete')),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.6),
+      builder: (context) => DeleteConfirmBottomSheet(
+        itemToDelete: savedIngredient,
+        onDeleted: _loadSavedIngredients,
       ),
     );
-
-    if (shouldDelete == true) {
-      try {
-        await DatabaseService().deleteIngredient(savedIngredient.id!);
-        _loadSavedIngredients(); // 목록 새로고침
-        if (mounted) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.translate('delete_success')),
-              backgroundColor: AppTheme.positiveColor,
-            ),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.translate('delete_failed')),
-              backgroundColor: AppTheme.negativeColor,
-            ),
-          );
-        }
-      }
-    }
   }
 
   @override
@@ -239,8 +211,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                 .toUpperCase(),
             style: const TextStyle(
               color: AppTheme.blackColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontSize: AppTheme.appBarTitleFontSize,
+              fontWeight: AppTheme.appBarTitleFontWeight,
               letterSpacing: 0.4,
             ),
           ),
@@ -287,8 +259,12 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                   fontWeight: FontWeight.w400,
                 ),
                 tabs: [
-                  Tab(text: AppLocalizations.of(context)!.translate('analysis_comparison')),
-                  Tab(text: AppLocalizations.of(context)!.translate('ingredients')),
+                  Tab(
+                      text: AppLocalizations.of(context)!
+                          .translate('analysis_comparison')),
+                  Tab(
+                      text: AppLocalizations.of(context)!
+                          .translate('ingredients')),
                 ],
               ),
             ),
@@ -333,108 +309,111 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                           : RefreshIndicator(
                               color: AppTheme.blackColor,
                               onRefresh: _loadSavedResults,
-                          child: ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: _savedResults.length,
-                            itemBuilder: (context, index) {
-                              final savedResult = _savedResults[index];
-                              return GestureDetector(
-                                onTap: () => _viewResult(savedResult),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding:
-                                      const EdgeInsets.fromLTRB(16, 12, 6, 12),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.cardBackgroundColor,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: AppTheme.cardBorderColor,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // Icon
-                                      Icon(
-                                        savedResult.resultType == 'analysis'
-                                            ? Icons.analytics_outlined
-                                            : Icons.compare_outlined,
-                                        color: AppTheme.blackColor,
-                                        size: 28,
-                                      ),
-                                      const SizedBox(width: 16),
-
-                                      // Content
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Category
-                                            Text(
-                                              AppLocalizations.of(context)!
-                                                  .translate(
-                                                      savedResult.category),
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                color: AppTheme.blackColor,
-                                                height: 1.1,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 4),
-
-                                            // Name
-                                            Text(
-                                              savedResult.name,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppTheme.gray700,
-                                                height: 1.2,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 4),
-
-                                            // Date time
-                                            Text(
-                                              _formatDate(
-                                                  savedResult.createdAt),
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                color: AppTheme.gray500,
-                                                height: 1.1,
-                                              ),
-                                            ),
-                                          ],
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _savedResults.length,
+                                itemBuilder: (context, index) {
+                                  final savedResult = _savedResults[index];
+                                  return GestureDetector(
+                                    onTap: () => _viewResult(savedResult),
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 12, 6, 12),
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.cardBackgroundColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: AppTheme.cardBorderColor,
+                                          width: 1,
                                         ),
                                       ),
-                                      const SizedBox(width: 14),
-                                      // Delete button
-                                      GestureDetector(
-                                        behavior: HitTestBehavior.opaque,
-                                        onTap: () => _deleteResult(savedResult),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(12),
-                                          child: const Icon(
-                                            Icons.close,
-                                            size: 18,
-                                            color: AppTheme.gray500,
+                                      child: Row(
+                                        children: [
+                                          // Icon
+                                          Icon(
+                                            savedResult.resultType == 'analysis'
+                                                ? Icons.analytics_outlined
+                                                : Icons.compare_outlined,
+                                            color: AppTheme.blackColor,
+                                            size: 28,
                                           ),
-                                        ),
+                                          const SizedBox(width: 16),
+
+                                          // Content
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                // Category
+                                                Text(
+                                                  AppLocalizations.of(context)!
+                                                      .translate(
+                                                          savedResult.category),
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: AppTheme.blackColor,
+                                                    height: 1.1,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+
+                                                // Name
+                                                Text(
+                                                  savedResult.name,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: AppTheme.gray700,
+                                                    height: 1.2,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+
+                                                // Date time
+                                                Text(
+                                                  _formatDate(
+                                                      savedResult.createdAt),
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: AppTheme.gray500,
+                                                    height: 1.1,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 14),
+                                          // Delete button
+                                          GestureDetector(
+                                            behavior: HitTestBehavior.opaque,
+                                            onTap: () =>
+                                                _deleteResult(savedResult),
+                                            child: Container(
+                                              padding: const EdgeInsets.all(12),
+                                              child: const Icon(
+                                                Icons.close,
+                                                size: 18,
+                                                color: AppTheme.gray500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                   // 성분 검색 결과 탭
                   _isLoading
                       ? const Center(
@@ -471,12 +450,15 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                                 padding: const EdgeInsets.all(16),
                                 itemCount: _savedIngredients.length,
                                 itemBuilder: (context, index) {
-                                  final savedIngredient = _savedIngredients[index];
+                                  final savedIngredient =
+                                      _savedIngredients[index];
                                   return GestureDetector(
-                                    onTap: () => _viewIngredient(savedIngredient),
+                                    onTap: () =>
+                                        _viewIngredient(savedIngredient),
                                     child: Container(
                                       margin: const EdgeInsets.only(bottom: 12),
-                                      padding: const EdgeInsets.fromLTRB(16, 12, 6, 12),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 12, 6, 12),
                                       decoration: BoxDecoration(
                                         color: AppTheme.cardBackgroundColor,
                                         borderRadius: BorderRadius.circular(10),
@@ -488,30 +470,27 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                                       child: Row(
                                         children: [
                                           // Icon
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              color: AppTheme.gray100,
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.search,
-                                              color: AppTheme.blackColor,
-                                              size: 20,
+                                          SvgPicture.asset(
+                                            'assets/icons/bolt.svg',
+                                            width: 28,
+                                            height: 28,
+                                            colorFilter: const ColorFilter.mode(
+                                              AppTheme.blackColor,
+                                              BlendMode.srcIn,
                                             ),
                                           ),
-                                          const SizedBox(width: 14),
-                                          
+                                          const SizedBox(width: 16),
+
                                           // Content
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                // Category
+                                                // Ingredient Name
                                                 Text(
-                                                  AppLocalizations.of(context)!
-                                                      .translate(savedIngredient.category),
+                                                  savedIngredient
+                                                      .ingredientName,
                                                   style: const TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w400,
@@ -519,21 +498,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                                                     height: 1.1,
                                                   ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(height: 4),
-
-                                                // Ingredient Name
-                                                Text(
-                                                  savedIngredient.ingredientName,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: AppTheme.blackColor,
-                                                    height: 1.2,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                                 const SizedBox(height: 4),
 
@@ -547,13 +513,15 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                                                     height: 1.2,
                                                   ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                                 const SizedBox(height: 4),
 
                                                 // Date time
                                                 Text(
-                                                  _formatDate(savedIngredient.createdAt),
+                                                  _formatDate(savedIngredient
+                                                      .createdAt),
                                                   style: const TextStyle(
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w400,
@@ -568,7 +536,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen> with SingleTick
                                           // Delete button
                                           GestureDetector(
                                             behavior: HitTestBehavior.opaque,
-                                            onTap: () => _deleteIngredient(savedIngredient),
+                                            onTap: () => _deleteIngredient(
+                                                savedIngredient),
                                             child: Container(
                                               padding: const EdgeInsets.all(12),
                                               child: const Icon(
