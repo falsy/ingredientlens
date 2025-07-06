@@ -261,8 +261,8 @@ class _SavedResultsScreenState extends State<SavedResultsScreen>
                 ),
                 tabs: [
                   Tab(
-                      text: AppLocalizations.of(context)!
-                          .translate('analysis_comparison')),
+                      text:
+                          AppLocalizations.of(context)!.translate('analysis')),
                   Tab(
                       text: AppLocalizations.of(context)!
                           .translate('ingredients')),
@@ -332,14 +332,19 @@ class _SavedResultsScreenState extends State<SavedResultsScreen>
                                       child: Row(
                                         children: [
                                           // Icon
-                                          Icon(
+                                          SvgPicture.asset(
                                             savedResult.resultType == 'analysis'
-                                                ? Icons.analytics_outlined
-                                                : Icons.compare_outlined,
-                                            color: AppTheme.blackColor,
-                                            size: 28,
+                                                ? 'assets/icons/analytics.svg'
+                                                : 'assets/icons/compare.svg',
+                                            width: 24,
+                                            height: 24,
+                                            colorFilter: const ColorFilter.mode(
+                                              AppTheme.blackColor,
+                                              BlendMode.srcIn,
+                                            ),
                                           ),
-                                          const SizedBox(width: 16),
+
+                                          const SizedBox(width: 18),
 
                                           // Content
                                           Expanded(
@@ -473,14 +478,14 @@ class _SavedResultsScreenState extends State<SavedResultsScreen>
                                           // Icon
                                           SvgPicture.asset(
                                             'assets/icons/bolt.svg',
-                                            width: 28,
-                                            height: 28,
+                                            width: 26,
+                                            height: 26,
                                             colorFilter: const ColorFilter.mode(
                                               AppTheme.blackColor,
                                               BlendMode.srcIn,
                                             ),
                                           ),
-                                          const SizedBox(width: 16),
+                                          const SizedBox(width: 18),
 
                                           // Content
                                           Expanded(

@@ -47,7 +47,7 @@ class AppTheme {
   static const double sectionTitleLineHeight = 1.2;
 
   static const Color sectionSubtitleColor = gray600;
-  static const double sectionSubtitleFontSize = 17.0;
+  static const double sectionSubtitleFontSize = 16.0;
   static const FontWeight sectionSubtitleFontWeight = FontWeight.w400;
   static const double sectionSubtitleLineHeight = 1.2;
 

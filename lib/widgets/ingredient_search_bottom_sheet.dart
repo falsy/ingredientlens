@@ -201,7 +201,7 @@ class _IngredientSearchBottomSheetState
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: AppTheme.getButtonStyle('cancel'),
                     child: Text(

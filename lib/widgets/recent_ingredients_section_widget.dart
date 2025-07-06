@@ -196,8 +196,8 @@ class _RecentIngredientsSectionWidgetState
                                 // Icon
                                 SvgPicture.asset(
                                   'assets/icons/bolt.svg',
-                                  width: 24,
-                                  height: 24,
+                                  width: 26,
+                                  height: 26,
                                   colorFilter: const ColorFilter.mode(
                                     AppTheme.blackColor,
                                     BlendMode.srcIn,

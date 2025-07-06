@@ -16,7 +16,8 @@ class SaveIngredientBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<SaveIngredientBottomSheet> createState() => _SaveIngredientBottomSheetState();
+  State<SaveIngredientBottomSheet> createState() =>
+      _SaveIngredientBottomSheetState();
 }
 
 class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
@@ -155,7 +156,8 @@ class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
               enabled: !_isSaving,
               maxLength: 50,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.translate('save_name_hint'),
+                hintText:
+                    AppLocalizations.of(context)!.translate('save_name_hint'),
                 counterText: '',
                 filled: true,
                 fillColor: AppTheme.gray100,
@@ -179,12 +181,13 @@ class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     onPressed: _isSaving ? null : () => Navigator.pop(context),
                     style: AppTheme.getButtonStyle('cancel'),
                     child: Text(
                       AppLocalizations.of(context)!.translate('cancel'),
-                      style: AppTheme.getButtonTextStyle(color: AppTheme.blackColor),
+                      style: AppTheme.getButtonTextStyle(
+                          color: AppTheme.blackColor),
                     ),
                   ),
                 ),
@@ -199,7 +202,8 @@ class _SaveIngredientBottomSheetState extends State<SaveIngredientBottomSheet> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : Text(

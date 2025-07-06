@@ -160,7 +160,7 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
   void _performIngredientSearch(String ingredientName) async {
     try {
       final langCode = Localizations.localeOf(context).languageCode;
-      
+
       final result = await ApiService.getIngredientDetail(
         ingredient: ingredientName,
         category: widget.category,
@@ -195,8 +195,8 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           ),
         );
         // 에러 시 로딩 화면까지 모두 닫기
-        Navigator.popUntil(context, (route) => 
-          route.settings.name != null || route.isFirst);
+        Navigator.popUntil(
+            context, (route) => route.settings.name != null || route.isFirst);
       }
     }
   }
@@ -304,63 +304,76 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
 
   Widget _buildIngredientCard(
       BuildContext context, dynamic item, Color accentColor) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-      decoration: BoxDecoration(
-        color: AppTheme.cardBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.cardBorderColor,
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 24,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    item['name'] ?? '',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppTheme.blackColor,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          decoration: BoxDecoration(
+            color: AppTheme.cardBackgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.cardBorderColor,
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item['name'] ?? '',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.blackColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item['description'] ?? '',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 15,
+                      color: AppTheme.gray700,
+                      height: 1.5,
                     ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        Align(
+          alignment: Alignment.centerRight,
+          child: GestureDetector(
+            onTap: () => _showIngredientSearchBottomSheet(item['name'] ?? ''),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!
+                      .translate('ingredient_detail_search'),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.gray600,
                   ),
                 ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () => _showIngredientSearchBottomSheet(item['name'] ?? ''),
-                  child: SvgPicture.asset(
-                    'assets/icons/wandstars.svg',
-                    width: 20,
-                    height: 20,
-                    colorFilter: const ColorFilter.mode(
-                      AppTheme.gray500,
-                      BlendMode.srcIn,
-                    ),
+                const SizedBox(width: 2),
+                SvgPicture.asset(
+                  'assets/icons/arrow-right.svg',
+                  width: 16,
+                  height: 16,
+                  colorFilter: const ColorFilter.mode(
+                    AppTheme.gray600,
+                    BlendMode.srcIn,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            item['description'] ?? '',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 15,
-                  color: AppTheme.gray700,
-                  height: 1.5,
-                ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 

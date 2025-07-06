@@ -188,7 +188,7 @@ class AppLocalizations {
       'save_failed': 'Save failed',
       'saved_results': 'Saved Results',
       'no_saved_results': 'No saved results',
-      'analysis': 'analysis',
+      'analysis': 'Analysis',
       'comparison': 'comparison',
       'edit_name': 'Edit Name',
       'delete': 'Delete',
@@ -218,7 +218,6 @@ class AppLocalizations {
       'recent_ingredients_title': 'Recent Ingredient Searches',
       'recent_ingredients_subtitle': 'Recently searched ingredient information',
       'no_recent_ingredients': 'No recent ingredient searches',
-      'analysis_comparison': 'Analysis/Comparison',
       'ingredients': 'Ingredients',
       'no_saved_ingredients': 'No saved ingredients',
       'searching': 'Searching...',
@@ -228,7 +227,8 @@ class AppLocalizations {
       'primary_functions': 'Primary Functions',
       'benefits': 'Benefits',
       'precautions': 'Precautions',
-      'additional_info': 'Additional Information'
+      'additional_info': 'Additional Information',
+      'ingredient_detail_search': 'View Details'
     },
     'ko': {
       'app_name': '성분렌즈',
@@ -348,8 +348,7 @@ class AppLocalizations {
       'recent_ingredients_title': '최근 성분 검색',
       'recent_ingredients_subtitle': '최근 검색한 성분 정보입니다',
       'no_recent_ingredients': '최근 성분 검색 기록이 없습니다',
-      'analysis_comparison': '분석/비교',
-      'ingredients': '성분 검색',
+      'ingredients': '성분',
       'no_saved_ingredients': '저장된 성분이 없습니다',
       'searching': '검색 중...',
       'searching_ingredient_info': '성분 정보를 검색하고 있습니다...',
@@ -358,7 +357,8 @@ class AppLocalizations {
       'primary_functions': '주요 기능',
       'benefits': '효능 및 이점',
       'precautions': '주의사항',
-      'additional_info': '추가 정보'
+      'additional_info': '추가 정보',
+      'ingredient_detail_search': '성분 상세 검색'
     },
     'zh': {
       'app_name': 'AI成分分析器',
@@ -473,8 +473,7 @@ class AppLocalizations {
       'recent_ingredients_title': '最近成分搜索',
       'recent_ingredients_subtitle': '最近搜索的成分信息',
       'no_recent_ingredients': '没有最近的成分搜索记录',
-      'analysis_comparison': '分析/比较',
-      'ingredients': '成分搜索',
+      'ingredients': '成分',
       'no_saved_ingredients': '没有保存的成分',
       'searching': '搜索中...',
       'searching_ingredient_info': '正在搜索成分信息...',
@@ -483,7 +482,8 @@ class AppLocalizations {
       'primary_functions': '主要功能',
       'benefits': '益处',
       'precautions': '注意事项',
-      'additional_info': '附加信息'
+      'additional_info': '附加信息',
+      'ingredient_detail_search': '查看详情'
     },
     'ja': {
       'app_name': 'AI成分分析',
@@ -600,8 +600,7 @@ class AppLocalizations {
       'recent_ingredients_title': '最近の成分検索',
       'recent_ingredients_subtitle': '最近検索した成分情報',
       'no_recent_ingredients': '最近の成分検索記録がありません',
-      'analysis_comparison': '分析/比較',
-      'ingredients': '成分検索',
+      'ingredients': '成分',
       'no_saved_ingredients': '保存された成分がありません',
       'searching': '検索中...',
       'searching_ingredient_info': '成分情報を検索しています...',
@@ -610,7 +609,8 @@ class AppLocalizations {
       'primary_functions': '主要機能',
       'benefits': '効果・効能',
       'precautions': '注意事項',
-      'additional_info': '追加情報'
+      'additional_info': '追加情報',
+      'ingredient_detail_search': '詳細を見る'
     },
     'es': {
       'app_name': 'Analizador de Ingredientes',
@@ -707,7 +707,7 @@ class AppLocalizations {
       'save_failed': 'Error al guardar',
       'saved_results': 'Resultados Guardados',
       'no_saved_results': 'No hay resultados guardados',
-      'analysis': 'análisis',
+      'analysis': 'Análisis',
       'comparison': 'comparación',
       'edit_name': 'Editar Nombre',
       'delete': 'Eliminar',
@@ -736,10 +736,11 @@ class AppLocalizations {
       'enter_name': 'Por favor ingrese el nombre',
       'save_complete': 'Guardado completo',
       'recent_ingredients_title': 'Búsquedas de Ingredientes Recientes',
-      'recent_ingredients_subtitle': 'Información de ingredientes recientemente buscados',
-      'no_recent_ingredients': 'No hay registros recientes de búsqueda de ingredientes',
-      'analysis_comparison': 'Análisis/Comparación',
-      'ingredients': 'Búsqueda de Ingredientes',
+      'recent_ingredients_subtitle':
+          'Información de ingredientes recientemente buscados',
+      'no_recent_ingredients':
+          'No hay registros recientes de búsqueda de ingredientes',
+      'ingredients': 'Ingredientes',
       'no_saved_ingredients': 'No hay ingredientes guardados',
       'searching': 'Buscando...',
       'searching_ingredient_info': 'Buscando información del ingrediente...',
@@ -748,7 +749,8 @@ class AppLocalizations {
       'primary_functions': 'Funciones Principales',
       'benefits': 'Beneficios',
       'precautions': 'Precauciones',
-      'additional_info': 'Información Adicional'
+      'additional_info': 'Información Adicional',
+      'ingredient_detail_search': 'Ver Detalles'
     },
     'pt': {
       'app_name': 'Analisador de Ingredientes',
@@ -845,7 +847,7 @@ class AppLocalizations {
       'save_failed': 'Erro ao salvar',
       'saved_results': 'Resultados Salvos',
       'no_saved_results': 'Nenhum resultado salvo',
-      'analysis': 'análise',
+      'analysis': 'Análise',
       'comparison': 'comparação',
       'edit_name': 'Editar Nome',
       'delete': 'Excluir',
@@ -874,10 +876,11 @@ class AppLocalizations {
       'enter_name': 'Por favor, insira o nome',
       'save_complete': 'Salvamento concluído',
       'recent_ingredients_title': 'Buscas de Ingredientes Recentes',
-      'recent_ingredients_subtitle': 'Informações de ingredientes pesquisados recentemente',
-      'no_recent_ingredients': 'Nenhum registro recente de busca de ingredientes',
-      'analysis_comparison': 'Análise/Comparação',
-      'ingredients': 'Busca de Ingredientes',
+      'recent_ingredients_subtitle':
+          'Informações de ingredientes pesquisados recentemente',
+      'no_recent_ingredients':
+          'Nenhum registro recente de busca de ingredientes',
+      'ingredients': 'Ingredientes',
       'no_saved_ingredients': 'Nenhum ingrediente salvo',
       'searching': 'Buscando...',
       'searching_ingredient_info': 'Buscando informações do ingrediente...',
@@ -886,7 +889,8 @@ class AppLocalizations {
       'primary_functions': 'Funções Principais',
       'benefits': 'Benefícios',
       'precautions': 'Precauções',
-      'additional_info': 'Informações Adicionais'
+      'additional_info': 'Informações Adicionais',
+      'ingredient_detail_search': 'Ver Detalhes'
     },
     'th': {
       'app_name': 'เครื่องวิเคราะห์ส่วนผสม',
@@ -1009,8 +1013,7 @@ class AppLocalizations {
       'recent_ingredients_title': 'การค้นหาส่วนผสมล่าสุด',
       'recent_ingredients_subtitle': 'ข้อมูลส่วนผสมที่ค้นหาล่าสุด',
       'no_recent_ingredients': 'ไม่มีบันทึกการค้นหาส่วนผสมล่าสุด',
-      'analysis_comparison': 'การวิเคราะห์/เปรียบเทียบ',
-      'ingredients': 'การค้นหาส่วนผสม',
+      'ingredients': 'วัตถุดิบ',
       'no_saved_ingredients': 'ไม่มีส่วนผสมที่บันทึกไว้',
       'searching': 'กำลังค้นหา...',
       'searching_ingredient_info': 'กำลังค้นหาข้อมูลส่วนผสม...',
@@ -1019,7 +1022,8 @@ class AppLocalizations {
       'primary_functions': 'หน้าที่หลัก',
       'benefits': 'ประโยชน์',
       'precautions': 'ข้อควรระวัง',
-      'additional_info': 'ข้อมูลเพิ่มเติม'
+      'additional_info': 'ข้อมูลเพิ่มเติม',
+      'ingredient_detail_search': 'ดูรายละเอียด'
     },
     'vi': {
       'app_name': 'Phân Tích Thành Phần',
@@ -1145,8 +1149,7 @@ class AppLocalizations {
       'recent_ingredients_title': 'Tìm Kiếm Thành Phần Gần Đây',
       'recent_ingredients_subtitle': 'Thông tin thành phần đã tìm kiếm gần đây',
       'no_recent_ingredients': 'Không có bản ghi tìm kiếm thành phần gần đây',
-      'analysis_comparison': 'Phân Tích/So Sánh',
-      'ingredients': 'Tìm Kiếm Thành Phần',
+      'ingredients': 'thành phần',
       'no_saved_ingredients': 'Không có thành phần đã lưu',
       'searching': 'Đang tìm kiếm...',
       'searching_ingredient_info': 'Đang tìm kiếm thông tin thành phần...',
@@ -1155,7 +1158,8 @@ class AppLocalizations {
       'primary_functions': 'Chức năng chính',
       'benefits': 'Lợi ích',
       'precautions': 'Lưu ý',
-      'additional_info': 'Thông tin bổ sung'
+      'additional_info': 'Thông tin bổ sung',
+      'ingredient_detail_search': 'Xem Chi Tiết'
     },
   };
 

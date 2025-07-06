@@ -358,7 +358,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -659,7 +659,7 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     onPressed:
                         _isProcessing ? null : () => Navigator.pop(context),
                     style: AppTheme.getButtonStyle('cancel'),
