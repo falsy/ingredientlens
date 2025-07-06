@@ -5,6 +5,7 @@ import '../models/recent_ingredient.dart';
 import '../services/database_service.dart';
 import '../services/localization_service.dart';
 import '../screens/ingredient_detail_screen.dart';
+import '../screens/home_screen.dart';
 import '../utils/theme.dart';
 
 class RecentIngredientsSectionWidget extends StatefulWidget {
@@ -16,13 +17,35 @@ class RecentIngredientsSectionWidget extends StatefulWidget {
 }
 
 class _RecentIngredientsSectionWidgetState
-    extends State<RecentIngredientsSectionWidget> {
+    extends State<RecentIngredientsSectionWidget> with RouteAware {
   List<RecentIngredient> _recentIngredients = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _loadRecentIngredients();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      // HomeScreen에서 이미 RouteObserver를 사용하고 있으므로 동일한 observer 사용
+      HomeScreen.routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void dispose() {
+    HomeScreen.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // 다른 화면에서 돌아왔을 때 갱신
     _loadRecentIngredients();
   }
 
@@ -54,6 +77,7 @@ class _RecentIngredientsSectionWidgetState
             ingredientDetail: resultData,
             ingredientName: ingredient.ingredientName,
             category: ingredient.category,
+            isNewSearch: false,
           ),
         ),
       );

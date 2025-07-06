@@ -161,6 +161,7 @@ class _SavedResultsScreenState extends State<SavedResultsScreen>
             ingredientName: savedIngredient.ingredientName,
             category: savedIngredient.category,
             fromSavedResults: true,
+            isNewSearch: false,
           ),
         ),
       ).then((_) {

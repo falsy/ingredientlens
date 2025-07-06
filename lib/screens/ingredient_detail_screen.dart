@@ -13,6 +13,7 @@ class IngredientDetailScreen extends StatefulWidget {
   final String ingredientName;
   final String category;
   final bool fromSavedResults;
+  final bool isNewSearch;
 
   const IngredientDetailScreen({
     super.key,
@@ -20,6 +21,7 @@ class IngredientDetailScreen extends StatefulWidget {
     required this.ingredientName,
     required this.category,
     this.fromSavedResults = false,
+    this.isNewSearch = true,
   });
 
   @override
@@ -34,8 +36,8 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
   }
 
   void _saveRecentIngredient() async {
-    // 로딩 상태이면 저장하지 않음
-    if (widget.ingredientDetail['loading'] == true) return;
+    // 새로운 검색이 아니거나 로딩 상태이면 저장하지 않음
+    if (!widget.isNewSearch || widget.ingredientDetail['loading'] == true) return;
 
     try {
       final description = widget.ingredientDetail['description'] ?? '';
@@ -43,7 +45,7 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
       if (description.toString().isNotEmpty) {
         final recentIngredient = RecentIngredient(
           ingredientName: widget.ingredientName,
-          category: widget.ingredientDetail['category'] ?? '',
+          category: widget.category,
           description: description.toString(),
           resultData: jsonEncode(widget.ingredientDetail),
           createdAt: DateTime.now(),
