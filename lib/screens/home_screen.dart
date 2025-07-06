@@ -17,7 +17,7 @@ import '../widgets/recent_ingredients_section_widget.dart';
 import '../widgets/category_action_bottom_sheet.dart';
 import '../widgets/image_source_bottom_sheet.dart';
 import '../widgets/home_footer_widget.dart';
-import '../widgets/main_footer_ad_banner_widget.dart';
+// import '../widgets/main_footer_ad_banner_widget.dart';
 import 'custom_camera_screen.dart';
 import 'image_crop_screen.dart';
 import 'compare_screen.dart';
@@ -437,9 +437,9 @@ class _HomeScreenState extends State<HomeScreen>
                                     const RecentIngredientsSectionWidget(),
                                     const SizedBox(height: 38),
 
-                                    // Main Footer Ad Banner
-                                    const MainFooterAdBannerWidget(),
-                                    const SizedBox(height: 38),
+                                    // // Main Footer Ad Banner
+                                    // const MainFooterAdBannerWidget(),
+                                    // const SizedBox(height: 38),
                                   ],
                                 ),
                               ),
