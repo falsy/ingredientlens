@@ -41,50 +41,21 @@ class _SavedResultsScreenState extends State<SavedResultsScreen>
   }
 
   Future<void> _loadSavedResults() async {
-    try {
-      final results = await DatabaseService().getAllResults();
-      if (mounted) {
-        setState(() {
-          _savedResults = results;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text(AppLocalizations.of(context)!.translate('save_failed')),
-            backgroundColor: AppTheme.negativeColor,
-          ),
-        );
-      }
+    final results = await DatabaseService().getAllResults();
+    if (mounted) {
+      setState(() {
+        _savedResults = results;
+      });
     }
   }
 
   Future<void> _loadSavedIngredients() async {
-    try {
-      final ingredients = await DatabaseService().getAllIngredients();
-      if (mounted) {
-        setState(() {
-          _savedIngredients = ingredients;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text(AppLocalizations.of(context)!.translate('save_failed')),
-            backgroundColor: AppTheme.negativeColor,
-          ),
-        );
-      }
+    final ingredients = await DatabaseService().getAllIngredients();
+    if (mounted) {
+      setState(() {
+        _savedIngredients = ingredients;
+        _isLoading = false;
+      });
     }
   }
 
