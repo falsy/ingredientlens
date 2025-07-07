@@ -6,7 +6,6 @@ import '../services/api_service.dart';
 import '../services/usage_limit_service.dart';
 import '../screens/ingredient_detail_screen.dart';
 import '../widgets/interstitial_ad_widget.dart';
-import '../config/app_config.dart';
 
 class IngredientSearchBottomSheet extends StatefulWidget {
   final String ingredientName;
@@ -60,33 +59,31 @@ class _IngredientSearchBottomSheetState
     // API 호출을 먼저 시작
     _performSearch();
 
-    // 광고가 활성화된 경우만 전면 광고 표시
-    if (AppConfig.enableAds) {
-      if (kDebugMode) print('📱 성분 검색 광고 화면 표시 시도...');
+    // 전면 광고 표시
+    if (kDebugMode) print('📱 성분 검색 광고 화면 표시 시도...');
 
-      // 약간의 딜레이 후 광고 화면 표시
-      await Future.delayed(const Duration(milliseconds: 100));
+    // 약간의 딜레이 후 광고 화면 표시
+    await Future.delayed(const Duration(milliseconds: 100));
 
-      if (mounted && !_isSearchCancelled) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              if (kDebugMode) print('✅ 성분 검색 광고 화면 빌드됨');
-              return InterstitialAdWidget(
-                onAdDismissed: () {
-                  if (kDebugMode) print('📺 성분 검색 광고 종료, API 진행 중...');
-                },
-                onAnalysisCancelled: () {
-                  if (kDebugMode) print('❌ 성분 검색 취소됨');
-                  _isSearchCancelled = true;
-                  Navigator.pop(context); // 광고 화면 닫기
-                },
-              );
-            },
-          ),
-        );
-      }
+    if (mounted && !_isSearchCancelled) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            if (kDebugMode) print('✅ 성분 검색 광고 화면 빌드됨');
+            return InterstitialAdWidget(
+              onAdDismissed: () {
+                if (kDebugMode) print('📺 성분 검색 광고 종료, API 진행 중...');
+              },
+              onAnalysisCancelled: () {
+                if (kDebugMode) print('❌ 성분 검색 취소됨');
+                _isSearchCancelled = true;
+                Navigator.pop(context); // 광고 화면 닫기
+              },
+            );
+          },
+        ),
+      );
     }
   }
 

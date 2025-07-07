@@ -9,7 +9,6 @@ import '../services/localization_service.dart';
 import '../services/api_service.dart';
 import '../services/usage_limit_service.dart';
 import '../widgets/interstitial_ad_widget.dart';
-import '../config/app_config.dart';
 import 'analysis_result_screen.dart';
 
 class ImageCropScreen extends StatefulWidget {
@@ -423,27 +422,25 @@ class _ImageCropScreenState extends State<ImageCropScreen> {
     // API 호출을 먼저 시작
     _performAnalysis(imageFile);
 
-    if (AppConfig.enableAds) {
-      if (kDebugMode) print('📱 광고 화면 표시 시도...');
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            if (kDebugMode) print('✅ 광고 화면 빌드됨');
-            return InterstitialAdWidget(
-              onAdDismissed: () {
-                if (kDebugMode) print('📺 광고 종료, API 진행 중...');
-              },
-              onAnalysisCancelled: () {
-                if (kDebugMode) print('❌ 분석 취소됨');
-                _isAnalysisCancelled = true;
-                Navigator.pop(context); // 광고 화면 닫기
-              },
-            );
-          },
-        ),
-      );
-    }
+    if (kDebugMode) print('📱 광고 화면 표시 시도...');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          if (kDebugMode) print('✅ 광고 화면 빌드됨');
+          return InterstitialAdWidget(
+            onAdDismissed: () {
+              if (kDebugMode) print('📺 광고 종료, API 진행 중...');
+            },
+            onAnalysisCancelled: () {
+              if (kDebugMode) print('❌ 분석 취소됨');
+              _isAnalysisCancelled = true;
+              Navigator.pop(context); // 광고 화면 닫기
+            },
+          );
+        },
+      ),
+    );
   }
 
   void _performAnalysis(File imageFile) async {

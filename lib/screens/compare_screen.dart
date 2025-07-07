@@ -11,7 +11,6 @@ import '../widgets/interstitial_ad_widget.dart';
 import '../widgets/image_source_bottom_sheet.dart';
 import '../services/api_service.dart';
 import '../config/ad_config.dart';
-import '../config/app_config.dart';
 import 'custom_camera_screen.dart';
 import 'image_crop_screen.dart';
 import 'comparison_result_screen.dart';
@@ -191,26 +190,24 @@ class _CompareScreenState extends State<CompareScreen> {
     // API 호출을 먼저 시작
     _performComparison();
 
-    // 광고가 활성화된 경우만 전면 광고 표시 (API는 이미 시작됨)
-    if (AppConfig.enableAds) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InterstitialAdWidget(
-            customAdUnitId: AdConfig.compareAdUnitId, // 비교용 광고 ID
-            onAdDismissed: () {
-              // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
-            },
-            onAnalysisCancelled: () {
-              // 분석 취소 플래그 설정
-              _isAnalysisCancelled = true;
-              // 분석 취소 시 광고 화면 닫기
-              Navigator.pop(context); // 광고 화면 닫기
-            },
-          ),
+    // 전면 광고 표시 (API는 이미 시작됨)
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InterstitialAdWidget(
+          customAdUnitId: AdConfig.compareAdUnitId, // 비교용 광고 ID
+          onAdDismissed: () {
+            // 광고가 끝났을 때는 아무것도 하지 않음 (API는 이미 진행 중)
+          },
+          onAnalysisCancelled: () {
+            // 분석 취소 플래그 설정
+            _isAnalysisCancelled = true;
+            // 분석 취소 시 광고 화면 닫기
+            Navigator.pop(context); // 광고 화면 닫기
+          },
         ),
-      );
-    }
+      ),
+    );
   }
 
   void _performComparison() async {

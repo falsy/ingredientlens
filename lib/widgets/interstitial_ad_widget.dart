@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../config/ad_config.dart';
-import '../config/app_config.dart';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import '../services/consent_service.dart';
@@ -35,15 +34,7 @@ class _InterstitialAdWidgetState extends State<InterstitialAdWidget> {
   @override
   void initState() {
     super.initState();
-    if (AppConfig.enableAds) {
-      _checkConsentAndLoadAd();
-    } else {
-      // 광고가 비활성화되어 있으면 바로 로딩 화면으로
-      setState(() {
-        _isLoadingAfterAd = true;
-      });
-      widget.onAdDismissed();
-    }
+    _checkConsentAndLoadAd();
   }
 
   void _checkConsentAndLoadAd() async {

@@ -403,10 +403,14 @@ class _SavedResultsScreenState extends State<SavedResultsScreen>
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.search_off,
-                                    size: 38,
-                                    color: AppTheme.gray500,
+                                  SvgPicture.asset(
+                                    'assets/icons/bookmark.svg',
+                                    width: 38,
+                                    height: 38,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppTheme.gray500,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(

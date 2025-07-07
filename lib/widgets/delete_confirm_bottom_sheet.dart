@@ -48,7 +48,7 @@ class _DeleteConfirmBottomSheetState extends State<DeleteConfirmBottomSheet> {
           SnackBar(
             content:
                 Text(AppLocalizations.of(context)!.translate('delete_success')),
-            backgroundColor: AppTheme.blackColor,
+            backgroundColor: AppTheme.positiveColor,
           ),
         );
       }

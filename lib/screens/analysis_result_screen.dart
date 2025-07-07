@@ -13,7 +13,6 @@ import '../widgets/save_result_bottom_sheet.dart';
 import '../widgets/ingredient_search_bottom_sheet.dart';
 import '../widgets/interstitial_ad_widget.dart';
 import '../screens/ingredient_detail_screen.dart';
-import '../config/app_config.dart';
 
 class AnalysisResultScreen extends StatefulWidget {
   final Map<String, dynamic> analysisResult;
@@ -131,30 +130,47 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     _performIngredientSearch(ingredientName);
 
     // 광고 표시 (로딩과 광고를 한번에)
-    if (AppConfig.enableAds) {
-      _isAdShowing = true;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => InterstitialAdWidget(
-            onAdDismissed: () {
-              _isAdShowing = false;
-              // 광고가 닫혔을 때 대기 중인 결과가 있으면 처리
-              if (_pendingApiResult != null) {
-                _navigateToResult(_pendingApiResult!, ingredientName);
-                _pendingApiResult = null;
-              }
-            },
-            onAnalysisCancelled: () {
-              _isAdShowing = false;
+    _isAdShowing = true;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InterstitialAdWidget(
+          onAdDismissed: () {
+            _isAdShowing = false;
+            // 광고가 닫혔을 때 대기 중인 결과가 있으면 처리
+            final pendingResult = _pendingApiResult;
+            if (pendingResult != null) {
               _pendingApiResult = null;
-              // 취소 시 현재 화면만 닫기
-              Navigator.pop(context);
-            },
-          ),
+              _navigateToResult(pendingResult, ingredientName);
+            }
+          },
+          onAnalysisCancelled: () {
+            _isAdShowing = false;
+            _pendingApiResult = null;
+            // 취소 시 현재 화면만 닫기
+            Navigator.pop(context);
+          },
         ),
-      );
-    }
+      ),
+    ).then((_) {
+      // 광고 화면이 닫혔을 때 (뒤로가기 등)
+      _isAdShowing = false;
+      // 대기 중인 결과가 있으면 바로 이동
+      final pendingResult = _pendingApiResult;
+      if (pendingResult != null) {
+        _pendingApiResult = null;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => IngredientDetailScreen(
+              ingredientDetail: pendingResult,
+              ingredientName: ingredientName,
+              category: widget.category,
+            ),
+          ),
+        );
+      }
+    });
   }
 
   void _performIngredientSearch(String ingredientName) async {
@@ -168,21 +184,32 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       );
 
       if (mounted) {
+        // 항상 결과를 저장
+        _pendingApiResult = result;
+        
         if (_isAdShowing) {
           // 광고가 표시 중이면 결과를 저장하고 대기
-          _pendingApiResult = result;
         } else {
-          // 광고가 없으면 바로 결과 화면으로 이동
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => IngredientDetailScreen(
-                ingredientDetail: result,
-                ingredientName: ingredientName,
-                category: widget.category,
-              ),
-            ),
-          );
+          // 광고가 이미 닫혔다면 광고 화면을 명시적으로 닫고 결과 화면으로 이동
+          // 현재 광고 화면을 닫기
+          Navigator.pop(context);
+          // 잠시 후 성분 상세 화면으로 이동
+          Future.delayed(const Duration(milliseconds: 50), () {
+            final pendingResult = _pendingApiResult;
+            if (mounted && pendingResult != null) {
+              _pendingApiResult = null;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => IngredientDetailScreen(
+                    ingredientDetail: pendingResult,
+                    ingredientName: ingredientName,
+                    category: widget.category,
+                  ),
+                ),
+              );
+            }
+          });
         }
       }
     } catch (e) {

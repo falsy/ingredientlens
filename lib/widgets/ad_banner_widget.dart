@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../utils/theme.dart';
 import '../config/ad_config.dart';
-import '../config/app_config.dart';
 import '../services/consent_service.dart';
 
 class AdBannerWidget extends StatefulWidget {
@@ -19,17 +18,10 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   int _retryCount = 0;
   static const int _maxRetries = 3;
 
-  // 광고 표시 여부 (app_config.dart에서 전역 관리)
-  bool get _enableAds => AppConfig.enableAds;
-
   @override
   void initState() {
     super.initState();
-    if (_enableAds) {
-      _checkConsentAndLoadAd();
-    } else {
-      setState(() {});
-    }
+    _checkConsentAndLoadAd();
   }
 
   void _checkConsentAndLoadAd() async {
@@ -107,12 +99,6 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // 광고가 비활성화된 경우 완전히 숨김
-    if (!_enableAds) {
-      return const SizedBox.shrink();
-    }
-
-    // 광고가 활성화된 경우에만 영역 표시
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
