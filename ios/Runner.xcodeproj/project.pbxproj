@@ -89,6 +89,9 @@
 		A182AD8B2E116C7A00588141 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A182AD8C2E116C7D00588141 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A182AD8D2E116C7F00588141 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A182AD8E2E1CE2C100588141 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/Main.strings; sourceTree = "<group>"; };
+		A182AD8F2E1CE2C100588141 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		A182AD902E1CE35600588141 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CADE060EC8FFB690457422DB /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		EB4C4F80D433DED7ABD5B4B7 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -270,6 +273,7 @@
 				vi,
 				en,
 				"zh-Hans",
+				hi,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -457,6 +461,7 @@
 				A10841BC2E0E4B94002BAE87 /* vi */,
 				A182AD1F2E11678D00588141 /* en */,
 				A182AD212E1168D600588141 /* zh-Hans */,
+				A182AD8E2E1CE2C100588141 /* hi */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -473,6 +478,7 @@
 				A10841BD2E0E4B95002BAE87 /* vi */,
 				A182AD202E11678D00588141 /* en */,
 				A182AD222E1168D600588141 /* zh-Hans */,
+				A182AD8F2E1CE2C100588141 /* hi */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -489,6 +495,7 @@
 				A182AD8B2E116C7A00588141 /* es */,
 				A182AD8C2E116C7D00588141 /* th */,
 				A182AD8D2E116C7F00588141 /* vi */,
+				A182AD902E1CE35600588141 /* hi */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
