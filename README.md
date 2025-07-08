@@ -1,16 +1,22 @@
-# ingredient_lens
+# IngredientLens
 
-A new Flutter project.
+What matters more than product packaging is the ingredients. IngredientLens provides marketing-free information through AI, helping you view products objectively - not perfect, but as unbiased as possible.
 
-## Getting Started
+![screenshot](/.github/images/screenshot.png)
 
-This project is a starting point for a Flutter application.
+## About
 
-A few resources to get you started if this is your first Flutter project:
+- AI-powered ingredient analysis for various products
+- Capture with camera or select from gallery
+- Detailed ingredient information and comprehensive analysis
+- Ingredient-based product comparison
+- Save analysis results
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Download
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [App Store](https://apps.apple.com/us/app/ingredientlens-ai-analyzer/id6747660352)
+- [Play Store](https://play.google.com/store/apps/details?id=com.falsy.ingredientlens)
+
+## License
+
+Apache 2.0 license.
