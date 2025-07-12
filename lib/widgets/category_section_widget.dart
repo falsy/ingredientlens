@@ -30,7 +30,7 @@ class CategorySectionWidget extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(4),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -53,7 +53,7 @@ class CategorySectionWidget extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: AppTheme.blackColor,
-                  height: 1.4,
+                  height: 1.2,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,

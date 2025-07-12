@@ -29,6 +29,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
   List<CameraDescription>? _cameras;
   bool _isCameraInitialized = false;
   bool _isCapturing = false;
+  Offset? _focusPoint;
 
   @override
   void initState() {
@@ -49,6 +50,15 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
         );
 
         await _controller!.initialize();
+        
+        // 자동 포커스 모드 설정
+        try {
+          await _controller!.setFocusMode(FocusMode.auto);
+          if (kDebugMode) print('Auto focus mode set');
+        } catch (e) {
+          if (kDebugMode) print('Error setting focus mode: $e');
+        }
+        
         if (kDebugMode) print('Camera initialized successfully');
 
         if (mounted) {
@@ -114,6 +124,42 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
       setState(() {
         _isCapturing = false;
       });
+    }
+  }
+
+  Future<void> _onTapToFocus(TapDownDetails details, Size size) async {
+    if (_controller?.value.isInitialized != true) return;
+
+    try {
+      // 화면 좌표를 카메라 좌표계로 변환 (0.0 ~ 1.0)
+      final Offset normalizedPoint = Offset(
+        details.localPosition.dx / size.width,
+        details.localPosition.dy / size.height,
+      );
+
+      // 포커스 포인트 설정
+      await _controller!.setFocusPoint(normalizedPoint);
+      await _controller!.setExposurePoint(normalizedPoint);
+
+      // 터치 위치 표시를 위해 상태 업데이트
+      setState(() {
+        _focusPoint = details.localPosition;
+      });
+
+      // 2초 후 포커스 인디케이터 숨기기
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _focusPoint = null;
+          });
+        }
+      });
+
+      if (kDebugMode) {
+        print('Focus set to: ${normalizedPoint.dx}, ${normalizedPoint.dy}');
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error setting focus: $e');
     }
   }
 
@@ -183,8 +229,47 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
           children: [
             // 카메라 프리뷰
             Positioned.fill(
-              child: CameraPreview(_controller!),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return GestureDetector(
+                    onTapDown: (details) => _onTapToFocus(details, constraints.biggest),
+                    child: CameraPreview(_controller!),
+                  );
+                },
+              ),
             ),
+
+            // 포커스 인디케이터
+            if (_focusPoint != null)
+              Positioned(
+                left: _focusPoint!.dx - 40,
+                top: _focusPoint!.dy - 40,
+                child: TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 300),
+                  tween: Tween(begin: 1.2, end: 1.0),
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.yellow,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        child: const Icon(
+                          Icons.center_focus_strong,
+                          color: Colors.yellow,
+                          size: 32,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
 
             // 상단 툴바
             Positioned(
