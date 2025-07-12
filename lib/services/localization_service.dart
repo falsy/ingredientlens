@@ -364,7 +364,7 @@ class AppLocalizations {
       'ingredient_detail_search': '성분 상세 검색'
     },
     'zh': {
-      'app_name': 'AI成分分析器',
+      'app_name': '成分镜头',
       'main_title': 'AI成分分析器',
       'section_title': '类别',
       'section_subtitle': '拍照并分析成分',
@@ -489,7 +489,7 @@ class AppLocalizations {
       'ingredient_detail_search': '查看详情'
     },
     'ja': {
-      'app_name': 'AI成分分析',
+      'app_name': '成分レンズ',
       'main_title': 'AI成分分析器',
       'section_title': 'カテゴリ',
       'section_subtitle': '写真を撮って成分を分析',
@@ -616,7 +616,7 @@ class AppLocalizations {
       'ingredient_detail_search': '詳細を見る'
     },
     'es': {
-      'app_name': 'Analizador de Ingredientes',
+      'app_name': 'IngredientLens',
       'main_title': 'Analizador de Ingredientes IA',
       'section_title': 'Categoría',
       'section_subtitle': 'Toma una foto y analiza los ingredientes',
@@ -756,7 +756,7 @@ class AppLocalizations {
       'ingredient_detail_search': 'Ver Detalles'
     },
     'pt': {
-      'app_name': 'Analisador de Ingredientes',
+      'app_name': 'IngredientLens',
       'main_title': 'Analisador de Ingredientes IA',
       'section_title': 'Categoria',
       'section_subtitle': 'Tire uma foto e analise os ingredientes',
@@ -1029,7 +1029,7 @@ class AppLocalizations {
       'ingredient_detail_search': 'ดูรายละเอียด'
     },
     'vi': {
-      'app_name': 'Phân Tích Thành Phần',
+      'app_name': 'Thành Phần Lens',
       'main_title': 'Phân tích thành phần AI',
       'section_title': 'Danh mục',
       'section_subtitle': 'Chụp ảnh và phân tích thành phần',
