@@ -231,7 +231,9 @@ class AppLocalizations {
       'benefits': 'Benefits',
       'precautions': 'Precautions',
       'additional_info': 'Additional Information',
-      'ingredient_detail_search': 'View Details'
+      'ingredient_detail_search': 'View Details',
+      'share': 'Share',
+      'sharing': 'Sharing...'
     },
     'ko': {
       'app_name': '성분렌즈',
@@ -361,7 +363,9 @@ class AppLocalizations {
       'benefits': '효능 및 이점',
       'precautions': '주의사항',
       'additional_info': '추가 정보',
-      'ingredient_detail_search': '성분 상세 검색'
+      'ingredient_detail_search': '성분 상세 검색',
+      'share': '공유하기',
+      'sharing': '공유 중...'
     },
     'zh': {
       'app_name': '成分镜头',
@@ -486,7 +490,9 @@ class AppLocalizations {
       'benefits': '益处',
       'precautions': '注意事项',
       'additional_info': '附加信息',
-      'ingredient_detail_search': '查看详情'
+      'ingredient_detail_search': '查看详情',
+      'share': '分享',
+      'sharing': '分享中...'
     },
     'ja': {
       'app_name': '成分レンズ',
@@ -613,7 +619,9 @@ class AppLocalizations {
       'benefits': '効果・効能',
       'precautions': '注意事項',
       'additional_info': '追加情報',
-      'ingredient_detail_search': '詳細を見る'
+      'ingredient_detail_search': '詳細を見る',
+      'share': '共有',
+      'sharing': '共有中...'
     },
     'es': {
       'app_name': 'IngredientLens',
@@ -753,7 +761,9 @@ class AppLocalizations {
       'benefits': 'Beneficios',
       'precautions': 'Precauciones',
       'additional_info': 'Información Adicional',
-      'ingredient_detail_search': 'Ver Detalles'
+      'ingredient_detail_search': 'Ver Detalles',
+      'share': 'Compartir',
+      'sharing': 'Compartiendo...'
     },
     'pt': {
       'app_name': 'IngredientLens',
@@ -893,7 +903,9 @@ class AppLocalizations {
       'benefits': 'Benefícios',
       'precautions': 'Precauções',
       'additional_info': 'Informações Adicionais',
-      'ingredient_detail_search': 'Ver Detalhes'
+      'ingredient_detail_search': 'Ver Detalhes',
+      'share': 'Compartilhar',
+      'sharing': 'Compartilhando...'
     },
     'th': {
       'app_name': 'เครื่องวิเคราะห์ส่วนผสม',
@@ -1026,7 +1038,9 @@ class AppLocalizations {
       'benefits': 'ประโยชน์',
       'precautions': 'ข้อควรระวัง',
       'additional_info': 'ข้อมูลเพิ่มเติม',
-      'ingredient_detail_search': 'ดูรายละเอียด'
+      'ingredient_detail_search': 'ดูรายละเอียด',
+      'share': 'แชร์',
+      'sharing': 'กำลังแชร์...'
     },
     'vi': {
       'app_name': 'Thành Phần Lens',
@@ -1162,7 +1176,9 @@ class AppLocalizations {
       'benefits': 'Lợi ích',
       'precautions': 'Lưu ý',
       'additional_info': 'Thông tin bổ sung',
-      'ingredient_detail_search': 'Xem Chi Tiết'
+      'ingredient_detail_search': 'Xem Chi Tiết',
+      'share': 'Chia sẻ',
+      'sharing': 'Đang chia sẻ...'
     },
     'hi': {
       'app_name': 'IngredientLens',
@@ -1299,7 +1315,9 @@ class AppLocalizations {
       'benefits': 'लाभ',
       'precautions': 'सावधानियां',
       'additional_info': 'अतिरिक्त जानकारी',
-      'ingredient_detail_search': 'विवरण देखें'
+      'ingredient_detail_search': 'विवरण देखें',
+      'share': 'साझा करें',
+      'sharing': 'साझा कर रहे हैं...'
     },
   };
 

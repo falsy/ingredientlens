@@ -7,6 +7,7 @@ import '../services/localization_service.dart';
 import '../services/database_service.dart';
 import '../services/api_service.dart';
 import '../services/usage_limit_service.dart';
+import '../services/share_service.dart';
 import '../models/recent_result.dart';
 import '../widgets/ad_banner_widget.dart';
 import '../widgets/save_result_bottom_sheet.dart';
@@ -33,6 +34,9 @@ class AnalysisResultScreen extends StatefulWidget {
 }
 
 class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
+  final GlobalKey _repaintBoundaryKey = GlobalKey();
+  bool _isCapturing = false;
+
   @override
   void initState() {
     super.initState();
@@ -242,6 +246,40 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
     );
   }
 
+  Future<void> _shareResults() async {
+    try {
+      // 캡처 모드 활성화 (광고 숨김)
+      setState(() {
+        _isCapturing = true;
+      });
+
+      // UI 업데이트 대기
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      await ShareService.captureAndShare(
+        repaintBoundaryKey: _repaintBoundaryKey,
+        fileName: 'analysis_result_${DateTime.now().millisecondsSinceEpoch}',
+        shareText: 'IngredientLens - ${AppLocalizations.of(context)!.translate('analysis_results')}',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('공유 중 오류가 발생했습니다: $e'),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+      }
+    } finally {
+      // 캡처 모드 비활성화 (광고 복원)
+      if (mounted) {
+        setState(() {
+          _isCapturing = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // 결과 화면에서도 상태바와 네비게이션 바를 배경색으로 설정
@@ -291,11 +329,17 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
           ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: _buildSectionsWithSpacing(context),
+          child: RepaintBoundary(
+            key: _repaintBoundaryKey,
+            child: Container(
+              color: AppTheme.backgroundColor,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: _buildSectionsWithSpacing(context),
+              ),
+            ),
           ),
         ),
       ),
@@ -452,16 +496,24 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
       sections.add(overallSection);
     }
 
-    // 광고 섹션 (총평 후에)
-    if (sections.isNotEmpty) {
+    // 광고 섹션 (총평 후에) - 캡처 모드가 아닐 때만 표시
+    if (sections.isNotEmpty && !_isCapturing) {
       sections.add(const SizedBox(height: 24));
       sections.add(const AdBannerWidget());
     }
 
-    // 저장 버튼 추가 (저장된 결과에서 온 경우가 아닐 때만)
-    if (sections.isNotEmpty && !widget.fromSavedResults) {
+    // 저장 및 공유 버튼 추가
+    if (sections.isNotEmpty) {
       sections.add(const SizedBox(height: 32));
-      sections.add(_buildScreenshotButton(context));
+      
+      // 저장 버튼 (저장된 결과에서 온 경우가 아닐 때만)
+      if (!widget.fromSavedResults) {
+        sections.add(_buildScreenshotButton(context));
+        sections.add(const SizedBox(height: 16));
+      }
+      
+      // 공유 버튼 (항상 표시)
+      sections.add(_buildShareButton(context));
     }
 
     // AI 안내 메시지 추가
@@ -506,6 +558,32 @@ class _AnalysisResultScreenState extends State<AnalysisResultScreen> {
           style: AppTheme.getButtonTextStyle(color: Colors.white),
         ),
         style: AppTheme.getButtonStyle('action'),
+      ),
+    );
+  }
+
+  Widget _buildShareButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _isCapturing ? null : _shareResults,
+        icon: _isCapturing 
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.blackColor),
+                ),
+              )
+            : const Icon(Icons.share, color: AppTheme.blackColor),
+        label: Text(
+          _isCapturing 
+              ? AppLocalizations.of(context)!.translate('sharing')
+              : AppLocalizations.of(context)!.translate('share'),
+          style: AppTheme.getButtonTextStyle(color: AppTheme.blackColor),
+        ),
+        style: AppTheme.getButtonStyle('action2'),
       ),
     );
   }
