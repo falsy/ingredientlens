@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:camera/camera.dart';
 import 'package:image/image.dart' as img;
 import 'dart:io';
+import 'dart:async';
 import '../utils/theme.dart';
 import '../services/localization_service.dart';
 import 'image_crop_screen.dart';
@@ -30,6 +31,8 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
   bool _isCameraInitialized = false;
   bool _isCapturing = false;
   Offset? _focusPoint;
+  Timer? _focusResetTimer;
+  Timer? _focusIndicatorTimer;
 
   @override
   void initState() {
@@ -51,12 +54,17 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
 
         await _controller!.initialize();
         
-        // 자동 포커스 모드 설정
+        // 카메라 포커스 및 노출 설정
         try {
           await _controller!.setFocusMode(FocusMode.auto);
-          if (kDebugMode) print('Auto focus mode set');
+          await _controller!.setExposureMode(ExposureMode.auto);
+          
+          if (kDebugMode) {
+            print('Auto focus mode set');
+            print('Auto exposure mode set');
+          }
         } catch (e) {
-          if (kDebugMode) print('Error setting focus mode: $e');
+          if (kDebugMode) print('Error setting focus/exposure mode: $e');
         }
         
         if (kDebugMode) print('Camera initialized successfully');
@@ -91,6 +99,8 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
 
   @override
   void dispose() {
+    _focusResetTimer?.cancel();
+    _focusIndicatorTimer?.cancel();
     _controller?.dispose();
     super.dispose();
   }
@@ -137,27 +147,58 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
         details.localPosition.dy / size.height,
       );
 
-      // 포커스 포인트 설정
-      await _controller!.setFocusPoint(normalizedPoint);
-      await _controller!.setExposurePoint(normalizedPoint);
+      if (kDebugMode) {
+        print('Touch position: ${details.localPosition.dx}, ${details.localPosition.dy}');
+        print('Screen size: ${size.width} x ${size.height}');
+        print('Normalized point: ${normalizedPoint.dx}, ${normalizedPoint.dy}');
+      }
 
-      // 터치 위치 표시를 위해 상태 업데이트
+      // 터치 위치 표시를 위해 상태 업데이트 (먼저 표시)
       setState(() {
         _focusPoint = details.localPosition;
       });
 
-      // 2초 후 포커스 인디케이터 숨기기
-      Future.delayed(const Duration(seconds: 2), () {
+      // 방법 3: 포커스 모드를 locked로 설정하고 유지
+      await _controller!.setFocusMode(FocusMode.locked);
+      await _controller!.setExposureMode(ExposureMode.locked);
+      await Future.delayed(const Duration(milliseconds: 50));
+      
+      // 포커스 포인트 설정
+      await _controller!.setFocusPoint(normalizedPoint);
+      await _controller!.setExposurePoint(normalizedPoint);
+      
+      if (kDebugMode) {
+        print('Focus locked at: ${normalizedPoint.dx}, ${normalizedPoint.dy}');
+      }
+
+      // 기존 타이머들 취소
+      _focusResetTimer?.cancel();
+      _focusIndicatorTimer?.cancel();
+      
+      // 1초 후 포커스 인디케이터 숨기기
+      _focusIndicatorTimer = Timer(const Duration(seconds: 1), () {
         if (mounted) {
           setState(() {
             _focusPoint = null;
           });
         }
       });
+      
+      // 10초 후 자동 포커스 모드로 복원
+      _focusResetTimer = Timer(const Duration(seconds: 10), () async {
+        if (mounted && _controller?.value.isInitialized == true) {
+          try {
+            await _controller!.setFocusMode(FocusMode.auto);
+            await _controller!.setExposureMode(ExposureMode.auto);
+            if (kDebugMode) {
+              print('Focus mode reset to auto');
+            }
+          } catch (e) {
+            if (kDebugMode) print('Error resetting focus mode: $e');
+          }
+        }
+      });
 
-      if (kDebugMode) {
-        print('Focus set to: ${normalizedPoint.dx}, ${normalizedPoint.dy}');
-      }
     } catch (e) {
       if (kDebugMode) print('Error setting focus: $e');
     }

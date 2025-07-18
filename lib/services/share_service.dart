@@ -61,9 +61,6 @@ class ShareService {
 
       // 고화질로 캡처 (픽셀 비율 2.0으로 낮춤)
       image = await boundary.toImage(pixelRatio: 2.0);
-      if (image == null) {
-        throw Exception('Failed to capture image - image is null');
-      }
 
       byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) {
@@ -95,7 +92,7 @@ class ShareService {
       }
 
       // 공유하기
-      final result = await Share.shareXFiles(
+      await Share.shareXFiles(
         [XFile(imagePath)],
         text: shareText ?? 'IngredientLens - AI component analysis results',
       );
