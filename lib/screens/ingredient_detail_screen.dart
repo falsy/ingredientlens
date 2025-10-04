@@ -1,0 +1,593 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ingredient_lens/l10n/app_localizations.dart';
+import 'package:ingredient_lens/widgets/result_banner_ad_widget.dart';
+import 'dart:convert';
+import '../utils/theme.dart';
+import '../services/database_service.dart';
+import '../services/share_service.dart';
+import '../models/recent_ingredient.dart';
+import '../widgets/ad_banner_widget.dart';
+import '../widgets/save_ingredient_bottom_sheet.dart';
+
+class IngredientDetailScreen extends StatefulWidget {
+  final Map<String, dynamic> ingredientDetail;
+  final String ingredientName;
+  final String category;
+  final bool fromSavedResults;
+  final bool isNewSearch;
+
+  const IngredientDetailScreen({
+    super.key,
+    required this.ingredientDetail,
+    required this.ingredientName,
+    required this.category,
+    this.fromSavedResults = false,
+    this.isNewSearch = true,
+  });
+
+  @override
+  State<IngredientDetailScreen> createState() => _IngredientDetailScreenState();
+}
+
+class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
+  final GlobalKey _repaintBoundaryKey = GlobalKey();
+  bool _isCapturing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _saveRecentIngredient();
+  }
+
+  void _saveRecentIngredient() async {
+    // 새로운 검색이 아니거나 로딩 상태이면 저장하지 않음
+    if (!widget.isNewSearch || widget.ingredientDetail['loading'] == true)
+      return;
+
+    try {
+      final description = widget.ingredientDetail['description'] ?? '';
+
+      if (description.toString().isNotEmpty) {
+        final recentIngredient = RecentIngredient(
+          ingredientName: widget.ingredientName,
+          category: widget.category,
+          description: description.toString(),
+          resultData: jsonEncode(widget.ingredientDetail),
+          createdAt: DateTime.now(),
+        );
+
+        await DatabaseService().saveRecentIngredient(recentIngredient);
+      }
+    } catch (e) {
+      // Error saving recent ingredient - ignore silently
+    }
+  }
+
+  void _showSaveBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      builder: (context) => SaveIngredientBottomSheet(
+        ingredientDetail: widget.ingredientDetail,
+        ingredientName: widget.ingredientName,
+      ),
+    );
+  }
+
+  Future<void> _shareResults() async {
+    try {
+      // 캡처 모드 활성화 (광고 숨김)
+      setState(() {
+        _isCapturing = true;
+      });
+
+      // UI 업데이트 대기
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      await ShareService.captureAndShare(
+        repaintBoundaryKey: _repaintBoundaryKey,
+        fileName: 'ingredient_detail_${DateTime.now().millisecondsSinceEpoch}',
+        shareText:
+            'IngredientLens - ${widget.ingredientName} ${AppLocalizations.of(context)!.ingredient_detail_search}',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.share_error(e.toString())),
+            backgroundColor: AppTheme.negativeColor,
+          ),
+        );
+      }
+    } finally {
+      // 캡처 모드 비활성화 (광고 복원)
+      if (mounted) {
+        setState(() {
+          _isCapturing = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+
+    // 로딩 상태인지 확인
+    final isLoading = widget.ingredientDetail['loading'] == true;
+
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppTheme.gradientStart, AppTheme.gradientEnd],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            isLoading
+                ? AppLocalizations.of(context)!.searching
+                : (widget.ingredientDetail['ingredient_name'] ??
+                    widget.ingredientName),
+            style: const TextStyle(
+              color: AppTheme.blackColor,
+              fontSize: AppTheme.appBarTitleFontSize,
+              fontWeight: AppTheme.appBarTitleFontWeight,
+              letterSpacing: 0.4,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          scrolledUnderElevation: 0,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.dark,
+          ),
+          leading: IconButton(
+            icon: Transform.rotate(
+              angle: 3.141592653589793, // 180도 회전 (π 라디안)
+              child: Image.asset(
+                'assets/images/icons/right-arrow.webp',
+                width: 16,
+                height: 16,
+                fit: BoxFit.contain,
+              ),
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        body: SafeArea(
+          child: isLoading
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(
+                        color: AppTheme.blackColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(context)!.searching_ingredient_info,
+                        style: TextStyle(
+                          fontSize: AppTheme.adjustFontSizeForPlatform(16),
+                          color: AppTheme.gray500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                  child: RepaintBoundary(
+                    key: _repaintBoundaryKey,
+                    child: Container(
+                      color: Colors.transparent,
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _buildSectionsWithSpacing(context),
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildSectionsWithSpacing(BuildContext context) {
+    List<Widget> sections = [];
+    final isLoading = widget.ingredientDetail['loading'] == true;
+
+    // 성분 설명
+    final descriptionSection = _buildDescriptionSection(context);
+    if (descriptionSection != null) {
+      sections.add(descriptionSection);
+    }
+
+    // 다른 이름들
+    final alternativeNamesSection = _buildAlternativeNamesSection(context);
+    if (alternativeNamesSection != null) {
+      if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
+      sections.add(alternativeNamesSection);
+    }
+
+    // 주요 기능
+    final functionsSection = _buildListSection(
+      context,
+      title: AppLocalizations.of(context)!.primary_functions,
+      items: widget.ingredientDetail['primary_functions'] ?? [],
+    );
+    if (functionsSection != null) {
+      if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
+      sections.add(functionsSection);
+    }
+
+    // 광고 섹션 (캡처 모드가 아닐 때만)
+    if (sections.isNotEmpty && !_isCapturing) {
+      sections.add(const SizedBox(height: 24));
+      sections.add(const ResultBannerAdWidget());
+    }
+
+    // 효능/이점
+    final benefitsSection = _buildListSection(
+      context,
+      title: AppLocalizations.of(context)!.benefits,
+      items: widget.ingredientDetail['benefits'] ?? [],
+    );
+    if (benefitsSection != null) {
+      if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
+      sections.add(benefitsSection);
+    }
+
+    // 주의사항/위험성
+    final risksSection = _buildListSection(
+      context,
+      title: AppLocalizations.of(context)!.precautions,
+      items: widget.ingredientDetail['potential_risks'] ?? [],
+    );
+    if (risksSection != null) {
+      if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
+      sections.add(risksSection);
+    }
+
+    // 추가 정보
+    final additionalInfoSection = _buildAdditionalInfoSection(context);
+    if (additionalInfoSection != null) {
+      if (sections.isNotEmpty) sections.add(const SizedBox(height: 32));
+      sections.add(additionalInfoSection);
+    }
+
+    // 광고 섹션 - 캡처 모드가 아닐 때만 표시
+    if (sections.isNotEmpty && !_isCapturing) {
+      sections.add(const SizedBox(height: 24));
+      sections.add(const AdBannerWidget());
+    }
+
+    // 저장 및 공유 버튼 추가
+    if (sections.isNotEmpty && !isLoading) {
+      sections.add(const SizedBox(height: 32));
+
+      // 저장 버튼 (저장된 결과에서 온 경우가 아닐 때만)
+      if (!widget.fromSavedResults) {
+        sections.add(_buildSaveButton(context));
+        sections.add(const SizedBox(height: 16));
+      }
+
+      // 공유 버튼 (항상 표시)
+      sections.add(_buildShareButton(context));
+    }
+
+    // AI 안내 메시지
+    if (sections.isNotEmpty) {
+      sections.add(const SizedBox(height: 32));
+      sections.add(
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: AppTheme.cardBoxShadow,
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.ai_disclaimer,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppTheme.gray500,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return sections;
+  }
+
+  Widget _buildSaveButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _showSaveBottomSheet,
+        icon: const Icon(Icons.save_alt, color: AppTheme.backgroundColor),
+        label: Text(
+          AppLocalizations.of(context)!.save_result,
+          style: AppTheme.getButtonTextStyle(color: AppTheme.backgroundColor),
+        ),
+        style: AppTheme.getButtonStyle('action'),
+      ),
+    );
+  }
+
+  Widget _buildShareButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          if (!_isCapturing) {
+            _shareResults();
+          }
+        },
+        icon: _isCapturing
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AppTheme.whiteColor),
+                ),
+              )
+            : const Icon(Icons.share, color: AppTheme.whiteColor),
+        label: Text(
+          _isCapturing
+              ? AppLocalizations.of(context)!.sharing
+              : AppLocalizations.of(context)!.share,
+          style: AppTheme.getButtonTextStyle(color: AppTheme.whiteColor),
+        ),
+        style: AppTheme.getButtonStyle('action2'),
+      ),
+    );
+  }
+
+  Widget? _buildDescriptionSection(BuildContext context) {
+    final description = widget.ingredientDetail['description'];
+    if (description == null || description.toString().trim().isEmpty) {
+      return null;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SvgPicture.asset(
+              'assets/icons/emergency.svg',
+              width: 12,
+              height: 12,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.blackColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              AppLocalizations.of(context)!.description,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.blackColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: AppTheme.cardBoxShadow,
+          ),
+          child: Text(
+            description.toString(),
+            style: TextStyle(
+              fontSize: AppTheme.adjustFontSizeForPlatform(15),
+              color: AppTheme.gray700,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget? _buildAlternativeNamesSection(BuildContext context) {
+    final names = widget.ingredientDetail['alternative_names'];
+    if (names == null || (names is List && names.isEmpty)) {
+      return null;
+    }
+
+    final nameList = names is List ? names : [names];
+    if (nameList.isEmpty) return null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SvgPicture.asset(
+              'assets/icons/emergency.svg',
+              width: 12,
+              height: 12,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.blackColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              AppLocalizations.of(context)!.alternative_names,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.blackColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: AppTheme.cardBoxShadow,
+          ),
+          child: Text(
+            nameList.join(', '),
+            style: TextStyle(
+              fontSize: AppTheme.adjustFontSizeForPlatform(15),
+              color: AppTheme.gray700,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget? _buildListSection(
+    BuildContext context, {
+    required String title,
+    required List<dynamic> items,
+  }) {
+    if (items.isEmpty) return null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SvgPicture.asset(
+              'assets/icons/emergency.svg',
+              width: 12,
+              height: 12,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.blackColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.blackColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ...items.map((item) => Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: AppTheme.cardBoxShadow,
+              ),
+              child: Text(
+                '• ${item.toString()}',
+                style: TextStyle(
+                  fontSize: AppTheme.adjustFontSizeForPlatform(15),
+                  color: AppTheme.gray700,
+                  height: 1.5,
+                ),
+              ),
+            )),
+      ],
+    );
+  }
+
+  Widget? _buildAdditionalInfoSection(BuildContext context) {
+    final additionalInfo = widget.ingredientDetail['additional_info'];
+    if (additionalInfo == null || additionalInfo.toString().trim().isEmpty) {
+      return null;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SvgPicture.asset(
+              'assets/icons/emergency.svg',
+              width: 12,
+              height: 12,
+              colorFilter: const ColorFilter.mode(
+                AppTheme.blackColor,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              AppLocalizations.of(context)!.additional_info,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.blackColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: AppTheme.cardBoxShadow,
+          ),
+          child: Text(
+            additionalInfo.toString(),
+            style: TextStyle(
+              fontSize: AppTheme.adjustFontSizeForPlatform(15),
+              color: AppTheme.gray700,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

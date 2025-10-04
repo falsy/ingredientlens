@@ -1,0 +1,83 @@
+name: ingredient_lens
+description: AI-powered ingredient analyzer app
+publish_to: "none"
+version: 2.0.10+81
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  google_mobile_ads: ^6.0.0
+  image_picker: ^1.0.4
+  permission_handler: ^11.0.1
+  camera: ^0.10.5+5
+  image: ^4.1.3
+  http: ^1.1.0
+  path_provider: ^2.1.2
+  gal: ^2.1.1
+  url_launcher: ^6.2.2
+  flutter_dotenv: ^5.1.0
+  sqflite: ^2.3.0
+  flutter_svg: ^2.2.0
+  shared_preferences: ^2.2.2
+  screenshot: ^3.0.0
+  share_plus: ^7.2.2
+  package_info_plus: ^8.0.0
+  flutter_gen: ^5.11.0
+  firebase_core: ^3.8.1
+  firebase_analytics: ^11.4.1
+  fl_chart: ^0.70.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  flutter_native_splash: ^2.3.10
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/images/step/
+    - assets/images/icons/
+    - assets/fonts/
+    - assets/icons/
+    - .env
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+          weight: 400
+        - asset: assets/fonts/Pretendard-Medium.otf
+          weight: 500
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
+
+flutter_native_splash:
+  # 기본 설정
+  color: "#FFFFFF"
+  image: assets/images/splash.png
+
+  # Android 12+ 명시적 설정 (앱 아이콘 대신 스플래시 이미지 사용)
+  android_12:
+    image: assets/images/splash.png
+    color: "#FFFFFF"
+
+  # 이미지 표시 방식
+  ios_content_mode: scaleAspectFit
+  fullscreen: false
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 31
+  remove_alpha_ios: true
